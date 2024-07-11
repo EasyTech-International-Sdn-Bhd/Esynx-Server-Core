@@ -17,3 +17,7 @@ type CmsCustomerSalesperson struct {
 func (m *CmsCustomerSalesperson) TableName() string {
 	return "cms_customer_salesperson"
 }
+
+func (m *CmsCustomerSalesperson) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

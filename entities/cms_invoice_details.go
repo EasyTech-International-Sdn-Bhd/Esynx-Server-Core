@@ -25,3 +25,10 @@ type CmsInvoiceDetails struct {
 func (m *CmsInvoiceDetails) TableName() string {
 	return "cms_invoice_details"
 }
+
+func (m *CmsInvoiceDetails) Validate() {
+}
+
+func (m *CmsInvoiceDetails) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

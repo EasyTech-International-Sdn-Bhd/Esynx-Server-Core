@@ -22,3 +22,13 @@ type CmsProductBatch struct {
 func (m *CmsProductBatch) TableName() string {
 	return "cms_product_batch"
 }
+
+func (m *CmsProductBatch) Validate() {
+	if m.ExpDate.IsZero() {
+		m.ExpDate = time.Now().AddDate(10, 1, 1)
+	}
+}
+
+func (m *CmsProductBatch) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

@@ -35,3 +35,16 @@ type CmsProduct struct {
 func (m *CmsProduct) TableName() string {
 	return "cms_product"
 }
+
+func (m *CmsProduct) Validate() {
+	if m.SearchFilter == "" {
+		m.SearchFilter = "{}"
+	}
+	if m.ProductUdf == "" {
+		m.ProductUdf = "{}"
+	}
+}
+
+func (m *CmsProduct) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

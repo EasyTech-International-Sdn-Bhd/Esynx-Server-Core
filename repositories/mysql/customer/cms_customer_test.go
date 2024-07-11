@@ -8,7 +8,7 @@ import (
 	"xorm.io/xorm"
 )
 
-func TestCmsCustomerRepository_InsertBatch(t *testing.T) {
+func TestCmsCustomerRepository_InsertMany(t *testing.T) {
 	db, err := dbConn()
 	if err != nil {
 		t.Error(err)
@@ -16,16 +16,16 @@ func TestCmsCustomerRepository_InsertBatch(t *testing.T) {
 		return
 	}
 	repo := NewCmsCustomerRepository(db)
-	var newCustomers []entities.CmsCustomer
+	var newCustomers []*entities.CmsCustomer
 	for i := 0; i < 10; i++ {
-		newCustomers = append(newCustomers, entities.CmsCustomer{
+		newCustomers = append(newCustomers, &entities.CmsCustomer{
 			CustCode:        fmt.Sprintf("CS-%d", rand.IntN(100000)+1),
 			CustCompanyName: fmt.Sprintf("CS-Name-%d", rand.IntN(100)+1),
 			CustEmail:       fmt.Sprintf("CS-Email-%d", rand.IntN(100)+1),
 			CustomerStatus:  rand.IntN(2),
 		})
 	}
-	err = repo.InsertBatch(newCustomers)
+	err = repo.InsertMany(newCustomers)
 	if err != nil {
 		t.Error(err)
 		t.Fail()

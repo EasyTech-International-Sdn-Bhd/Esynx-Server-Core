@@ -7,7 +7,7 @@ type CustomerWithBranches struct {
 	B []*entities.CmsCustomerBranch
 }
 
-type CustomerWithAgents struct {
+type CustomerWithAgent struct {
 	C *entities.CmsCustomer
 	A *entities.CmsLogin
 }

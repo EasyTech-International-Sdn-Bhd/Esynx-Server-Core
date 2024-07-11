@@ -52,11 +52,14 @@ func (m *CmsCustomer) TableName() string {
 }
 
 func (m *CmsCustomer) Validate() {
-	m.UpdatedAt = time.Now()
 	if m.CustUdf == "" {
 		m.CustUdf = "{}"
 	}
 	if m.CreatedDate.IsZero() {
 		m.CreatedDate = time.Now()
 	}
+}
+
+func (m *CmsCustomer) ToUpdate() {
+	m.UpdatedAt = time.Now()
 }

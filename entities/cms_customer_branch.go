@@ -39,3 +39,11 @@ type CmsCustomerBranch struct {
 func (m *CmsCustomerBranch) TableName() string {
 	return "cms_customer_branch"
 }
+
+func (m *CmsCustomerBranch) Validate() {
+
+}
+
+func (m *CmsCustomerBranch) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

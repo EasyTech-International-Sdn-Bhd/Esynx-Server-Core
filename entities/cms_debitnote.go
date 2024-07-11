@@ -11,6 +11,7 @@ type CmsDebitnote struct {
 	DnDate            time.Time `xorm:"TIMESTAMP"`
 	DnAmount          float64   `xorm:"DOUBLE"`
 	OutstandingAmount float64   `xorm:"DOUBLE"`
+	SalespersonId     int       `xorm:"INT"`
 	Cancelled         string    `xorm:"CHAR(1)"`
 	Approved          int       `xorm:"default 0 INT"`
 	Approver          string    `xorm:"VARCHAR(200)"`
@@ -20,4 +21,11 @@ type CmsDebitnote struct {
 
 func (m *CmsDebitnote) TableName() string {
 	return "cms_debitnote"
+}
+
+func (m *CmsDebitnote) Validate() {
+}
+
+func (m *CmsDebitnote) ToUpdate() {
+	m.UpdatedAt = time.Now()
 }

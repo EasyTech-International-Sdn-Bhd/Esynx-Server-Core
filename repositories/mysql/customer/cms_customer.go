@@ -67,7 +67,7 @@ func (r *CmsCustomerRepository) GetWithBranches(custCode string) (*models.Custom
 	}, nil
 }
 
-func (r *CmsCustomerRepository) GetWithAgents(custCode string) (*models.CustomerWithAgents, error) {
+func (r *CmsCustomerRepository) GetWithAgent(custCode string) (*models.CustomerWithAgent, error) {
 	customer, err := r.Get(custCode)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (r *CmsCustomerRepository) GetWithAgents(custCode string) (*models.Customer
 	if err != nil {
 		return nil, err
 	}
-	return &models.CustomerWithAgents{
+	return &models.CustomerWithAgent{
 		C: customer,
 		A: agentRec,
 	}, nil
@@ -131,11 +131,27 @@ func (r *CmsCustomerRepository) GetCustomerById(custId string) (*entities.CmsCus
 	return &record, nil
 }
 
-func (r *CmsCustomerRepository) InsertBatch(records []entities.CmsCustomer) error {
-	_, err := r.db.Insert(iterator.Map(records, func(item entities.CmsCustomer) entities.CmsCustomer {
+func (r *CmsCustomerRepository) InsertMany(records []*entities.CmsCustomer) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = session.Insert(iterator.Map(records, func(item *entities.CmsCustomer) *entities.CmsCustomer {
 		item.Validate()
+		item.ToUpdate()
 		return item
 	}))
+	if err != nil {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return err
+	}
+	err = session.Commit()
 	if err != nil {
 		return err
 	}
@@ -150,11 +166,7 @@ func (r *CmsCustomerRepository) Update(customer *entities.CmsCustomer) error {
 	return nil
 }
 
-func (r *CmsCustomerRepository) UpdateBatch(customers []*entities.CmsCustomer) error {
-	var custCodes []string
-	for _, customer := range customers {
-		custCodes = append(custCodes, customer.CustCode)
-	}
+func (r *CmsCustomerRepository) UpdateMany(customers []*entities.CmsCustomer) error {
 	session := r.db.NewSession()
 	defer session.Close()
 	err := session.Begin()
@@ -164,6 +176,8 @@ func (r *CmsCustomerRepository) UpdateBatch(customers []*entities.CmsCustomer) e
 	var sessionErr error
 	rollback := false
 	for _, customer := range customers {
+		customer.Validate()
+		customer.ToUpdate()
 		_, err = session.Where("cust_code = ?", customer.CustCode).Update(customer)
 		if err != nil {
 			rollback = true
@@ -187,12 +201,14 @@ func (r *CmsCustomerRepository) UpdateBatch(customers []*entities.CmsCustomer) e
 
 func (r *CmsCustomerRepository) Delete(customer *entities.CmsCustomer) error {
 	customer.CustomerStatus = 0
+	customer.ToUpdate()
 	return r.Update(customer)
 }
 
-func (r *CmsCustomerRepository) DeleteBatch(customers []*entities.CmsCustomer) error {
+func (r *CmsCustomerRepository) DeleteMany(customers []*entities.CmsCustomer) error {
 	for _, customer := range customers {
 		customer.CustomerStatus = 0
+		customer.ToUpdate()
 	}
-	return r.UpdateBatch(customers)
+	return r.UpdateMany(customers)
 }

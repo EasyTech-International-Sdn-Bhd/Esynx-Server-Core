@@ -27,3 +27,16 @@ type CmsProductPriceV2 struct {
 func (m *CmsProductPriceV2) TableName() string {
 	return "cms_product_price_v2"
 }
+
+func (m *CmsProductPriceV2) Validate() {
+	if m.DateFrom.IsZero() {
+		m.DateFrom = time.Now().AddDate(-1, 0, 0)
+	}
+	if m.DateTo.IsZero() {
+		m.DateTo = time.Now().AddDate(10, 0, 0)
+	}
+}
+
+func (m *CmsProductPriceV2) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

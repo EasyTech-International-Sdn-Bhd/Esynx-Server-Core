@@ -40,3 +40,10 @@ type CmsDo struct {
 func (m *CmsDo) TableName() string {
 	return "cms_do"
 }
+
+func (m *CmsDo) Validate() {
+}
+
+func (m *CmsDo) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

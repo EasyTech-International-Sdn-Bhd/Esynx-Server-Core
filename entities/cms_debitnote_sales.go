@@ -21,3 +21,10 @@ type CmsDebitnoteSales struct {
 func (m *CmsDebitnoteSales) TableName() string {
 	return "cms_debitnote_sales"
 }
+
+func (m *CmsDebitnoteSales) Validate() {
+}
+
+func (m *CmsDebitnoteSales) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

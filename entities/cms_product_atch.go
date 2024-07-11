@@ -17,3 +17,11 @@ type CmsProductAtch struct {
 func (m *CmsProductAtch) TableName() string {
 	return "cms_product_atch"
 }
+
+func (m *CmsProductAtch) Validate() {
+
+}
+
+func (m *CmsProductAtch) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

@@ -12,9 +12,9 @@ type ICmsInvoice interface {
 	GetWithItems(invoiceCode string) (*models.InvoiceWithItems, error)
 	GetByCustomer(custCode string) ([]*entities.CmsInvoice, error)
 	GetByDate(from time.Time, to time.Time) ([]*entities.CmsInvoice, error)
-	InsertBatch(invoices []*entities.CmsInvoice) error
+	InsertMany(invoices []*entities.CmsInvoice) error
 	Update(invoice *entities.CmsInvoice) error
-	UpdateBatch(invoices []*entities.CmsInvoice) error
+	UpdateMany(invoices []*entities.CmsInvoice) error
 	Delete(invoice *entities.CmsInvoice) error
-	DeleteBatch(invoices []*entities.CmsInvoice) error
+	DeleteMany(invoices []*entities.CmsInvoice) error
 }

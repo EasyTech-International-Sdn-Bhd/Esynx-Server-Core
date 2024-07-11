@@ -18,6 +18,7 @@ type CmsCreditnote struct {
 	Approved         int       `xorm:"default 0 INT"`
 	Approver         string    `xorm:"VARCHAR(200)"`
 	ApprovedAt       time.Time `xorm:"DATETIME"`
+	FromDoc          string    `xorm:"default 'SL' ENUM('AR','SL')"`
 	RefNo            string    `xorm:"VARCHAR(20)"`
 }
 

@@ -24,3 +24,11 @@ type CmsWarehouseStock struct {
 func (m *CmsWarehouseStock) TableName() string {
 	return "cms_warehouse_stock"
 }
+
+func (m *CmsWarehouseStock) Validate() {
+	// NOTE: nothing for now
+}
+
+func (m *CmsWarehouseStock) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

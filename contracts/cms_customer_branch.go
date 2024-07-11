@@ -7,9 +7,9 @@ type ICmsCustomerBranch interface {
 	GetByCustomerCode(custCode string) ([]*entities.CmsCustomerBranch, error)
 	GetByAgentId(agentId int64) ([]*entities.CmsCustomerBranch, error)
 	GetAllStatusByAgentId(agentId int64) ([]*entities.CmsCustomerBranch, error)
-	InsertBatch(records []*entities.CmsCustomerBranch) error
+	InsertMany(records []*entities.CmsCustomerBranch) error
 	Update(record *entities.CmsCustomerBranch) error
-	UpdateBatch(records []*entities.CmsCustomerBranch) error
+	UpdateMany(records []*entities.CmsCustomerBranch) error
 	Delete(record *entities.CmsCustomerBranch) error
-	DeleteBatch(records []*entities.CmsCustomerBranch) error
+	DeleteMany(records []*entities.CmsCustomerBranch) error
 }

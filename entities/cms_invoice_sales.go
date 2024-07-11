@@ -21,8 +21,16 @@ type CmsInvoiceSales struct {
 	UpdatedAt         time.Time `xorm:"not null default CURRENT_TIMESTAMP TIMESTAMP"`
 	CreatedBy         string    `xorm:"VARCHAR(20)"`
 	RefNo             int       `xorm:"INT"`
+	Termcode          string    `xorm:"VARCHAR(20)"`
 }
 
 func (m *CmsInvoiceSales) TableName() string {
 	return "cms_invoice_sales"
+}
+
+func (m *CmsInvoiceSales) Validate() {
+}
+
+func (m *CmsInvoiceSales) ToUpdate() {
+	m.UpdatedAt = time.Now()
 }

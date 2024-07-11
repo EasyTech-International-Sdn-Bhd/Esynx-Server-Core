@@ -21,3 +21,13 @@ type CmsLogin struct {
 func (m *CmsLogin) TableName() string {
 	return "cms_login"
 }
+
+func (m *CmsLogin) Validate() {
+	if m.RoleId == 0 {
+		m.RoleId = 2
+	}
+}
+
+func (m *CmsLogin) ToUpdate() {
+
+}

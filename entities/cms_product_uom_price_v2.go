@@ -21,3 +21,11 @@ type CmsProductUomPriceV2 struct {
 func (m *CmsProductUomPriceV2) TableName() string {
 	return "cms_product_uom_price_v2"
 }
+
+func (m *CmsProductUomPriceV2) Validate() {
+
+}
+
+func (m *CmsProductUomPriceV2) ToUpdate() {
+	m.UpdatedAt = time.Now()
+}

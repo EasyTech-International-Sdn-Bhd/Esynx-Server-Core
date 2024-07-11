@@ -19,7 +19,7 @@ func NewCmsCustomerSalespersonRepository(db *xorm.Engine) *CmsCustomerSalesperso
 
 func (r *CmsCustomerSalespersonRepository) GetByAgentId(agentId int64) ([]*entities.CmsCustomerSalesperson, error) {
 	var record []*entities.CmsCustomerSalesperson
-	err := r.db.Where("salesperson_id = ?", agentId).Find(&record)
+	err := r.db.Where("salesperson_id = ? AND active_status = ?", agentId, 1).Find(&record)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func (r *CmsCustomerSalespersonRepository) GetByAgentId(agentId int64) ([]*entit
 
 func (r *CmsCustomerSalespersonRepository) GetByCustomerId(custId int64) (*entities.CmsCustomerSalesperson, error) {
 	var record entities.CmsCustomerSalesperson
-	has, err := r.db.Where("customer_id = ?", custId).Get(&record)
+	has, err := r.db.Where("customer_id = ? AND active_status = ?", custId, 1).Get(&record)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (r *CmsCustomerSalespersonRepository) GetAgentByCustId(custId int64) (*enti
 	if err != nil {
 		return nil, err
 	}
-	c, err := r.l.Resolve(int64(a.SalespersonId))
+	c, err := r.l.Get(int64(a.SalespersonId))
 	if err != nil {
 		return nil, err
 	}

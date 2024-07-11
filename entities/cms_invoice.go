@@ -19,6 +19,7 @@ type CmsInvoice struct {
 	InvUdf            string    `xorm:"JSON"`
 	RefNo             int       `xorm:"INT"`
 	DocType           string    `xorm:"default 'IV' ENUM('CS','IV')"`
+	FromDoc           string    `xorm:"default 'SL' ENUM('AR','SL','CS')"`
 	Cancelled         string    `xorm:"CHAR(1)"`
 	UpdatedAt         time.Time `xorm:"not null default CURRENT_TIMESTAMP TIMESTAMP"`
 	Termcode          string    `xorm:"VARCHAR(20)"`
@@ -26,4 +27,11 @@ type CmsInvoice struct {
 
 func (m *CmsInvoice) TableName() string {
 	return "cms_invoice"
+}
+
+func (m *CmsInvoice) Validate() {
+}
+
+func (m *CmsInvoice) ToUpdate() {
+	m.UpdatedAt = time.Now()
 }

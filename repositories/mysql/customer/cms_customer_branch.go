@@ -16,7 +16,7 @@ func NewCmsCustomerBranchRepository(db *xorm.Engine) *CmsCustomerBranchRepositor
 	}
 }
 
-func (r *CmsCustomerBranchRepository) Resolve(branchCode string) (*entities.CmsCustomerBranch, error) {
+func (r *CmsCustomerBranchRepository) Get(branchCode string) (*entities.CmsCustomerBranch, error) {
 	var branch entities.CmsCustomerBranch
 	has, err := r.db.Where("branch_code = ?", branchCode).Get(&branch)
 	if err != nil {
@@ -30,7 +30,7 @@ func (r *CmsCustomerBranchRepository) Resolve(branchCode string) (*entities.CmsC
 
 func (r *CmsCustomerBranchRepository) GetByCustomerCode(custCode string) ([]*entities.CmsCustomerBranch, error) {
 	var branches []*entities.CmsCustomerBranch
-	err := r.db.Where("cust_code = ?", custCode).Where("branch_active = ?", 1).Find(&branches)
+	err := r.db.Where("cust_code = ? AND branch_active = ?", custCode, 1).Find(&branches)
 	if err != nil {
 		return nil, err
 	}
@@ -59,10 +59,83 @@ func (r *CmsCustomerBranchRepository) GetAllStatusByAgentId(agentId int64) ([]*e
 	return branches, nil
 }
 
-func (r *CmsCustomerBranchRepository) InsertBatch(records []*entities.CmsCustomerBranch) error {
-	_, err := r.db.Insert(records)
+func (r *CmsCustomerBranchRepository) InsertMany(records []*entities.CmsCustomerBranch) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Insert(iterator.Map(records, func(item *entities.CmsCustomerBranch) *entities.CmsCustomerBranch {
+		item.Validate()
+		item.ToUpdate()
+		return item
+	}))
+	if err != nil {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return err
+	}
+	err = session.Commit()
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (r *CmsCustomerBranchRepository) Update(record *entities.CmsCustomerBranch) error {
+	_, err := r.db.Where("branch_code = ?", record.BranchCode).Update(record)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *CmsCustomerBranchRepository) UpdateMany(records []*entities.CmsCustomerBranch) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
+	for _, branch := range records {
+		branch.Validate()
+		_, err = session.Where("branch_code = ?", branch.BranchCode).Update(branch)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
+	}
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *CmsCustomerBranchRepository) Delete(record *entities.CmsCustomerBranch) error {
+	record.BranchActive = 0
+	record.ToUpdate()
+	return r.Update(record)
+}
+
+func (r *CmsCustomerBranchRepository) DeleteMany(records []*entities.CmsCustomerBranch) error {
+	for _, record := range records {
+		record.BranchActive = 0
+		record.ToUpdate()
+	}
+	return r.UpdateMany(records)
 }
