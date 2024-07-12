@@ -44,25 +44,11 @@ func (r *CmsProductPriceTagRepository) GetByPriceType(productCode string, priceT
 }
 
 func (r *CmsProductPriceTagRepository) InsertMany(records []*entities.CmsProductPriceV2) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	_, err = session.Insert(iterator.Map(records, func(item *entities.CmsProductPriceV2) *entities.CmsProductPriceV2 {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductPriceV2) *entities.CmsProductPriceV2 {
 		item.Validate()
 		item.ToUpdate()
 		return item
 	}))
-	if err != nil {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return err
-	}
-	err = session.Commit()
 	if err != nil {
 		return err
 	}

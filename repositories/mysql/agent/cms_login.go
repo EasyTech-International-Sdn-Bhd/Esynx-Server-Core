@@ -54,26 +54,11 @@ func (r *CmsLoginRepository) GetAll() ([]*entities.CmsLogin, error) {
 }
 
 func (r *CmsLoginRepository) InsertMany(records []*entities.CmsLogin) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-
-	_, err = session.Insert(iterator.Map(records, func(item *entities.CmsLogin) *entities.CmsLogin {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsLogin) *entities.CmsLogin {
 		item.Validate()
 		item.ToUpdate()
 		return item
 	}))
-	if err != nil {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return err
-	}
-	err = session.Commit()
 	if err != nil {
 		return err
 	}

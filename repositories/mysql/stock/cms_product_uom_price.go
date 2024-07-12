@@ -26,26 +26,11 @@ func (r *CmsProductUomPriceRepository) Get(productCode string) ([]*entities.CmsP
 }
 
 func (r *CmsProductUomPriceRepository) InsertMany(records []*entities.CmsProductUomPriceV2) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-
-	_, err = session.Insert(iterator.Map(records, func(item *entities.CmsProductUomPriceV2) *entities.CmsProductUomPriceV2 {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductUomPriceV2) *entities.CmsProductUomPriceV2 {
 		item.Validate()
 		item.ToUpdate()
 		return item
 	}))
-	if err != nil {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return err
-	}
-	err = session.Commit()
 	if err != nil {
 		return err
 	}

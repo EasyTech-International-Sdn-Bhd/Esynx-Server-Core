@@ -132,26 +132,11 @@ func (r *CmsCustomerRepository) GetCustomerById(custId string) (*entities.CmsCus
 }
 
 func (r *CmsCustomerRepository) InsertMany(records []*entities.CmsCustomer) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-
-	_, err = session.Insert(iterator.Map(records, func(item *entities.CmsCustomer) *entities.CmsCustomer {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsCustomer) *entities.CmsCustomer {
 		item.Validate()
 		item.ToUpdate()
 		return item
 	}))
-	if err != nil {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return err
-	}
-	err = session.Commit()
 	if err != nil {
 		return err
 	}

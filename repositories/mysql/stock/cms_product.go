@@ -69,26 +69,11 @@ func (r *CmsProductRepository) Search(predicate string) ([]*entities.CmsProduct,
 }
 
 func (r *CmsProductRepository) InsertMany(records []*entities.CmsProduct) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-
-	_, err = session.Insert(iterator.Map(records, func(item *entities.CmsProduct) *entities.CmsProduct {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProduct) *entities.CmsProduct {
 		item.Validate()
 		item.ToUpdate()
 		return item
 	}))
-	if err != nil {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return err
-	}
-	err = session.Commit()
 	if err != nil {
 		return err
 	}

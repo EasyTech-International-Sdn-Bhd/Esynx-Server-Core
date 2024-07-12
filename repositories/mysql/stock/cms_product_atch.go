@@ -26,26 +26,11 @@ func (r *CmsProductAtchRepository) Get(productCode string) ([]*entities.CmsProdu
 }
 
 func (r *CmsProductAtchRepository) InsertMany(records []*entities.CmsProductAtch) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-
-	_, err = session.Insert(iterator.Map(records, func(item *entities.CmsProductAtch) *entities.CmsProductAtch {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductAtch) *entities.CmsProductAtch {
 		item.Validate()
 		item.ToUpdate()
 		return item
 	}))
-	if err != nil {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return err
-	}
-	err = session.Commit()
 	if err != nil {
 		return err
 	}

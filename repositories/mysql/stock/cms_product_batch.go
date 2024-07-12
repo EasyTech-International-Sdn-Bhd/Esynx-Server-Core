@@ -35,26 +35,11 @@ func (r *CmsProductBatchRepository) GetByWarehouse(productCode string, warehouse
 }
 
 func (r *CmsProductBatchRepository) InsertMany(records []*entities.CmsProductBatch) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-
-	_, err = session.Insert(iterator.Map(records, func(item *entities.CmsProductBatch) *entities.CmsProductBatch {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductBatch) *entities.CmsProductBatch {
 		item.Validate()
 		item.ToUpdate()
 		return item
 	}))
-	if err != nil {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return err
-	}
-	err = session.Commit()
 	if err != nil {
 		return err
 	}
