@@ -25,6 +25,7 @@ func (m *MySqlDb) Open(conn string) (err error) {
 		}
 		return nil
 	})
+	m.Engine.SetLogLevel(0)
 	if err != nil {
 		return err
 	}
