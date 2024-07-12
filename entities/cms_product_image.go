@@ -5,7 +5,7 @@ import (
 )
 
 type CmsProductImage struct {
-	ProductImageId          int       `xorm:"not null pk autoincr INT"`
+	ProductImageId          uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	ProductId               int       `xorm:"unique(unique_key) INT"`
 	ImageUrl                string    `xorm:"unique(unique_key) VARCHAR(400)"`
 	SequenceNo              int       `xorm:"INT"`

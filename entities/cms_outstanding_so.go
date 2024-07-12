@@ -5,7 +5,7 @@ import (
 )
 
 type CmsOutstandingSo struct {
-	Id              int       `xorm:"not null pk autoincr INT"`
+	Id              uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	SoDocno         string    `xorm:"not null unique(so_docno) VARCHAR(20)"`
 	SoDockey        string    `xorm:"not null VARCHAR(30)"`
 	SoProductCode   string    `xorm:"not null default '' unique(so_docno) VARCHAR(50)"`

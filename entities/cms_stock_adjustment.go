@@ -5,7 +5,7 @@ import (
 )
 
 type CmsStockAdjustment struct {
-	Id                   []byte    `xorm:"not null pk default uuid_to_bin(uuid()) BINARY(16)"`
+	Id                   uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	AdjId                string    `xorm:"not null unique VARCHAR(25)"`
 	AdjDate              time.Time `xorm:"DATE"`
 	AdjDescription       string    `xorm:"VARCHAR(255)"`

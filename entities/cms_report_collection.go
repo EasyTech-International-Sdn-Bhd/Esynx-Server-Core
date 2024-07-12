@@ -5,7 +5,7 @@ import (
 )
 
 type CmsReportCollection struct {
-	Id           uint64    `xorm:"not null pk autoincr unique UNSIGNED BIGINT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	UniqueId     string    `xorm:"not null unique VARCHAR(30)"`
 	Data         string    `xorm:"JSON"`
 	ActiveStatus int       `xorm:"not null default 1 INT"`

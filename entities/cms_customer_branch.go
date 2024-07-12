@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerBranch struct {
-	BranchId         int       `xorm:"not null pk autoincr INT"`
+	BranchId         uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CustId           int       `xorm:"not null INT"`
 	AgentId          int       `xorm:"not null INT"`
 	CustCode         string    `xorm:"not null unique(unique_branch) VARCHAR(100)"`

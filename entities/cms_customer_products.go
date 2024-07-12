@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerProducts struct {
-	Id           int       `xorm:"not null pk autoincr INT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CustCode     string    `xorm:"not null unique(unq) VARCHAR(50)"`
 	ProductCode  string    `xorm:"not null unique(unq) VARCHAR(50)"`
 	VipQty       float64   `xorm:"not null default 0 DOUBLE"`

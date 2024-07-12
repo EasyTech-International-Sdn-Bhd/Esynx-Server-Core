@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCreditnote struct {
-	CnId             int       `xorm:"not null pk autoincr INT"`
+	CnId             uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CnCode           string    `xorm:"index unique VARCHAR(20)"`
 	CustCode         string    `xorm:"index VARCHAR(20)"`
 	CnDate           time.Time `xorm:"TIMESTAMP"`

@@ -1,7 +1,7 @@
 package entities
 
 type CmsSalespersonUploadsType struct {
-	TypeId     int    `xorm:"not null pk autoincr INT"`
+	TypeId     uint64 `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	TypeName   string `xorm:"not null VARCHAR(100)"`
 	TypeStatus int    `xorm:"not null default 0 comment('0 means inactive and 1 means active') INT"`
 }

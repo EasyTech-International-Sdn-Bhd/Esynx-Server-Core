@@ -1,7 +1,7 @@
 package entities
 
 type CmsWarehouse struct {
-	Id        int    `xorm:"not null pk autoincr INT"`
+	Id        uint64 `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	WhName    string `xorm:"not null VARCHAR(200)"`
 	WhCode    string `xorm:"not null unique VARCHAR(50)"`
 	WhAddress string `xorm:"VARCHAR(1000)"`

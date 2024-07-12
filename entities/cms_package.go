@@ -5,7 +5,7 @@ import (
 )
 
 type CmsPackage struct {
-	PkgId            int       `xorm:"not null pk autoincr INT"`
+	PkgId            uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	PkgCode          string    `xorm:"not null default '' index unique VARCHAR(100)"`
 	PkgName          string    `xorm:"default '' VARCHAR(100)"`
 	PkgDesc          string    `xorm:"default '' VARCHAR(200)"`

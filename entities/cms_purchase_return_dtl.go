@@ -5,7 +5,7 @@ import (
 )
 
 type CmsPurchaseReturnDtl struct {
-	Id                  []byte    `xorm:"not null pk default uuid_to_bin(uuid()) index BINARY(16)"`
+	Id                  uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	PrId                string    `xorm:"comment('this reference is unique and link to order table. it cannot use order id because the order are sending from different ipad, the order id which is generated from ipad might be the same when reach to CMS.') unique(unique_key) VARCHAR(20)"`
 	DeviceItemId        int       `xorm:"default 0 unique(unique_key) INT"`
 	ProductCode         string    `xorm:"unique(unique_key) VARCHAR(50)"`
@@ -16,8 +16,8 @@ type CmsPurchaseReturnDtl struct {
 	UnitPrice           float64   `xorm:"default 0 DOUBLE"`
 	Discount            string    `xorm:"VARCHAR(50)"`
 	ProductUom          string    `xorm:"VARCHAR(100)"`
-	AttributeRemark     string    `xorm:"comment('The chosen attribute name and value will be stored here, e.g. Size=L, Colour=Red') LONGTEXT(4294967295)"`
-	OptionalRemark      string    `xorm:"comment('The selected optional item will store here, e.g. Sport Rim, Leather Seat.') LONGTEXT(4294967295)"`
+	AttributeRemark     string    `xorm:"comment('The chosen attribute name and value will be stored here, e.g. Size=L, Colour=Red') BLOB"`
+	OptionalRemark      string    `xorm:"comment('The selected optional item will store here, e.g. Sport Rim, Leather Seat.') BLOB"`
 	DiscountMethod      string    `xorm:"comment('Percentage or Fixed (Amount)') VARCHAR(100)"`
 	PickerNote          string    `xorm:"not null VARCHAR(500)"`
 	DiscountAmount      float64   `xorm:"default 0 DOUBLE"`

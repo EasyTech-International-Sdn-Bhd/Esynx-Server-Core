@@ -3,7 +3,7 @@ package entities
 import "time"
 
 type CmsDebitnoteDetails struct {
-	Id           int       `xorm:"not null pk autoincr INT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	DnCode       string    `xorm:"VARCHAR(100)"`
 	ItemCode     string    `xorm:"VARCHAR(200)"`
 	ItemName     string    `xorm:"VARCHAR(200)"`

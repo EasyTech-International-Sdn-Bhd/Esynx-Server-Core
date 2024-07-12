@@ -5,7 +5,7 @@ import (
 )
 
 type CmsVisitReport struct {
-	Id                    int       `xorm:"not null pk autoincr INT"`
+	Id                    uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CustomerId            int       `xorm:"not null unique(unq) INT"`
 	BranchCode            string    `xorm:"VARCHAR(20)"`
 	SalespersonId         int       `xorm:"not null INT"`

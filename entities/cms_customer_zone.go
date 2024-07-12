@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerZone struct {
-	ZoneId       int       `xorm:"not null pk autoincr INT"`
+	ZoneId       uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	ZoneName     string    `xorm:"not null default '' unique VARCHAR(100)"`
 	ZoneRemark   string    `xorm:"not null default '' VARCHAR(1000)"`
 	ActiveStatus int       `xorm:"not null default 1 INT"`

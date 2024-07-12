@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerContraLocal struct {
-	CtId              int       `xorm:"not null pk autoincr INT"`
+	CtId              uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CtCode            string    `xorm:"index unique VARCHAR(20)"`
 	CustCode          string    `xorm:"index VARCHAR(20)"`
 	CtDate            time.Time `xorm:"TIMESTAMP"`

@@ -5,7 +5,7 @@ import (
 )
 
 type CmsPaymentGatewayBills struct {
-	Id              []byte    `xorm:"not null pk default uuid_to_bin(uuid()) unique BINARY(16)"`
+	Id              uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CollectionId    string    `xorm:"unique(cms_payment_gateway_bills_unq) VARCHAR(50)"`
 	BillId          string    `xorm:"unique(cms_payment_gateway_bills_unq) VARCHAR(50)"`
 	BillTempRef     string    `xorm:"unique(cms_payment_gateway_bills_unq) VARCHAR(50)"`

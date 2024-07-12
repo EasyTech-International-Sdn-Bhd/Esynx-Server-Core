@@ -5,9 +5,9 @@ import (
 )
 
 type CmsProductGroup struct {
-	Id           int       `xorm:"not null pk autoincr INT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	Name         string    `xorm:"unique VARCHAR(100)"`
-	Description  string    `xorm:"LONGTEXT(4294967295)"`
+	Description  string    `xorm:"BLOB"`
 	ProductCode  string    `xorm:"VARCHAR(250)"`
 	DateCreated  time.Time `xorm:"default CURRENT_TIMESTAMP TIMESTAMP"`
 	CategoryId   int       `xorm:"default 0 INT"`

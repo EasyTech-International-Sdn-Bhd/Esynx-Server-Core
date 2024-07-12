@@ -5,7 +5,7 @@ import (
 )
 
 type CmsDebitnote struct {
-	DnId              int       `xorm:"not null pk autoincr INT"`
+	DnId              uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	DnCode            string    `xorm:"index unique VARCHAR(20)"`
 	CustCode          string    `xorm:"index VARCHAR(20)"`
 	DnDate            time.Time `xorm:"TIMESTAMP"`

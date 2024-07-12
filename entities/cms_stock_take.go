@@ -5,7 +5,7 @@ import (
 )
 
 type CmsStockTake struct {
-	Id              int       `xorm:"not null pk autoincr INT"`
+	Id              uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	StId            int       `xorm:"not null unique(unq) INT"`
 	CustCode        string    `xorm:"not null VARCHAR(200)"`
 	CustCompanyName string    `xorm:"not null VARCHAR(200)"`

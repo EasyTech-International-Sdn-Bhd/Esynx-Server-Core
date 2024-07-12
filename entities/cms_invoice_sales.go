@@ -5,7 +5,7 @@ import (
 )
 
 type CmsInvoiceSales struct {
-	InvoiceId         int64     `xorm:"not null pk autoincr BIGINT"`
+	InvoiceId         uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	InvoiceCode       string    `xorm:"not null default '' unique VARCHAR(200)"`
 	CustCode          string    `xorm:"VARCHAR(20)"`
 	InvoiceDate       time.Time `xorm:"TIMESTAMP"`

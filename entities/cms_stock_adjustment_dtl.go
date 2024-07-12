@@ -5,7 +5,7 @@ import (
 )
 
 type CmsStockAdjustmentDtl struct {
-	Id            []byte    `xorm:"not null pk default uuid_to_bin(uuid()) BINARY(16)"`
+	Id            uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	AdjId         string    `xorm:"not null unique(unq) VARCHAR(25)"`
 	DeviceItemId  int64     `xorm:"default 0 unique(unq) BIGINT"`
 	ProductCode   string    `xorm:"VARCHAR(25)"`

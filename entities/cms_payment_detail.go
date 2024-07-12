@@ -5,7 +5,7 @@ import (
 )
 
 type CmsPaymentDetail struct {
-	PaymentDetailId     int       `xorm:"not null pk autoincr INT"`
+	PaymentDetailId     uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	PaymentId           string    `xorm:"unique VARCHAR(50)"`
 	MobileDetailId      int       `xorm:"INT"`
 	PaymentMethod       string    `xorm:"VARCHAR(50)"`

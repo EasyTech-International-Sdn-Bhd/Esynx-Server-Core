@@ -5,7 +5,7 @@ import (
 )
 
 type CmsProductAtch struct {
-	Id           uint64    `xorm:"not null pk autoincr UNSIGNED BIGINT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	ProductCode  string    `xorm:"not null VARCHAR(50)"`
 	ContentType  string    `xorm:"not null VARCHAR(50)"`
 	Link         string    `xorm:"not null VARCHAR(500)"`

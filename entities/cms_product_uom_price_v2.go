@@ -5,7 +5,7 @@ import (
 )
 
 type CmsProductUomPriceV2 struct {
-	ProductUomPriceId   int       `xorm:"not null pk autoincr INT"`
+	ProductUomPriceId   uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	ProductCode         string    `xorm:"unique(unique_uom) VARCHAR(50)"`
 	ProductUom          string    `xorm:"unique(unique_uom) VARCHAR(50)"`
 	ProductUomRate      float64   `xorm:"default 0 unique(unique_uom) DOUBLE"`

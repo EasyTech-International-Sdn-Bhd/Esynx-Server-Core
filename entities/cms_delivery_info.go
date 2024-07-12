@@ -5,7 +5,7 @@ import (
 )
 
 type CmsDeliveryInfo struct {
-	Id        int       `xorm:"not null pk autoincr INT"`
+	Id        uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	OrderId   string    `xorm:"unique VARCHAR(20)"`
 	Message   string    `xorm:"VARCHAR(500)"`
 	UpdatedAt time.Time `xorm:"not null default CURRENT_TIMESTAMP TIMESTAMP"`

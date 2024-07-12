@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerMerchandSched struct {
-	Id             int       `xorm:"not null pk autoincr INT"`
+	Id             uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	AppmntCode     string    `xorm:"not null unique(unq) VARCHAR(55)"`
 	AppmntNote     []byte    `xorm:"BLOB"`
 	AppmntDocType  string    `xorm:"not null JSON"`

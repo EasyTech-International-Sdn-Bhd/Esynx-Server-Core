@@ -5,7 +5,7 @@ import (
 )
 
 type CmsWarehouseStock struct {
-	Id             int       `xorm:"not null pk autoincr INT"`
+	Id             uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	ProductCode    string    `xorm:"not null unique(unq) VARCHAR(200)"`
 	WhCode         string    `xorm:"not null unique(unq) VARCHAR(200)"`
 	ReadyStQty     float64   `xorm:"default 0 DOUBLE"`

@@ -5,7 +5,7 @@ import (
 )
 
 type CmsProductBatch struct {
-	Id           uint64    `xorm:"not null pk autoincr UNSIGNED BIGINT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	ProductCode  string    `xorm:"not null index(product_code_batch_code_wh_code) unique(unq_key) VARCHAR(50)"`
 	Quantity     float64   `xorm:"not null DOUBLE"`
 	WhCode       string    `xorm:"not null index(product_code_batch_code_wh_code) unique(unq_key) VARCHAR(50)"`

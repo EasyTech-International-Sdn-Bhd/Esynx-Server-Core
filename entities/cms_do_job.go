@@ -5,7 +5,7 @@ import (
 )
 
 type CmsDoJob struct {
-	RunningId        int       `xorm:"not null pk autoincr INT"`
+	RunningId        uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	JobId            int       `xorm:"not null unique INT"`
 	DoCode           string    `xorm:"not null default '' VARCHAR(500)"`
 	StartTime        time.Time `xorm:"DATETIME"`

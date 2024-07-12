@@ -5,15 +5,15 @@ import (
 )
 
 type CmsProduct struct {
-	ProductId                int       `xorm:"not null pk autoincr index INT"`
+	ProductId                uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CategoryId               int       `xorm:"default 0 comment('0 means roof.') index INT"`
 	Productidentifierid      string    `xorm:"not null default '' VARCHAR(20)"`
 	ProductCode              string    `xorm:"unique VARCHAR(50)"`
 	QrCode                   string    `xorm:"VARCHAR(100)"`
 	ProductName              string    `xorm:"VARCHAR(400)"`
-	ProductDesc              string    `xorm:"comment('the product desc is the THML tag format') LONGTEXT(4294967295)"`
-	ProductRemark            string    `xorm:"comment('product remark is normal text format') LONGTEXT(4294967295)"`
-	ProductPromo             string    `xorm:"LONGTEXT(4294967295)"`
+	ProductDesc              string    `xorm:"comment('the product desc is the THML tag format') BLOB"`
+	ProductRemark            string    `xorm:"comment('product remark is normal text format') BLOB"`
+	ProductPromo             string    `xorm:"BLOB"`
 	SequenceNo               int       `xorm:"INT"`
 	ProductStatus            int       `xorm:"default 1 comment('1=active, 0=inactive') INT"`
 	ProductCurrentQuantity   float64   `xorm:"default 0 comment('it can be N/A, or 9999. the quantity will be deduct when order transfer to CMS') DOUBLE"`

@@ -5,7 +5,7 @@ import (
 )
 
 type CmsReceipt struct {
-	ReceiptId             uint64    `xorm:"not null pk autoincr unique UNSIGNED BIGINT"`
+	ReceiptId             uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	ReceiptCode           string    `xorm:"index unique VARCHAR(20)"`
 	CustCode              string    `xorm:"index VARCHAR(20)"`
 	ReceiptDate           time.Time `xorm:"TIMESTAMP"`

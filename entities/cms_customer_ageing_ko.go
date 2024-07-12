@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerAgeingKo struct {
-	Id            int       `xorm:"not null pk autoincr INT"`
+	Id            uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	DocDate       time.Time `xorm:"DATETIME"`
 	DocCode       string    `xorm:"not null unique(unq) VARCHAR(100)"`
 	DocKoRef      string    `xorm:"not null unique(unq) VARCHAR(100)"`

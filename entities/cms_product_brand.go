@@ -5,7 +5,7 @@ import (
 )
 
 type CmsProductBrand struct {
-	BrandId       int       `xorm:"not null pk autoincr index INT"`
+	BrandId       uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	BrandCode     string    `xorm:"not null unique VARCHAR(20)"`
 	BrandName     string    `xorm:"VARCHAR(400)"`
 	ParentBrandId int       `xorm:"default 0 INT"`

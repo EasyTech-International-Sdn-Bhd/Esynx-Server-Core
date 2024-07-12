@@ -5,7 +5,7 @@ import (
 )
 
 type CmsDo struct {
-	DoId              int       `xorm:"not null pk autoincr INT"`
+	DoId              uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	DoCode            string    `xorm:"not null default '' unique VARCHAR(50)"`
 	CustCode          string    `xorm:"not null VARCHAR(20)"`
 	DoDate            time.Time `xorm:"not null DATETIME"`

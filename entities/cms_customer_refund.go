@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerRefund struct {
-	CfId             int       `xorm:"not null pk autoincr INT"`
+	CfId             uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CfCode           string    `xorm:"index unique VARCHAR(20)"`
 	CustCode         string    `xorm:"index VARCHAR(20)"`
 	CfDate           time.Time `xorm:"TIMESTAMP"`

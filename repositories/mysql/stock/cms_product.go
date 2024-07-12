@@ -148,7 +148,7 @@ func (r *CmsProductRepository) GetWithDetails(productCode string) (*models.Produ
 	if err != nil {
 		return nil, err
 	}
-	i, err := r.i.Get(strconv.Itoa(p.ProductId))
+	i, err := r.i.Get(strconv.FormatUint(p.ProductId, 10))
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ import (
 )
 
 type CmsInvoiceDetails struct {
-	Id           uint64    `xorm:"not null pk autoincr unique UNSIGNED BIGINT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	InvoiceCode  string    `xorm:"not null unique(invoice_code) VARCHAR(50)"`
 	ItemCode     string    `xorm:"not null VARCHAR(50)"`
 	ItemName     string    `xorm:"not null VARCHAR(200)"`

@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerMerchandSchedSeq struct {
-	Id            int       `xorm:"not null pk autoincr INT"`
+	Id            uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	AppmntDtlId   int       `xorm:"not null unique INT"`
 	SalespersonId int       `xorm:"not null INT"`
 	Sequence      int       `xorm:"not null INT"`

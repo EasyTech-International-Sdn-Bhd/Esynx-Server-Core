@@ -5,7 +5,7 @@ import (
 )
 
 type CmsSerialNo struct {
-	Id           int       `xorm:"not null autoincr index INT"`
+	Id           int       `xorm:"not null pk autoincr UNSIGNED BIGINT"`
 	ProductCode  string    `xorm:"VARCHAR(200)"`
 	WhCode       string    `xorm:"VARCHAR(200)"`
 	SerialNo     string    `xorm:"VARCHAR(200)"`

@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerVisitSched struct {
-	Id                  int       `xorm:"not null pk autoincr INT"`
+	Id                  uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	SchedCode           string    `xorm:"VARCHAR(50)"`
 	CustCode            string    `xorm:"not null unique(cms_customer_visit_sched_unq) VARCHAR(100)"`
 	BranchCode          string    `xorm:"default '' VARCHAR(50)"`

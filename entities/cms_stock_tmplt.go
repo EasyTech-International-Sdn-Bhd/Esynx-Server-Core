@@ -5,7 +5,7 @@ import (
 )
 
 type CmsStockTmplt struct {
-	Id           int       `xorm:"not null pk autoincr INT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	TmpltName    string    `xorm:"VARCHAR(200)"`
 	ActiveStatus int       `xorm:"default 1 INT"`
 	CreatedAt    time.Time `xorm:"DATETIME"`

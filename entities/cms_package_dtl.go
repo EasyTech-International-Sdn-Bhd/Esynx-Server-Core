@@ -5,7 +5,7 @@ import (
 )
 
 type CmsPackageDtl struct {
-	DtlId            int       `xorm:"not null pk autoincr INT"`
+	DtlId            uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	DtlParent        string    `xorm:"not null default '' index(dtl_idx) unique(dtl_unique) VARCHAR(100)"`
 	DtlCode          string    `xorm:"not null default '' index(dtl_idx) unique(dtl_unique) VARCHAR(100)"`
 	DtlName          string    `xorm:"default '' VARCHAR(100)"`

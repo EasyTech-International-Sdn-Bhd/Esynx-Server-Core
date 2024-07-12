@@ -7,7 +7,7 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	gitea.com/lunny/log v0.0.0-20190322053110-01b5df579c4e // indirect
 	github.com/ahl5esoft/golang-underscore v2.0.0+incompatible // indirect
-	github.com/denisenkom/go-mssqldb v0.10.0 // indirect
+	github.com/denisenkom/go-mssqldb v0.12.3 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
@@ -30,6 +30,7 @@ require (
 	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/exp v0.0.0-20240707233637-46b078467d37 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	src.techknowlogick.com/xormigrate v1.7.1 // indirect
 	xorm.io/builder v0.3.13 // indirect
 	xorm.io/core v0.7.2 // indirect
 	xorm.io/reverse v0.1.3 // indirect

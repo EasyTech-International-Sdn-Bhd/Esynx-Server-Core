@@ -5,7 +5,7 @@ import (
 )
 
 type CmsSalespersonDevice struct {
-	Id           int64     `xorm:"pk autoincr BIGINT"`
+	Id           int64     `xorm:"not null pk autoincr UNSIGNED BIGINT"`
 	Prefix       string    `xorm:"not null pk default 'D' CHAR(30)"`
 	DeviceNo     int       `xorm:"default 1 INT"`
 	DeviceToken  string    `xorm:"not null unique(unq) VARCHAR(200)"`

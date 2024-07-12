@@ -1,7 +1,7 @@
 package entities
 
 type CmsStockTransferDtl struct {
-	Id                int     `xorm:"not null pk autoincr unique(unq) INT"`
+	Id                uint64  `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	StCode            string  `xorm:"not null unique(unq) VARCHAR(200)"`
 	ProductCode       string  `xorm:"not null VARCHAR(200)"`
 	ProductName       string  `xorm:"VARCHAR(200)"`

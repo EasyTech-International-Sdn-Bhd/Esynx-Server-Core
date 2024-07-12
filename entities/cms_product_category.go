@@ -5,7 +5,7 @@ import (
 )
 
 type CmsProductCategory struct {
-	CategoryId           int       `xorm:"not null pk autoincr index INT"`
+	CategoryId           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	Categoryidentifierid string    `xorm:"not null unique VARCHAR(20)"`
 	CategoryName         string    `xorm:"VARCHAR(400)"`
 	ParentCategoryId     int       `xorm:"default 0 INT"`

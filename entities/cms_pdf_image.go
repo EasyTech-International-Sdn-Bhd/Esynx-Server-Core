@@ -1,7 +1,7 @@
 package entities
 
 type CmsPdfImage struct {
-	Id                 uint64 `xorm:"not null pk autoincr unique UNSIGNED BIGINT"`
+	Id                 uint64 `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	PdfHeader          string `xorm:"not null VARCHAR(200)"`
 	PdfFooter          string `xorm:"not null VARCHAR(200)"`
 	PdfContent         []byte `xorm:"BLOB"`

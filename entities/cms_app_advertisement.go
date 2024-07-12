@@ -5,7 +5,7 @@ import (
 )
 
 type CmsAppAdvertisement struct {
-	Id           int       `xorm:"not null pk autoincr INT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	AdverCode    string    `xorm:"default '' unique VARCHAR(50)"`
 	AdverName    string    `xorm:"not null VARCHAR(50)"`
 	AdverLink    string    `xorm:"not null VARCHAR(255)"`

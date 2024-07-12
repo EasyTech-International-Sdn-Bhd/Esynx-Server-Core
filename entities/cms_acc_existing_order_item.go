@@ -5,7 +5,7 @@ import (
 )
 
 type CmsAccExistingOrderItem struct {
-	OrderItemId         int       `xorm:"not null pk autoincr index INT"`
+	OrderItemId         uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	OrderId             string    `xorm:"comment('this reference is unique and link to order table. it cannot use order id because the order are sending from different ipad, the order id which is generated from ipad might be the same when reach to CMS.') unique(unx) VARCHAR(20)"`
 	IpadItemId          int       `xorm:"default 0 unique(unx) INT"`
 	ProductCode         string    `xorm:"unique(unx) VARCHAR(50)"`
@@ -19,7 +19,7 @@ type CmsAccExistingOrderItem struct {
 	Disc2               float64   `xorm:"DOUBLE"`
 	Disc3               float64   `xorm:"DOUBLE"`
 	UnitUom             string    `xorm:"VARCHAR(100)"`
-	AttributeRemark     string    `xorm:"comment('The chosen attribute name and value will be stored here, e.g. Size=L, Colour=Red') LONGTEXT(4294967295)"`
+	AttributeRemark     string    `xorm:"comment('The chosen attribute name and value will be stored here, e.g. Size=L, Colour=Red') BLOB"`
 	OptionalRemark      string    `xorm:"comment('The selected optional item will store here, e.g. Sport Rim, Leather Seat.') VARCHAR(100)"`
 	DiscountMethod      string    `xorm:"comment('Percentage or Fixed (Amount)') VARCHAR(100)"`
 	PickerNote          string    `xorm:"not null VARCHAR(500)"`

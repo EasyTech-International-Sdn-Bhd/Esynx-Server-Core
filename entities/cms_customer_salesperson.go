@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerSalesperson struct {
-	SalespersonCustomerId int       `xorm:"not null pk autoincr INT"`
+	SalespersonCustomerId uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	SalespersonId         int       `xorm:"unique(unique_customer) INT"`
 	Sequence              int       `xorm:"default 0 INT"`
 	CustomerId            int       `xorm:"unique(unique_customer) INT"`

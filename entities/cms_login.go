@@ -1,7 +1,7 @@
 package entities
 
 type CmsLogin struct {
-	LoginId     int64  `xorm:"not null pk autoincr index BIGINT"`
+	LoginId     uint64 `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	StaffCode   string `xorm:"unique VARCHAR(20)"`
 	Login       string `xorm:"VARCHAR(30)"`
 	Password    string `xorm:"VARCHAR(30)"`
@@ -10,7 +10,7 @@ type CmsLogin struct {
 	ContactNo   string `xorm:"VARCHAR(100)"`
 	DeviceToken string `xorm:"VARCHAR(100)"`
 	RoleId      int    `xorm:"default 2 comment('Officer, Salesperson, Admin') INT"`
-	Remark      string `xorm:"LONGTEXT(4294967295)"`
+	Remark      string `xorm:"BLOB"`
 	LoginStatus int    `xorm:"default 1 comment('1=active, 0=inactive , please check the disable salesperson is not allowed to send in order.') INT"`
 	DocSuffix   string `xorm:"default 'S' VARCHAR(10)"`
 	ProjNo      string `xorm:"VARCHAR(100)"`

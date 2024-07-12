@@ -5,7 +5,7 @@ import (
 )
 
 type CmsProductPriceV2 struct {
-	ProductPriceId int64     `xorm:"not null pk autoincr BIGINT"`
+	ProductPriceId uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	ProductCode    string    `xorm:"unique(unique) VARCHAR(200)"`
 	PriceCat       string    `xorm:"unique(unique) VARCHAR(50)"`
 	CustCode       string    `xorm:"VARCHAR(30)"`

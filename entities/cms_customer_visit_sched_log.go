@@ -5,7 +5,7 @@ import (
 )
 
 type CmsCustomerVisitSchedLog struct {
-	Id          int       `xorm:"not null pk autoincr INT"`
+	Id          uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	SchedId     int       `xorm:"not null INT"`
 	SchedSeenBy int       `xorm:"not null INT"`
 	SchedSeenAt time.Time `xorm:"default CURRENT_TIMESTAMP DATETIME"`

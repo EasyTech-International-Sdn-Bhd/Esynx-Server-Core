@@ -3,7 +3,7 @@ package entities
 import "time"
 
 type CmsCreditnoteDetails struct {
-	Id           int       `xorm:"not null pk autoincr INT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CnCode       string    `xorm:"unique(cn_code) VARCHAR(100)"`
 	ItemCode     string    `xorm:"unique(cn_code) VARCHAR(200)"`
 	ItemName     string    `xorm:"VARCHAR(200)"`

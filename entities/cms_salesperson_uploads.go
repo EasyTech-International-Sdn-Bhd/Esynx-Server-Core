@@ -5,7 +5,7 @@ import (
 )
 
 type CmsSalespersonUploads struct {
-	UploadId            int       `xorm:"not null pk autoincr INT"`
+	UploadId            uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	UploadImage         string    `xorm:"not null unique VARCHAR(200)"`
 	UploadTypeName      string    `xorm:"not null comment('module name from cms_module_camera') VARCHAR(200)"`
 	UploadRemark        string    `xorm:"VARCHAR(200)"`

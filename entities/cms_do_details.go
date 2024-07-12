@@ -5,7 +5,7 @@ import (
 )
 
 type CmsDoDetails struct {
-	Id                  int       `xorm:"not null pk autoincr INT"`
+	Id                  uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	DoCode              string    `xorm:"not null default '' unique(unq_key) VARCHAR(50)"`
 	ItemCode            string    `xorm:"not null VARCHAR(20)"`
 	ItemName            string    `xorm:"not null VARCHAR(200)"`

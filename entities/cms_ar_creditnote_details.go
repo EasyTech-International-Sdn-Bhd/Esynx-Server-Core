@@ -1,7 +1,7 @@
 package entities
 
 type CmsArCreditnoteDetails struct {
-	Id              int     `xorm:"not null pk autoincr INT"`
+	Id              uint64  `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	CnCode          string  `xorm:"not null VARCHAR(20)"`
 	AccNo           string  `xorm:"not null VARCHAR(50)"`
 	Description     string  `xorm:"default '' VARCHAR(150)"`

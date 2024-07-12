@@ -5,7 +5,7 @@ import (
 )
 
 type CmsAppAnnouncement struct {
-	Id           int       `xorm:"not null pk autoincr INT"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
 	AlertName    string    `xorm:"not null unique VARCHAR(200)"`
 	AlertContent []byte    `xorm:"not null BLOB"`
 	AlertImage   string    `xorm:"not null VARCHAR(255)"`
