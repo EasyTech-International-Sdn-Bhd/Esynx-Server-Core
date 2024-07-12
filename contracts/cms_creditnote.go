@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type ICreditNote interface {
+type ICmsCreditNote interface {
 	Get(creditNoteCode string) (*entities.CmsCreditnote, error)
 	GetWithCustomer(creditNoteCode string) (*models.CreditNoteWithCustomer, error)
 	GetWithItems(creditNoteCode string) (*models.CreditNoteWithItems, error)

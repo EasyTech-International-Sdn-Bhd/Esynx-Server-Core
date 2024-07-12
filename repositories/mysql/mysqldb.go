@@ -8,7 +8,7 @@ import (
 )
 
 type MySqlDb struct {
-	engine *xorm.Engine
+	Engine *xorm.Engine
 }
 
 func NewMySqlDb() *MySqlDb {
@@ -16,7 +16,7 @@ func NewMySqlDb() *MySqlDb {
 }
 
 func (m *MySqlDb) Open(conn string) (err error) {
-	m.engine, err = xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
+	m.Engine, err = xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
 		db.SetMaxOpenConns(4)
 		db.SetConnMaxLifetime(-1)
 		db.SetMaxIdleConns(1)
@@ -34,7 +34,7 @@ func (m *MySqlDb) Open(conn string) (err error) {
 }
 
 func (m *MySqlDb) Close() error {
-	err := m.engine.Close()
+	err := m.Engine.Close()
 	if err != nil {
 		return err
 	}
