@@ -8,7 +8,6 @@ import (
 type ICmsCreditNoteDetails interface {
 	Get(creditNoteCode string) ([]*entities.CmsCreditnoteDetails, error)
 	GetMany(creditNoteCodes []string) ([]*entities.CmsCreditnoteDetails, error)
-	GetByProductCode(productCode string) ([]*entities.CmsCreditnoteDetails, error)
 	GetWithProduct(creditNoteCode string) ([]*models.CreditNoteDetailsWithProduct, error)
 	InsertMany(details []*entities.CmsCreditnoteDetails) error
 	Update(details *entities.CmsCreditnoteDetails) error

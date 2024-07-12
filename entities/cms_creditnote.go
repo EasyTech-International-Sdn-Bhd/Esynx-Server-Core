@@ -25,3 +25,13 @@ type CmsCreditnote struct {
 func (m *CmsCreditnote) TableName() string {
 	return "cms_creditnote"
 }
+
+func (m *CmsCreditnote) Validate() {
+
+}
+
+func (m *CmsCreditnote) ToUpdate() {
+	if m.UpdatedAt.IsZero() {
+		m.UpdatedAt = time.Now()
+	}
+}

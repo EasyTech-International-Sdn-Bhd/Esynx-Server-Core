@@ -2,6 +2,7 @@ package agent
 
 import (
 	"github.com/easytech-international-sdn-bhd/core/entities"
+	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/xorm"
 )
 
@@ -48,4 +49,71 @@ func (r *CmsCustomerSalespersonRepository) GetAgentByCustId(custId int64) (*enti
 		return nil, err
 	}
 	return c, nil
+}
+
+func (r *CmsCustomerSalespersonRepository) InsertMany(records []*entities.CmsCustomerSalesperson) error {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsCustomerSalesperson) *entities.CmsCustomerSalesperson {
+		item.Validate()
+		item.ToUpdate()
+		return item
+	}))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *CmsCustomerSalespersonRepository) Update(record *entities.CmsCustomerSalesperson) error {
+	_, err := r.db.Where("salesperson_customer_id = ?").Update(record.SalespersonCustomerId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *CmsCustomerSalespersonRepository) UpdateMany(records []*entities.CmsCustomerSalesperson) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
+	for _, record := range records {
+		record.Validate()
+		record.ToUpdate()
+		_, err = session.Where("salesperson_customer_id = ?", record.SalespersonCustomerId).Update(record)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
+	}
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *CmsCustomerSalespersonRepository) Delete(record *entities.CmsCustomerSalesperson) error {
+	record.ActiveStatus = 0
+	record.ToUpdate()
+	return r.Update(record)
+}
+
+func (r *CmsCustomerSalespersonRepository) DeleteMany(records []*entities.CmsCustomerSalesperson) error {
+	for _, record := range records {
+		record.ActiveStatus = 0
+		record.ToUpdate()
+	}
+	return r.UpdateMany(records)
 }
