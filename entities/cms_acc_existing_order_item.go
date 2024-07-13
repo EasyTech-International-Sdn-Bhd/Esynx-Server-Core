@@ -20,7 +20,7 @@ type CmsAccExistingOrderItem struct {
 	Disc3               float64   `xorm:"DOUBLE"`
 	UnitUom             string    `xorm:"VARCHAR(100)"`
 	AttributeRemark     string    `xorm:"comment('The chosen attribute name and value will be stored here, e.g. Size=L, Colour=Red') BLOB"`
-	OptionalRemark      string    `xorm:"comment('The selected optional item will store here, e.g. Sport Rim, Leather Seat.') VARCHAR(100)"`
+	OptionalRemark      string    `xorm:"comment('The selected optional item will options here, e.g. Sport Rim, Leather Seat.') VARCHAR(100)"`
 	DiscountMethod      string    `xorm:"comment('Percentage or Fixed (Amount)') VARCHAR(100)"`
 	PickerNote          string    `xorm:"not null VARCHAR(500)"`
 	DiscountAmount      string    `xorm:"VARCHAR(30)"`

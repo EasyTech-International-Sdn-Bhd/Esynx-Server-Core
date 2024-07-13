@@ -1,22 +1,27 @@
 package invoice
 
 import (
+	"fmt"
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
 	"github.com/easytech-international-sdn-bhd/core/models"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/stock"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/xorm"
 )
 
 type CmsInvoiceDetailsRepository struct {
-	db *xorm.Engine
-	p  *stock.CmsProductRepository
+	db    *xorm.Engine
+	audit contracts.IAuditLog
+	p     *stock.CmsProductRepository
 }
 
-func NewCmsInvoiceDetailsRepository(db *xorm.Engine) *CmsInvoiceDetailsRepository {
+func NewCmsInvoiceDetailsRepository(option *contracts.IRepository) *CmsInvoiceDetailsRepository {
 	return &CmsInvoiceDetailsRepository{
-		db: db,
-		p:  stock.NewCmsProductRepository(db),
+		db:    option.Db,
+		audit: option.Audit,
+		p:     stock.NewCmsProductRepository(option),
 	}
 }
 
@@ -76,6 +81,9 @@ func (r *CmsInvoiceDetailsRepository) InsertMany(details []*entities.CmsInvoiceD
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", details)
+
 	return nil
 }
 
@@ -84,6 +92,9 @@ func (r *CmsInvoiceDetailsRepository) Update(details *entities.CmsInvoiceDetails
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsInvoiceDetails{details})
+
 	return nil
 }
 
@@ -117,6 +128,9 @@ func (r *CmsInvoiceDetailsRepository) UpdateMany(details []*entities.CmsInvoiceD
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", details)
+
 	return nil
 }
 
@@ -132,4 +146,17 @@ func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceD
 		detail.ToUpdate()
 	}
 	return r.UpdateMany(details)
+}
+
+func (r *CmsInvoiceDetailsRepository) log(op string, payload []*entities.CmsInvoiceDetails) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsInvoiceDetails) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      fmt.Sprintf("%s.%s", item.InvoiceCode, item.ItemCode),
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

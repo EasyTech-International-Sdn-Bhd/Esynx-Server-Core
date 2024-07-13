@@ -1,13 +1,13 @@
 package core
 
 import (
-	"fmt"
+	"github.com/easytech-international-sdn-bhd/core/test"
 	"testing"
 )
 
 func TestNewESynxCore(t *testing.T) {
-	conn := fmt.Sprintf("root:mysql@tcp(127.0.0.1:3306)/easysale_elk?charset=utf8mb4&parseTime=True&loc=Local&timeout=2s")
-	provider, err := NewEsynxProvider(MySQL, conn)
+	session := test.NewTestSession()
+	provider, err := NewEsynxProvider(session)
 	if err != nil {
 		t.Error(err)
 		t.Fail()

@@ -2,6 +2,7 @@ package module
 
 import (
 	"encoding/json"
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/agent"
 	"xorm.io/xorm"
@@ -12,10 +13,10 @@ type CmsMobileModuleRepository struct {
 	l  *agent.CmsLoginRepository
 }
 
-func NewCmsMobileModuleRepository(db *xorm.Engine) *CmsMobileModuleRepository {
+func NewCmsMobileModuleRepository(option *contracts.IRepository) *CmsMobileModuleRepository {
 	return &CmsMobileModuleRepository{
-		db: db,
-		l:  agent.NewCmsLoginRepository(db),
+		db: option.Db,
+		l:  agent.NewCmsLoginRepository(option),
 	}
 }
 

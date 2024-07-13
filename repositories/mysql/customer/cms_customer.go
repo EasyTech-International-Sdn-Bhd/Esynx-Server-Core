@@ -1,9 +1,11 @@
 package customer
 
 import (
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
 	"github.com/easytech-international-sdn-bhd/core/models"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/agent"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"strings"
 	"xorm.io/builder"
@@ -12,16 +14,18 @@ import (
 )
 
 type CmsCustomerRepository struct {
-	db *xorm.Engine
-	b  *CmsCustomerBranchRepository
-	s  *agent.CmsCustomerSalespersonRepository
+	db    *xorm.Engine
+	audit contracts.IAuditLog
+	b     *CmsCustomerBranchRepository
+	s     *agent.CmsCustomerSalespersonRepository
 }
 
-func NewCmsCustomerRepository(db *xorm.Engine) *CmsCustomerRepository {
+func NewCmsCustomerRepository(option *contracts.IRepository) *CmsCustomerRepository {
 	return &CmsCustomerRepository{
-		db: db,
-		b:  NewCmsCustomerBranchRepository(db),
-		s:  agent.NewCmsCustomerSalespersonRepository(db),
+		db:    option.Db,
+		audit: option.Audit,
+		b:     NewCmsCustomerBranchRepository(option),
+		s:     agent.NewCmsCustomerSalespersonRepository(option),
 	}
 }
 
@@ -140,6 +144,9 @@ func (r *CmsCustomerRepository) InsertMany(records []*entities.CmsCustomer) erro
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", records)
+
 	return nil
 }
 
@@ -148,6 +155,9 @@ func (r *CmsCustomerRepository) Update(customer *entities.CmsCustomer) error {
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsCustomer{customer})
+
 	return nil
 }
 
@@ -181,6 +191,9 @@ func (r *CmsCustomerRepository) UpdateMany(customers []*entities.CmsCustomer) er
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", customers)
+
 	return nil
 }
 
@@ -196,4 +209,17 @@ func (r *CmsCustomerRepository) DeleteMany(customers []*entities.CmsCustomer) er
 		customer.ToUpdate()
 	}
 	return r.UpdateMany(customers)
+}
+
+func (r *CmsCustomerRepository) log(op string, payload []*entities.CmsCustomer) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsCustomer) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      item.CustCode,
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

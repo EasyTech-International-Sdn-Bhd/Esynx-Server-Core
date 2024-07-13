@@ -1,18 +1,22 @@
 package stock
 
 import (
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/xorm"
 )
 
 type CmsWarehouseStockRepository struct {
-	db *xorm.Engine
+	db    *xorm.Engine
+	audit contracts.IAuditLog
 }
 
-func NewCmsWarehouseStockRepository(db *xorm.Engine) *CmsWarehouseStockRepository {
+func NewCmsWarehouseStockRepository(option *contracts.IRepository) *CmsWarehouseStockRepository {
 	return &CmsWarehouseStockRepository{
-		db: db,
+		db:    option.Db,
+		audit: option.Audit,
 	}
 }
 
@@ -34,6 +38,9 @@ func (r *CmsWarehouseStockRepository) InsertMany(records []*entities.CmsWarehous
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", records)
+
 	return nil
 }
 
@@ -42,6 +49,9 @@ func (r *CmsWarehouseStockRepository) Update(record *entities.CmsWarehouseStock)
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsWarehouseStock{record})
+
 	return nil
 }
 
@@ -75,6 +85,9 @@ func (r *CmsWarehouseStockRepository) UpdateMany(records []*entities.CmsWarehous
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", records)
+
 	return nil
 }
 
@@ -90,4 +103,17 @@ func (r *CmsWarehouseStockRepository) DeleteMany(records []*entities.CmsWarehous
 		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
+}
+
+func (r *CmsWarehouseStockRepository) log(op string, payload []*entities.CmsWarehouseStock) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsWarehouseStock) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      item.ProductCode,
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

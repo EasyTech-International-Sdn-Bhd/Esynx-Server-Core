@@ -1,8 +1,10 @@
 package stock
 
 import (
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
 	"github.com/easytech-international-sdn-bhd/core/models"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"strconv"
 	"strings"
@@ -11,24 +13,26 @@ import (
 )
 
 type CmsProductRepository struct {
-	db *xorm.Engine
-	a  *CmsProductAtchRepository
-	b  *CmsProductBatchRepository
-	i  *CmsProductImageRepository
-	t  *CmsProductPriceTagRepository
-	p  *CmsProductUomPriceRepository
-	w  *CmsWarehouseStockRepository
+	db    *xorm.Engine
+	audit contracts.IAuditLog
+	a     *CmsProductAtchRepository
+	b     *CmsProductBatchRepository
+	i     *CmsProductImageRepository
+	t     *CmsProductPriceTagRepository
+	p     *CmsProductUomPriceRepository
+	w     *CmsWarehouseStockRepository
 }
 
-func NewCmsProductRepository(db *xorm.Engine) *CmsProductRepository {
+func NewCmsProductRepository(option *contracts.IRepository) *CmsProductRepository {
 	return &CmsProductRepository{
-		db: db,
-		a:  NewCmsProductAtchRepository(db),
-		b:  NewCmsProductBatchRepository(db),
-		i:  NewCmsProductImageRepository(db),
-		t:  NewCmsProductPriceTagRepository(db),
-		p:  NewCmsProductUomPriceRepository(db),
-		w:  NewCmsWarehouseStockRepository(db),
+		db:    option.Db,
+		audit: option.Audit,
+		a:     NewCmsProductAtchRepository(option),
+		b:     NewCmsProductBatchRepository(option),
+		i:     NewCmsProductImageRepository(option),
+		t:     NewCmsProductPriceTagRepository(option),
+		p:     NewCmsProductUomPriceRepository(option),
+		w:     NewCmsWarehouseStockRepository(option),
 	}
 }
 
@@ -77,6 +81,9 @@ func (r *CmsProductRepository) InsertMany(records []*entities.CmsProduct) error 
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", records)
+
 	return nil
 }
 
@@ -85,6 +92,9 @@ func (r *CmsProductRepository) Update(record *entities.CmsProduct) error {
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsProduct{record})
+
 	return nil
 }
 
@@ -118,6 +128,9 @@ func (r *CmsProductRepository) UpdateMany(records []*entities.CmsProduct) error 
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", records)
+
 	return nil
 }
 
@@ -170,4 +183,17 @@ func (r *CmsProductRepository) GetWithDetails(productCode string) (*models.Produ
 		B: b,
 		W: w,
 	}, nil
+}
+
+func (r *CmsProductRepository) log(op string, payload []*entities.CmsProduct) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsProduct) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      item.ProductCode,
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

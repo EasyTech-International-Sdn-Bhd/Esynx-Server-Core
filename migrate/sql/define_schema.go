@@ -111,5 +111,6 @@ func defaults() []interface{} {
 		&entities.CmsVisitReportDocuments{},
 		&entities.CmsWarehouse{},
 		&entities.CmsWarehouseStock{},
+		&entities.AuditLog{},
 	}
 }

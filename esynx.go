@@ -2,21 +2,16 @@ package core
 
 import (
 	"github.com/easytech-international-sdn-bhd/core/contracts"
+	"github.com/easytech-international-sdn-bhd/core/options"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/agent"
+	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/audit"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/creditnote"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/customer"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/debitnote"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/invoice"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/module"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/stock"
-)
-
-type DatabaseProvider int
-
-const (
-	MySQL DatabaseProvider = iota
-	Firestore
 )
 
 type ESynx struct {
@@ -42,37 +37,43 @@ type ESynx struct {
 	ProductWarehouseStock contracts.ICmsWarehouseStock
 }
 
-func NewEsynxProvider(provider DatabaseProvider, conn string) (*ESynx, error) {
-	if provider == MySQL {
+func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
+	if session.GetStore() == options.MySQL {
 		db := mysql.NewMySqlDb()
-		err := db.Open(conn)
+		err := db.Open(session.GetConnection())
 		if err != nil {
 			return nil, err
 		}
+		userOptions := contracts.IRepository{
+			Db:      db.Engine,
+			User:    session.GetUser(),
+			AppName: session.GetApp(),
+			Audit:   audit.NewAuditLogRepository(db.Engine, session),
+		}
 		return &ESynx{
 			engine:                db,
-			CreditNote:            creditnote.NewCmsCreditNoteRepository(db.Engine),
-			CreditNoteDetails:     creditnote.NewCmsCreditNoteDetailsRepository(db.Engine),
-			Customer:              customer.NewCmsCustomerRepository(db.Engine),
-			CustomerBranch:        customer.NewCmsCustomerBranchRepository(db.Engine),
-			CustomerSalesperson:   agent.NewCmsCustomerSalespersonRepository(db.Engine),
-			DebitNote:             debitnote.NewCmsDebitNoteRepository(db.Engine),
-			DebitNoteDetails:      debitnote.NewCmsDebitNoteDetailsRepository(db.Engine),
-			Invoice:               invoice.NewCmsInvoiceRepository(db.Engine),
-			InvoiceDetails:        invoice.NewCmsInvoiceDetailsRepository(db.Engine),
-			InvoiceSales:          invoice.NewCmsInvoiceSalesRepository(db.Engine),
-			Agent:                 agent.NewCmsLoginRepository(db.Engine),
-			MobileAppModule:       module.NewCmsMobileModuleRepository(db.Engine),
-			Product:               stock.NewCmsProductRepository(db.Engine),
-			ProductAttachment:     stock.NewCmsProductAtchRepository(db.Engine),
-			ProductBatch:          stock.NewCmsProductBatchRepository(db.Engine),
-			ProductImage:          stock.NewCmsProductImageRepository(db.Engine),
-			ProductPriceTag:       stock.NewCmsProductPriceTagRepository(db.Engine),
-			ProductStandardPrice:  stock.NewCmsProductUomPriceRepository(db.Engine),
-			ProductWarehouseStock: stock.NewCmsWarehouseStockRepository(db.Engine),
+			CreditNote:            creditnote.NewCmsCreditNoteRepository(&userOptions),
+			CreditNoteDetails:     creditnote.NewCmsCreditNoteDetailsRepository(&userOptions),
+			Customer:              customer.NewCmsCustomerRepository(&userOptions),
+			CustomerBranch:        customer.NewCmsCustomerBranchRepository(&userOptions),
+			CustomerSalesperson:   agent.NewCmsCustomerSalespersonRepository(&userOptions),
+			DebitNote:             debitnote.NewCmsDebitNoteRepository(&userOptions),
+			DebitNoteDetails:      debitnote.NewCmsDebitNoteDetailsRepository(&userOptions),
+			Invoice:               invoice.NewCmsInvoiceRepository(&userOptions),
+			InvoiceDetails:        invoice.NewCmsInvoiceDetailsRepository(&userOptions),
+			InvoiceSales:          invoice.NewCmsInvoiceSalesRepository(&userOptions),
+			Agent:                 agent.NewCmsLoginRepository(&userOptions),
+			MobileAppModule:       module.NewCmsMobileModuleRepository(&userOptions),
+			Product:               stock.NewCmsProductRepository(&userOptions),
+			ProductAttachment:     stock.NewCmsProductAtchRepository(&userOptions),
+			ProductBatch:          stock.NewCmsProductBatchRepository(&userOptions),
+			ProductImage:          stock.NewCmsProductImageRepository(&userOptions),
+			ProductPriceTag:       stock.NewCmsProductPriceTagRepository(&userOptions),
+			ProductStandardPrice:  stock.NewCmsProductUomPriceRepository(&userOptions),
+			ProductWarehouseStock: stock.NewCmsWarehouseStockRepository(&userOptions),
 		}, nil
 	}
-	if provider == Firestore {
+	if session.GetStore() == options.Firestore {
 		// TODO: implement firestore or others for realtime data. **Not Now**
 	}
 	return nil, nil

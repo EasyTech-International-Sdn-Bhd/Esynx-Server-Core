@@ -1,22 +1,27 @@
 package creditnote
 
 import (
+	"fmt"
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
 	"github.com/easytech-international-sdn-bhd/core/models"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/stock"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/xorm"
 )
 
 type CmsCreditNoteDetailsRepository struct {
-	db *xorm.Engine
-	p  *stock.CmsProductRepository
+	db    *xorm.Engine
+	audit contracts.IAuditLog
+	p     *stock.CmsProductRepository
 }
 
-func NewCmsCreditNoteDetailsRepository(db *xorm.Engine) *CmsCreditNoteDetailsRepository {
+func NewCmsCreditNoteDetailsRepository(option *contracts.IRepository) *CmsCreditNoteDetailsRepository {
 	return &CmsCreditNoteDetailsRepository{
-		db: db,
-		p:  stock.NewCmsProductRepository(db),
+		db:    option.Db,
+		audit: option.Audit,
+		p:     stock.NewCmsProductRepository(option),
 	}
 }
 
@@ -76,6 +81,9 @@ func (r *CmsCreditNoteDetailsRepository) InsertMany(details []*entities.CmsCredi
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", details)
+
 	return nil
 }
 
@@ -84,6 +92,9 @@ func (r *CmsCreditNoteDetailsRepository) Update(details *entities.CmsCreditnoteD
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsCreditnoteDetails{details})
+
 	return nil
 }
 
@@ -117,6 +128,9 @@ func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCredi
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", details)
+
 	return nil
 }
 
@@ -132,4 +146,17 @@ func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCredi
 		detail.ToUpdate()
 	}
 	return r.UpdateMany(details)
+}
+
+func (r *CmsCreditNoteDetailsRepository) log(op string, payload []*entities.CmsCreditnoteDetails) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsCreditnoteDetails) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      fmt.Sprintf("%s.%s", item.ItemCode, item.CnCode),
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

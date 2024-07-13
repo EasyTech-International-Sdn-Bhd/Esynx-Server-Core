@@ -1,18 +1,22 @@
 package stock
 
 import (
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/xorm"
 )
 
 type CmsProductUomPriceRepository struct {
-	db *xorm.Engine
+	db    *xorm.Engine
+	audit contracts.IAuditLog
 }
 
-func NewCmsProductUomPriceRepository(db *xorm.Engine) *CmsProductUomPriceRepository {
+func NewCmsProductUomPriceRepository(option *contracts.IRepository) *CmsProductUomPriceRepository {
 	return &CmsProductUomPriceRepository{
-		db: db,
+		db:    option.Db,
+		audit: option.Audit,
 	}
 }
 
@@ -34,6 +38,9 @@ func (r *CmsProductUomPriceRepository) InsertMany(records []*entities.CmsProduct
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", records)
+
 	return nil
 }
 
@@ -42,6 +49,9 @@ func (r *CmsProductUomPriceRepository) Update(record *entities.CmsProductUomPric
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsProductUomPriceV2{record})
+
 	return nil
 }
 
@@ -75,6 +85,9 @@ func (r *CmsProductUomPriceRepository) UpdateMany(records []*entities.CmsProduct
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", records)
+
 	return nil
 }
 
@@ -90,4 +103,17 @@ func (r *CmsProductUomPriceRepository) DeleteMany(records []*entities.CmsProduct
 		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
+}
+
+func (r *CmsProductUomPriceRepository) log(op string, payload []*entities.CmsProductUomPriceV2) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsProductUomPriceV2) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      item.ProductCode,
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

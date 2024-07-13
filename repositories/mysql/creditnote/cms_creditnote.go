@@ -1,9 +1,11 @@
 package creditnote
 
 import (
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
 	"github.com/easytech-international-sdn-bhd/core/models"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/customer"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"time"
 	"xorm.io/builder"
@@ -11,16 +13,18 @@ import (
 )
 
 type CmsCreditNoteRepository struct {
-	db *xorm.Engine
-	c  *customer.CmsCustomerRepository
-	d  *CmsCreditNoteDetailsRepository
+	db    *xorm.Engine
+	audit contracts.IAuditLog
+	c     *customer.CmsCustomerRepository
+	d     *CmsCreditNoteDetailsRepository
 }
 
-func NewCmsCreditNoteRepository(db *xorm.Engine) *CmsCreditNoteRepository {
+func NewCmsCreditNoteRepository(option *contracts.IRepository) *CmsCreditNoteRepository {
 	return &CmsCreditNoteRepository{
-		db: db,
-		c:  customer.NewCmsCustomerRepository(db),
-		d:  NewCmsCreditNoteDetailsRepository(db),
+		db:    option.Db,
+		audit: option.Audit,
+		c:     customer.NewCmsCustomerRepository(option),
+		d:     NewCmsCreditNoteDetailsRepository(option),
 	}
 }
 
@@ -96,6 +100,9 @@ func (r *CmsCreditNoteRepository) InsertMany(creditNotes []*entities.CmsCreditno
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", creditNotes)
+
 	return nil
 }
 
@@ -104,6 +111,9 @@ func (r *CmsCreditNoteRepository) Update(creditNote *entities.CmsCreditnote) err
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsCreditnote{creditNote})
+
 	return nil
 }
 
@@ -137,6 +147,9 @@ func (r *CmsCreditNoteRepository) UpdateMany(creditNotes []*entities.CmsCreditno
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", creditNotes)
+
 	return nil
 }
 
@@ -152,4 +165,17 @@ func (r *CmsCreditNoteRepository) DeleteMany(creditNotes []*entities.CmsCreditno
 		cn.ToUpdate()
 	}
 	return r.UpdateMany(creditNotes)
+}
+
+func (r *CmsCreditNoteRepository) log(op string, payload []*entities.CmsCreditnote) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsCreditnote) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      item.CnCode,
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

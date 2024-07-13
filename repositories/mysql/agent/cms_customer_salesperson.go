@@ -1,20 +1,25 @@
 package agent
 
 import (
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
+	"strconv"
 	"xorm.io/xorm"
 )
 
 type CmsCustomerSalespersonRepository struct {
-	db *xorm.Engine
-	l  *CmsLoginRepository
+	db    *xorm.Engine
+	audit contracts.IAuditLog
+	l     *CmsLoginRepository
 }
 
-func NewCmsCustomerSalespersonRepository(db *xorm.Engine) *CmsCustomerSalespersonRepository {
+func NewCmsCustomerSalespersonRepository(option *contracts.IRepository) *CmsCustomerSalespersonRepository {
 	return &CmsCustomerSalespersonRepository{
-		db: db,
-		l:  NewCmsLoginRepository(db),
+		db:    option.Db,
+		audit: option.Audit,
+		l:     NewCmsLoginRepository(option),
 	}
 }
 
@@ -60,6 +65,9 @@ func (r *CmsCustomerSalespersonRepository) InsertMany(records []*entities.CmsCus
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", records)
+
 	return nil
 }
 
@@ -68,6 +76,9 @@ func (r *CmsCustomerSalespersonRepository) Update(record *entities.CmsCustomerSa
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsCustomerSalesperson{record})
+
 	return nil
 }
 
@@ -101,6 +112,9 @@ func (r *CmsCustomerSalespersonRepository) UpdateMany(records []*entities.CmsCus
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", records)
+
 	return nil
 }
 
@@ -116,4 +130,17 @@ func (r *CmsCustomerSalespersonRepository) DeleteMany(records []*entities.CmsCus
 		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
+}
+
+func (r *CmsCustomerSalespersonRepository) log(op string, payload []*entities.CmsCustomerSalesperson) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsCustomerSalesperson) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      strconv.FormatUint(item.SalespersonCustomerId, 10),
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

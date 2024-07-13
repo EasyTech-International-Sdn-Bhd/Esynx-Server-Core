@@ -1,9 +1,11 @@
 package invoice
 
 import (
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
 	"github.com/easytech-international-sdn-bhd/core/models"
 	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/customer"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"time"
 	"xorm.io/builder"
@@ -11,16 +13,18 @@ import (
 )
 
 type CmsInvoiceRepository struct {
-	db *xorm.Engine
-	c  *customer.CmsCustomerRepository
-	d  *CmsInvoiceDetailsRepository
+	db    *xorm.Engine
+	audit contracts.IAuditLog
+	c     *customer.CmsCustomerRepository
+	d     *CmsInvoiceDetailsRepository
 }
 
-func NewCmsInvoiceRepository(db *xorm.Engine) *CmsInvoiceRepository {
+func NewCmsInvoiceRepository(option *contracts.IRepository) *CmsInvoiceRepository {
 	return &CmsInvoiceRepository{
-		db: db,
-		c:  customer.NewCmsCustomerRepository(db),
-		d:  NewCmsInvoiceDetailsRepository(db),
+		db:    option.Db,
+		audit: option.Audit,
+		c:     customer.NewCmsCustomerRepository(option),
+		d:     NewCmsInvoiceDetailsRepository(option),
 	}
 }
 
@@ -96,6 +100,9 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", invoices)
+
 	return nil
 }
 
@@ -104,6 +111,9 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsInvoice{invoice})
+
 	return nil
 }
 
@@ -137,6 +147,9 @@ func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", invoices)
+
 	return nil
 }
 
@@ -152,4 +165,17 @@ func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error
 		invoice.ToUpdate()
 	}
 	return r.UpdateMany(invoices)
+}
+
+func (r *CmsInvoiceRepository) log(op string, payload []*entities.CmsInvoice) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsInvoice) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      item.InvoiceCode,
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

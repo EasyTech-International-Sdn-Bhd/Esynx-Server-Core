@@ -1,18 +1,23 @@
 package customer
 
 import (
+	"fmt"
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/xorm"
 )
 
 type CmsCustomerBranchRepository struct {
-	db *xorm.Engine
+	db    *xorm.Engine
+	audit contracts.IAuditLog
 }
 
-func NewCmsCustomerBranchRepository(db *xorm.Engine) *CmsCustomerBranchRepository {
+func NewCmsCustomerBranchRepository(option *contracts.IRepository) *CmsCustomerBranchRepository {
 	return &CmsCustomerBranchRepository{
-		db: db,
+		db:    option.Db,
+		audit: option.Audit,
 	}
 }
 
@@ -68,6 +73,9 @@ func (r *CmsCustomerBranchRepository) InsertMany(records []*entities.CmsCustomer
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", records)
+
 	return nil
 }
 
@@ -76,6 +84,9 @@ func (r *CmsCustomerBranchRepository) Update(record *entities.CmsCustomerBranch)
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsCustomerBranch{record})
+
 	return nil
 }
 
@@ -108,6 +119,9 @@ func (r *CmsCustomerBranchRepository) UpdateMany(records []*entities.CmsCustomer
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", records)
+
 	return nil
 }
 
@@ -123,4 +137,17 @@ func (r *CmsCustomerBranchRepository) DeleteMany(records []*entities.CmsCustomer
 		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
+}
+
+func (r *CmsCustomerBranchRepository) log(op string, payload []*entities.CmsCustomerBranch) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsCustomerBranch) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      fmt.Sprintf("%s.%s", item.CustCode, item.BranchCode),
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }

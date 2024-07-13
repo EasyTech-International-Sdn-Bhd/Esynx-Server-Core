@@ -1,19 +1,23 @@
 package agent
 
 import (
+	"github.com/easytech-international-sdn-bhd/core/contracts"
 	"github.com/easytech-international-sdn-bhd/core/entities"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/xorm"
 )
 
 type CmsLoginRepository struct {
-	db *xorm.Engine
+	db    *xorm.Engine
+	audit contracts.IAuditLog
 }
 
-func NewCmsLoginRepository(db *xorm.Engine) *CmsLoginRepository {
+func NewCmsLoginRepository(option *contracts.IRepository) *CmsLoginRepository {
 	return &CmsLoginRepository{
-		db: db,
+		db:    option.Db,
+		audit: option.Audit,
 	}
 }
 
@@ -62,6 +66,9 @@ func (r *CmsLoginRepository) InsertMany(records []*entities.CmsLogin) error {
 	if err != nil {
 		return err
 	}
+
+	go r.log("INSERT", records)
+
 	return nil
 }
 
@@ -70,6 +77,9 @@ func (r *CmsLoginRepository) Update(record *entities.CmsLogin) error {
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", []*entities.CmsLogin{record})
+
 	return nil
 }
 
@@ -103,6 +113,9 @@ func (r *CmsLoginRepository) UpdateMany(records []*entities.CmsLogin) error {
 	if err != nil {
 		return err
 	}
+
+	go r.log("UPDATE", records)
+
 	return nil
 }
 
@@ -118,4 +131,17 @@ func (r *CmsLoginRepository) DeleteMany(records []*entities.CmsLogin) error {
 		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
+}
+
+func (r *CmsLoginRepository) log(op string, payload []*entities.CmsLogin) {
+	record, _ := json.Marshal(payload)
+	body := iterator.Map(payload, func(item *entities.CmsLogin) *entities.AuditLog {
+		return &entities.AuditLog{
+			OperationType: op,
+			RecordTable:   item.TableName(),
+			RecordID:      item.StaffCode,
+			RecordBody:    string(record),
+		}
+	})
+	r.audit.Log(body)
 }
