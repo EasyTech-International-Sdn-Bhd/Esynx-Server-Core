@@ -1,6 +1,6 @@
 package contracts
 
-import "github.com/easytech-international-sdn-bhd/core/entities"
+import "github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
 
 type ICmsLogin interface {
 	Get(agentId int64) (*entities.CmsLogin, error)

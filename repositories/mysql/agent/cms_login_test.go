@@ -1,7 +1,7 @@
 package agent
 
 import (
-	"github.com/easytech-international-sdn-bhd/core/test"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/test"
 	"testing"
 )
 

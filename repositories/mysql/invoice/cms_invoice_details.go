@@ -2,10 +2,10 @@ package invoice
 
 import (
 	"fmt"
-	"github.com/easytech-international-sdn-bhd/core/contracts"
-	"github.com/easytech-international-sdn-bhd/core/entities"
-	"github.com/easytech-international-sdn-bhd/core/models"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/stock"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/stock"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/xorm"

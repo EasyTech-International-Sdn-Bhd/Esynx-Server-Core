@@ -2,7 +2,7 @@ package mysql
 
 import (
 	"database/sql"
-	migrate "github.com/easytech-international-sdn-bhd/core/migrate/sql"
+	migrate "github.com/easytech-international-sdn-bhd/esynx-server-core/migrate/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"xorm.io/xorm"
 )

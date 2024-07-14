@@ -1,4 +1,4 @@
-module github.com/easytech-international-sdn-bhd/core
+module github.com/easytech-international-sdn-bhd/esynx-server-core
 
 go 1.22
 

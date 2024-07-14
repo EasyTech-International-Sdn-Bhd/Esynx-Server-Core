@@ -2,7 +2,7 @@ package sql
 
 import (
 	"fmt"
-	"github.com/easytech-international-sdn-bhd/core/entities"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
 	_ "github.com/go-sql-driver/mysql"
 	"src.techknowlogick.com/xormigrate"
 	"xorm.io/xorm"

@@ -1,6 +1,6 @@
 package contracts
 
-import "github.com/easytech-international-sdn-bhd/core/options"
+import "github.com/easytech-international-sdn-bhd/esynx-server-core/options"
 
 type IDatabase interface {
 	Open(conn string) error

@@ -1,10 +1,10 @@
 package test
 
 import (
-	"github.com/easytech-international-sdn-bhd/core/contracts"
-	"github.com/easytech-international-sdn-bhd/core/options"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/audit"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/options"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/audit"
 )
 
 type TestSession struct {

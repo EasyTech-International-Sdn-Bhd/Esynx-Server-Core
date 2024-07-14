@@ -1,17 +1,17 @@
 package core
 
 import (
-	"github.com/easytech-international-sdn-bhd/core/contracts"
-	"github.com/easytech-international-sdn-bhd/core/options"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/agent"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/audit"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/creditnote"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/customer"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/debitnote"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/invoice"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/module"
-	"github.com/easytech-international-sdn-bhd/core/repositories/mysql/stock"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/options"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/agent"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/audit"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/creditnote"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/customer"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/debitnote"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/invoice"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/module"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/stock"
 )
 
 type ESynx struct {

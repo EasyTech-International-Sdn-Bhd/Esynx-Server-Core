@@ -2,7 +2,7 @@ package customer
 
 import (
 	"fmt"
-	"github.com/easytech-international-sdn-bhd/core/entities"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
 	"math/rand/v2"
 	"testing"
 )
