@@ -16,7 +16,7 @@ func NewMySqlDb() *MySqlDb {
 	return &MySqlDb{}
 }
 
-func (m *MySqlDb) Open(conn string, logger *contracts.IDatabaseLogger) (err error) {
+func (m *MySqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error) {
 	m.Engine, err = xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
 		db.SetMaxOpenConns(4)
 		db.SetConnMaxLifetime(-1)

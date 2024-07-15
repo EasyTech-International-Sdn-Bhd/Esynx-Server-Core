@@ -49,7 +49,7 @@ func (r *CmsProductImageRepository) InsertMany(records []*entities.CmsProductIma
 		return err
 	}
 
-	go r.log("INSERT", records)
+	r.log("INSERT", records)
 
 	return nil
 }
@@ -60,7 +60,7 @@ func (r *CmsProductImageRepository) Update(record *entities.CmsProductImage) err
 		return err
 	}
 
-	go r.log("UPDATE", []*entities.CmsProductImage{record})
+	r.log("UPDATE", []*entities.CmsProductImage{record})
 
 	return nil
 }
@@ -96,7 +96,7 @@ func (r *CmsProductImageRepository) UpdateMany(records []*entities.CmsProductIma
 		return err
 	}
 
-	go r.log("UPDATE", records)
+	r.log("UPDATE", records)
 
 	return nil
 }
@@ -121,7 +121,7 @@ func (r *CmsProductImageRepository) log(op string, payload []*entities.CmsProduc
 		return &entities.AuditLog{
 			OperationType: op,
 			RecordTable:   item.TableName(),
-			RecordID:      strconv.Itoa(item.ProductId),
+			RecordId:      strconv.Itoa(item.ProductId),
 			RecordBody:    string(record),
 		}
 	})

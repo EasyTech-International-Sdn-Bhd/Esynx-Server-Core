@@ -82,7 +82,7 @@ func (r *CmsDebitNoteDetailsRepository) InsertMany(details []*entities.CmsDebitn
 		return err
 	}
 
-	go r.log("INSERT", details)
+	r.log("INSERT", details)
 
 	return nil
 }
@@ -93,7 +93,7 @@ func (r *CmsDebitNoteDetailsRepository) Update(details *entities.CmsDebitnoteDet
 		return err
 	}
 
-	go r.log("UPDATE", []*entities.CmsDebitnoteDetails{details})
+	r.log("UPDATE", []*entities.CmsDebitnoteDetails{details})
 
 	return nil
 }
@@ -129,7 +129,7 @@ func (r *CmsDebitNoteDetailsRepository) UpdateMany(details []*entities.CmsDebitn
 		return err
 	}
 
-	go r.log("UPDATE", details)
+	r.log("UPDATE", details)
 
 	return nil
 }
@@ -154,7 +154,7 @@ func (r *CmsDebitNoteDetailsRepository) log(op string, payload []*entities.CmsDe
 		return &entities.AuditLog{
 			OperationType: op,
 			RecordTable:   item.TableName(),
-			RecordID:      fmt.Sprintf("%s.%s", item.DnCode, item.ItemCode),
+			RecordId:      fmt.Sprintf("%s.%s", item.DnCode, item.ItemCode),
 			RecordBody:    string(record),
 		}
 	})

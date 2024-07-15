@@ -3,19 +3,20 @@ package customer
 import (
 	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/test"
 	"math/rand/v2"
 	"testing"
 	"xorm.io/xorm"
 )
 
 func TestCmsCustomerRepository_InsertMany(t *testing.T) {
-	db, err := dbConn()
+	option, err := test.TestOption()
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 		return
 	}
-	repo := NewCmsCustomerRepository(db)
+	repo := NewCmsCustomerRepository(option)
 	var newCustomers []*entities.CmsCustomer
 	for i := 0; i < 10; i++ {
 		newCustomers = append(newCustomers, &entities.CmsCustomer{
@@ -33,13 +34,13 @@ func TestCmsCustomerRepository_InsertMany(t *testing.T) {
 }
 
 func TestCmsCustomerRepository_SearchByNameOrCode(t *testing.T) {
-	db, err := dbConn()
+	option, err := test.TestOption()
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 		return
 	}
-	repo := NewCmsCustomerRepository(db)
+	repo := NewCmsCustomerRepository(option)
 	cmsCustomers, err := repo.SearchByNameOrCode("CS-")
 	if err != nil {
 		t.Fail()
@@ -54,13 +55,13 @@ func TestCmsCustomerRepository_SearchByNameOrCode(t *testing.T) {
 }
 
 func TestCmsCustomerRepository_Update(t *testing.T) {
-	db, err := dbConn()
+	option, err := test.TestOption()
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 		return
 	}
-	repo := NewCmsCustomerRepository(db)
+	repo := NewCmsCustomerRepository(option)
 	err = repo.Update(&entities.CmsCustomer{
 		CustCode:       fmt.Sprintf("CS-%d", 111),
 		CustomerStatus: 2,

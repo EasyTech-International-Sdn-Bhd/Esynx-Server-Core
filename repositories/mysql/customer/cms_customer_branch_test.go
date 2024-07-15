@@ -3,18 +3,19 @@ package customer
 import (
 	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/test"
 	"math/rand/v2"
 	"testing"
 )
 
 func TestCmsCustomerBranchRepository_InsertMany(t *testing.T) {
-	db, err := dbConn()
+	option, err := test.TestOption()
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 		return
 	}
-	repo := NewCmsCustomerBranchRepository(db)
+	repo := NewCmsCustomerBranchRepository(option)
 	var branches []*entities.CmsCustomerBranch
 	for i := 0; i < 10; i++ {
 		branches = append(branches, &entities.CmsCustomerBranch{

@@ -101,7 +101,7 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 		return err
 	}
 
-	go r.log("INSERT", invoices)
+	r.log("INSERT", invoices)
 
 	return nil
 }
@@ -112,7 +112,7 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 		return err
 	}
 
-	go r.log("UPDATE", []*entities.CmsInvoice{invoice})
+	r.log("UPDATE", []*entities.CmsInvoice{invoice})
 
 	return nil
 }
@@ -148,7 +148,7 @@ func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error
 		return err
 	}
 
-	go r.log("UPDATE", invoices)
+	r.log("UPDATE", invoices)
 
 	return nil
 }
@@ -173,7 +173,7 @@ func (r *CmsInvoiceRepository) log(op string, payload []*entities.CmsInvoice) {
 		return &entities.AuditLog{
 			OperationType: op,
 			RecordTable:   item.TableName(),
-			RecordID:      item.InvoiceCode,
+			RecordId:      item.InvoiceCode,
 			RecordBody:    string(record),
 		}
 	})

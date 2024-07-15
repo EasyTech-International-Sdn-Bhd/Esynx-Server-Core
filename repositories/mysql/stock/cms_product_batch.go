@@ -49,7 +49,7 @@ func (r *CmsProductBatchRepository) InsertMany(records []*entities.CmsProductBat
 		return err
 	}
 
-	go r.log("INSERT", records)
+	r.log("INSERT", records)
 
 	return nil
 }
@@ -60,7 +60,7 @@ func (r *CmsProductBatchRepository) Update(record *entities.CmsProductBatch) err
 		return err
 	}
 
-	go r.log("UPDATE", []*entities.CmsProductBatch{record})
+	r.log("UPDATE", []*entities.CmsProductBatch{record})
 
 	return nil
 }
@@ -96,7 +96,7 @@ func (r *CmsProductBatchRepository) UpdateMany(records []*entities.CmsProductBat
 		return err
 	}
 
-	go r.log("UPDATE", records)
+	r.log("UPDATE", records)
 
 	return nil
 }
@@ -121,7 +121,7 @@ func (r *CmsProductBatchRepository) log(op string, payload []*entities.CmsProduc
 		return &entities.AuditLog{
 			OperationType: op,
 			RecordTable:   item.TableName(),
-			RecordID:      fmt.Sprintf("%s.%s", item.BatchCode, item.ProductCode),
+			RecordId:      fmt.Sprintf("%s.%s", item.BatchCode, item.ProductCode),
 			RecordBody:    string(record),
 		}
 	})

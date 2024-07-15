@@ -66,7 +66,7 @@ func (r *CmsCustomerSalespersonRepository) InsertMany(records []*entities.CmsCus
 		return err
 	}
 
-	go r.log("INSERT", records)
+	r.log("INSERT", records)
 
 	return nil
 }
@@ -77,7 +77,7 @@ func (r *CmsCustomerSalespersonRepository) Update(record *entities.CmsCustomerSa
 		return err
 	}
 
-	go r.log("UPDATE", []*entities.CmsCustomerSalesperson{record})
+	r.log("UPDATE", []*entities.CmsCustomerSalesperson{record})
 
 	return nil
 }
@@ -113,7 +113,7 @@ func (r *CmsCustomerSalespersonRepository) UpdateMany(records []*entities.CmsCus
 		return err
 	}
 
-	go r.log("UPDATE", records)
+	r.log("UPDATE", records)
 
 	return nil
 }
@@ -138,7 +138,7 @@ func (r *CmsCustomerSalespersonRepository) log(op string, payload []*entities.Cm
 		return &entities.AuditLog{
 			OperationType: op,
 			RecordTable:   item.TableName(),
-			RecordID:      strconv.FormatUint(item.SalespersonCustomerId, 10),
+			RecordId:      strconv.FormatUint(item.SalespersonCustomerId, 10),
 			RecordBody:    string(record),
 		}
 	})

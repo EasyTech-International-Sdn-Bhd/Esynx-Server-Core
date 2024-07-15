@@ -101,7 +101,7 @@ func (r *CmsCreditNoteRepository) InsertMany(creditNotes []*entities.CmsCreditno
 		return err
 	}
 
-	go r.log("INSERT", creditNotes)
+	r.log("INSERT", creditNotes)
 
 	return nil
 }
@@ -112,7 +112,7 @@ func (r *CmsCreditNoteRepository) Update(creditNote *entities.CmsCreditnote) err
 		return err
 	}
 
-	go r.log("UPDATE", []*entities.CmsCreditnote{creditNote})
+	r.log("UPDATE", []*entities.CmsCreditnote{creditNote})
 
 	return nil
 }
@@ -148,7 +148,7 @@ func (r *CmsCreditNoteRepository) UpdateMany(creditNotes []*entities.CmsCreditno
 		return err
 	}
 
-	go r.log("UPDATE", creditNotes)
+	r.log("UPDATE", creditNotes)
 
 	return nil
 }
@@ -173,7 +173,7 @@ func (r *CmsCreditNoteRepository) log(op string, payload []*entities.CmsCreditno
 		return &entities.AuditLog{
 			OperationType: op,
 			RecordTable:   item.TableName(),
-			RecordID:      item.CnCode,
+			RecordId:      item.CnCode,
 			RecordBody:    string(record),
 		}
 	})

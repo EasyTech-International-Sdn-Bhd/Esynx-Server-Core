@@ -6,7 +6,7 @@ import (
 )
 
 type IDatabase interface {
-	Open(conn string, logger *IDatabaseLogger) error
+	Open(conn string, logger IDatabaseLogger) error
 	DefineSchema() error
 	Close() error
 }
@@ -16,7 +16,7 @@ type IDatabaseUserSession interface {
 	GetApp() string
 	GetStore() options.DatabaseStore
 	GetConnection() string
-	GetLogger() *IDatabaseLogger
+	GetLogger() IDatabaseLogger
 }
 
 type IDatabaseLogger interface {
