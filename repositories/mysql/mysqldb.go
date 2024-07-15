@@ -18,7 +18,8 @@ func NewMySqlDb() *MySqlDb {
 
 func (m *MySqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error) {
 	m.Engine, err = xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
-		db.SetMaxOpenConns(4)
+		db.SetMaxOpenConns(1)
+		db.SetMaxIdleConns(1)
 		db.SetConnMaxLifetime(-1)
 		err := db.Ping()
 		if err != nil {
@@ -26,8 +27,10 @@ func (m *MySqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error
 		}
 		return nil
 	})
+	if logger != nil {
+		m.Engine.SetLogger(logger)
+	}
 	m.Engine.ShowSQL(true)
-	m.Engine.SetLogger(logger)
 	m.Engine.SetLogLevel(0)
 	if err != nil {
 		return err
