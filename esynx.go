@@ -40,7 +40,7 @@ type ESynx struct {
 func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
 	if session.GetStore() == options.MySQL {
 		db := mysql.NewMySqlDb()
-		err := db.Open(session.GetConnection())
+		err := db.Open(session.GetConnection(), session.GetLogger())
 		if err != nil {
 			return nil, err
 		}
