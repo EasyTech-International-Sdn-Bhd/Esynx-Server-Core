@@ -5,7 +5,6 @@ import (
 	migrate "github.com/easytech-international-sdn-bhd/esynx-server-core/migrate/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"xorm.io/xorm"
-	"xorm.io/xorm/log"
 )
 
 type MySqlDb struct {
@@ -16,7 +15,7 @@ func NewMySqlDb() *MySqlDb {
 	return &MySqlDb{}
 }
 
-func (m *MySqlDb) Open(conn string, logger *log.Logger) (err error) {
+func (m *MySqlDb) Open(conn string, logger *interface{}) (err error) {
 	m.Engine, err = xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
 		db.SetMaxOpenConns(4)
 		db.SetConnMaxLifetime(-1)

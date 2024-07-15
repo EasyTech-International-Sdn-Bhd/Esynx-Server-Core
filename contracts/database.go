@@ -2,11 +2,10 @@ package contracts
 
 import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/options"
-	"xorm.io/xorm/log"
 )
 
 type IDatabase interface {
-	Open(conn string, logger *log.Logger) error
+	Open(conn string, logger *interface{}) error
 	DefineSchema() error
 	Close() error
 }
@@ -16,5 +15,5 @@ type IDatabaseUserSession interface {
 	GetApp() string
 	GetStore() options.DatabaseStore
 	GetConnection() string
-	GetLogger() *log.Logger
+	GetLogger() *interface{}
 }
