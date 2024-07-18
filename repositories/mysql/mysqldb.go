@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	migrate "github.com/easytech-international-sdn-bhd/esynx-server-core/migrate/sql"
 	_ "github.com/go-sql-driver/mysql"
@@ -17,6 +18,7 @@ func NewMySqlDb() *MySqlDb {
 }
 
 func (m *MySqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error) {
+	fmt.Printf("Connecting to %s\n", conn)
 	m.Engine, err = xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
 		db.SetMaxOpenConns(1)
 		db.SetMaxIdleConns(1)
