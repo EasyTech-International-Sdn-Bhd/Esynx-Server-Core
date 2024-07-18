@@ -27,14 +27,14 @@ func (m *MySqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error
 		}
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 	if logger != nil {
 		m.Engine.SetLogger(logger)
 	}
 	m.Engine.ShowSQL(true)
 	m.Engine.SetLogLevel(0)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
