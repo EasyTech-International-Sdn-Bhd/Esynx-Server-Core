@@ -22,10 +22,10 @@ func (m *CmsProductUomPriceV2) TableName() string {
 	return "cms_product_uom_price_v2"
 }
 
-func (m *CmsProductUomPriceV2) Validate() {
-
+func (m *CmsProductUomPriceV2) BeforeInsert() {
+	m.BeforeUpdate()
 }
 
-func (m *CmsProductUomPriceV2) ToUpdate() {
+func (m *CmsProductUomPriceV2) BeforeUpdate() {
 	m.UpdatedAt = time.Now()
 }

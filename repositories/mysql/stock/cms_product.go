@@ -74,8 +74,6 @@ func (r *CmsProductRepository) Search(predicate string) ([]*entities.CmsProduct,
 
 func (r *CmsProductRepository) InsertMany(records []*entities.CmsProduct) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProduct) *entities.CmsProduct {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -108,8 +106,6 @@ func (r *CmsProductRepository) UpdateMany(records []*entities.CmsProduct) error 
 	var sessionErr error
 	rollback := false
 	for _, product := range records {
-		product.Validate()
-		product.ToUpdate()
 		_, err = session.Where("product_code = ?", product.ProductCode).Update(product)
 		if err != nil {
 			rollback = true
@@ -136,14 +132,12 @@ func (r *CmsProductRepository) UpdateMany(records []*entities.CmsProduct) error 
 
 func (r *CmsProductRepository) Delete(record *entities.CmsProduct) error {
 	record.ProductStatus = 0
-	record.ToUpdate()
 	return r.Update(record)
 }
 
 func (r *CmsProductRepository) DeleteMany(records []*entities.CmsProduct) error {
 	for _, record := range records {
 		record.ProductStatus = 0
-		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
 }

@@ -18,10 +18,10 @@ func (m *CmsProductAtch) TableName() string {
 	return "cms_product_atch"
 }
 
-func (m *CmsProductAtch) Validate() {
-
+func (m *CmsProductAtch) BeforeInsert() {
+	m.BeforeUpdate()
 }
 
-func (m *CmsProductAtch) ToUpdate() {
+func (m *CmsProductAtch) BeforeUpdate() {
 	m.UpdatedAt = time.Now()
 }

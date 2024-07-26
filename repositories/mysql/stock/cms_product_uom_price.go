@@ -31,8 +31,6 @@ func (r *CmsProductUomPriceRepository) Get(productCode string) ([]*entities.CmsP
 
 func (r *CmsProductUomPriceRepository) InsertMany(records []*entities.CmsProductUomPriceV2) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductUomPriceV2) *entities.CmsProductUomPriceV2 {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -65,8 +63,6 @@ func (r *CmsProductUomPriceRepository) UpdateMany(records []*entities.CmsProduct
 	var sessionErr error
 	rollback := false
 	for _, record := range records {
-		record.Validate()
-		record.ToUpdate()
 		_, err = session.Where("product_uom_price_id = ?", record.ProductUomPriceId).Update(record)
 		if err != nil {
 			rollback = true
@@ -93,14 +89,12 @@ func (r *CmsProductUomPriceRepository) UpdateMany(records []*entities.CmsProduct
 
 func (r *CmsProductUomPriceRepository) Delete(record *entities.CmsProductUomPriceV2) error {
 	record.ActiveStatus = 0
-	record.ToUpdate()
 	return r.Update(record)
 }
 
 func (r *CmsProductUomPriceRepository) DeleteMany(records []*entities.CmsProductUomPriceV2) error {
 	for _, record := range records {
 		record.ActiveStatus = 0
-		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
 }

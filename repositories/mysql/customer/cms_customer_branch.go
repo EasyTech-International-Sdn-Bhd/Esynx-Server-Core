@@ -66,8 +66,6 @@ func (r *CmsCustomerBranchRepository) GetAllStatusByAgentId(agentId int64) ([]*e
 
 func (r *CmsCustomerBranchRepository) InsertMany(records []*entities.CmsCustomerBranch) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsCustomerBranch) *entities.CmsCustomerBranch {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -127,14 +125,12 @@ func (r *CmsCustomerBranchRepository) UpdateMany(records []*entities.CmsCustomer
 
 func (r *CmsCustomerBranchRepository) Delete(record *entities.CmsCustomerBranch) error {
 	record.BranchActive = 0
-	record.ToUpdate()
 	return r.Update(record)
 }
 
 func (r *CmsCustomerBranchRepository) DeleteMany(records []*entities.CmsCustomerBranch) error {
 	for _, record := range records {
 		record.BranchActive = 0
-		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
 }

@@ -93,8 +93,6 @@ func (r *CmsInvoiceSalesRepository) GetByDate(from time.Time, to time.Time) ([]*
 
 func (r *CmsInvoiceSalesRepository) InsertMany(invoices []*entities.CmsInvoiceSales) error {
 	_, err := r.db.Insert(iterator.Map(invoices, func(item *entities.CmsInvoiceSales) *entities.CmsInvoiceSales {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -127,8 +125,6 @@ func (r *CmsInvoiceSalesRepository) UpdateMany(invoices []*entities.CmsInvoiceSa
 	var sessionErr error
 	rollback := false
 	for _, inv := range invoices {
-		inv.Validate()
-		inv.ToUpdate()
 		_, err = session.Where("invoice_code = ?", inv.InvoiceCode).Update(inv)
 		if err != nil {
 			rollback = true
@@ -155,14 +151,12 @@ func (r *CmsInvoiceSalesRepository) UpdateMany(invoices []*entities.CmsInvoiceSa
 
 func (r *CmsInvoiceSalesRepository) Delete(invoice *entities.CmsInvoiceSales) error {
 	invoice.Cancelled = "T"
-	invoice.ToUpdate()
 	return r.Update(invoice)
 }
 
 func (r *CmsInvoiceSalesRepository) DeleteMany(invoices []*entities.CmsInvoiceSales) error {
 	for _, invoice := range invoices {
 		invoice.Cancelled = "T"
-		invoice.ToUpdate()
 	}
 	return r.UpdateMany(invoices)
 }

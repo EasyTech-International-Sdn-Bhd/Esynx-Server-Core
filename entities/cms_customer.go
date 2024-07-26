@@ -51,15 +51,16 @@ func (m *CmsCustomer) TableName() string {
 	return "cms_customer"
 }
 
-func (m *CmsCustomer) Validate() {
+func (m *CmsCustomer) BeforeInsert() {
+	m.BeforeUpdate()
+}
+
+func (m *CmsCustomer) BeforeUpdate() {
+	m.UpdatedAt = time.Now()
 	if m.CustUdf == "" {
 		m.CustUdf = "{}"
 	}
 	if m.CreatedDate.IsZero() {
 		m.CreatedDate = time.Now()
 	}
-}
-
-func (m *CmsCustomer) ToUpdate() {
-	m.UpdatedAt = time.Now()
 }

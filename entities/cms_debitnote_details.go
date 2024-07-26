@@ -21,9 +21,10 @@ func (m *CmsDebitnoteDetails) TableName() string {
 	return "cms_debitnote_details"
 }
 
-func (m *CmsDebitnoteDetails) Validate() {
+func (m *CmsDebitnoteDetails) BeforeInsert() {
+	m.BeforeUpdate()
 }
 
-func (m *CmsDebitnoteDetails) ToUpdate() {
+func (m *CmsDebitnoteDetails) BeforeUpdate() {
 	m.UpdatedAt = time.Now()
 }

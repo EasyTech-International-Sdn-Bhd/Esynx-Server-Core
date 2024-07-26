@@ -28,15 +28,16 @@ func (m *CmsProductPriceV2) TableName() string {
 	return "cms_product_price_v2"
 }
 
-func (m *CmsProductPriceV2) Validate() {
+func (m *CmsProductPriceV2) BeforeInsert() {
+	m.BeforeUpdate()
+}
+
+func (m *CmsProductPriceV2) BeforeUpdate() {
+	m.UpdatedAt = time.Now()
 	if m.DateFrom.IsZero() {
 		m.DateFrom = time.Now().AddDate(-1, 0, 0)
 	}
 	if m.DateTo.IsZero() {
 		m.DateTo = time.Now().AddDate(10, 0, 0)
 	}
-}
-
-func (m *CmsProductPriceV2) ToUpdate() {
-	m.UpdatedAt = time.Now()
 }

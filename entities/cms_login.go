@@ -22,12 +22,12 @@ func (m *CmsLogin) TableName() string {
 	return "cms_login"
 }
 
-func (m *CmsLogin) Validate() {
+func (m *CmsLogin) BeforeInsert() {
+	m.BeforeUpdate()
+}
+
+func (m *CmsLogin) BeforeUpdate() {
 	if m.RoleId == 0 {
 		m.RoleId = 2
 	}
-}
-
-func (m *CmsLogin) ToUpdate() {
-
 }

@@ -26,11 +26,11 @@ func (m *CmsCreditnote) TableName() string {
 	return "cms_creditnote"
 }
 
-func (m *CmsCreditnote) Validate() {
-
+func (m *CmsCreditnote) BeforeInsert() {
+	m.BeforeUpdate()
 }
 
-func (m *CmsCreditnote) ToUpdate() {
+func (m *CmsCreditnote) BeforeUpdate() {
 	if m.UpdatedAt.IsZero() {
 		m.UpdatedAt = time.Now()
 	}

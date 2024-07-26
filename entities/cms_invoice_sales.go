@@ -28,9 +28,10 @@ func (m *CmsInvoiceSales) TableName() string {
 	return "cms_invoice_sales"
 }
 
-func (m *CmsInvoiceSales) Validate() {
+func (m *CmsInvoiceSales) BeforeInsert() {
+	m.BeforeUpdate()
 }
 
-func (m *CmsInvoiceSales) ToUpdate() {
+func (m *CmsInvoiceSales) BeforeUpdate() {
 	m.UpdatedAt = time.Now()
 }

@@ -74,8 +74,6 @@ func (r *CmsInvoiceDetailsRepository) GetWithProduct(invoiceCode string) ([]*mod
 
 func (r *CmsInvoiceDetailsRepository) InsertMany(details []*entities.CmsInvoiceDetails) error {
 	_, err := r.db.Insert(iterator.Map(details, func(item *entities.CmsInvoiceDetails) *entities.CmsInvoiceDetails {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -108,8 +106,6 @@ func (r *CmsInvoiceDetailsRepository) UpdateMany(details []*entities.CmsInvoiceD
 	var sessionErr error
 	rollback := false
 	for _, detail := range details {
-		detail.Validate()
-		detail.ToUpdate()
 		_, err = session.Where("id = ?", detail.Id).Update(detail)
 		if err != nil {
 			rollback = true
@@ -136,14 +132,12 @@ func (r *CmsInvoiceDetailsRepository) UpdateMany(details []*entities.CmsInvoiceD
 
 func (r *CmsInvoiceDetailsRepository) Delete(details *entities.CmsInvoiceDetails) error {
 	details.ActiveStatus = 0
-	details.ToUpdate()
 	return r.Update(details)
 }
 
 func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceDetails) error {
 	for _, detail := range details {
 		detail.ActiveStatus = 0
-		detail.ToUpdate()
 	}
 	return r.UpdateMany(details)
 }

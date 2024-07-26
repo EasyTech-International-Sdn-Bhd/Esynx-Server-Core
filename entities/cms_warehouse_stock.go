@@ -25,10 +25,10 @@ func (m *CmsWarehouseStock) TableName() string {
 	return "cms_warehouse_stock"
 }
 
-func (m *CmsWarehouseStock) Validate() {
-	// NOTE: nothing for now
+func (m *CmsWarehouseStock) BeforeInsert() {
+	m.BeforeUpdate()
 }
 
-func (m *CmsWarehouseStock) ToUpdate() {
+func (m *CmsWarehouseStock) BeforeUpdate() {
 	m.UpdatedAt = time.Now()
 }

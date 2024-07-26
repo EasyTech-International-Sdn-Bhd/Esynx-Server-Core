@@ -74,8 +74,6 @@ func (r *CmsCreditNoteDetailsRepository) GetWithProduct(creditNoteCode string) (
 
 func (r *CmsCreditNoteDetailsRepository) InsertMany(details []*entities.CmsCreditnoteDetails) error {
 	_, err := r.db.Insert(iterator.Map(details, func(item *entities.CmsCreditnoteDetails) *entities.CmsCreditnoteDetails {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -108,8 +106,6 @@ func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCredi
 	var sessionErr error
 	rollback := false
 	for _, detail := range details {
-		detail.Validate()
-		detail.ToUpdate()
 		_, err = session.Where("id = ?", detail.Id).Update(detail)
 		if err != nil {
 			rollback = true
@@ -136,14 +132,12 @@ func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCredi
 
 func (r *CmsCreditNoteDetailsRepository) Delete(details *entities.CmsCreditnoteDetails) error {
 	details.ActiveStatus = 0
-	details.ToUpdate()
 	return r.Update(details)
 }
 
 func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCreditnoteDetails) error {
 	for _, detail := range details {
 		detail.ActiveStatus = 0
-		detail.ToUpdate()
 	}
 	return r.UpdateMany(details)
 }

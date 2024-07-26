@@ -137,8 +137,6 @@ func (r *CmsCustomerRepository) GetCustomerById(custId string) (*entities.CmsCus
 
 func (r *CmsCustomerRepository) InsertMany(records []*entities.CmsCustomer) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsCustomer) *entities.CmsCustomer {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -171,8 +169,6 @@ func (r *CmsCustomerRepository) UpdateMany(customers []*entities.CmsCustomer) er
 	var sessionErr error
 	rollback := false
 	for _, customer := range customers {
-		customer.Validate()
-		customer.ToUpdate()
 		_, err = session.Where("cust_code = ?", customer.CustCode).Update(customer)
 		if err != nil {
 			rollback = true
@@ -199,14 +195,12 @@ func (r *CmsCustomerRepository) UpdateMany(customers []*entities.CmsCustomer) er
 
 func (r *CmsCustomerRepository) Delete(customer *entities.CmsCustomer) error {
 	customer.CustomerStatus = 0
-	customer.ToUpdate()
 	return r.Update(customer)
 }
 
 func (r *CmsCustomerRepository) DeleteMany(customers []*entities.CmsCustomer) error {
 	for _, customer := range customers {
 		customer.CustomerStatus = 0
-		customer.ToUpdate()
 	}
 	return r.UpdateMany(customers)
 }

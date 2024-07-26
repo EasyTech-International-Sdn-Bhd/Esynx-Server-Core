@@ -22,6 +22,6 @@ func (m *CmsCustomerSalesperson) Validate() {
 
 }
 
-func (m *CmsCustomerSalesperson) ToUpdate() {
+func (m *CmsCustomerSalesperson) BeforeUpdate() {
 	m.UpdatedAt = time.Now()
 }

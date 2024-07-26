@@ -36,15 +36,16 @@ func (m *CmsProduct) TableName() string {
 	return "cms_product"
 }
 
-func (m *CmsProduct) Validate() {
+func (m *CmsProduct) BeforeInsert() {
+	m.BeforeUpdate()
+}
+
+func (m *CmsProduct) BeforeUpdate() {
+	m.UpdatedAt = time.Now()
 	if m.SearchFilter == "" {
 		m.SearchFilter = "{}"
 	}
 	if m.ProductUdf == "" {
 		m.ProductUdf = "{}"
 	}
-}
-
-func (m *CmsProduct) ToUpdate() {
-	m.UpdatedAt = time.Now()
 }

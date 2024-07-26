@@ -59,7 +59,6 @@ func (r *CmsCustomerSalespersonRepository) GetAgentByCustId(custId int64) (*enti
 func (r *CmsCustomerSalespersonRepository) InsertMany(records []*entities.CmsCustomerSalesperson) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsCustomerSalesperson) *entities.CmsCustomerSalesperson {
 		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -93,7 +92,6 @@ func (r *CmsCustomerSalespersonRepository) UpdateMany(records []*entities.CmsCus
 	rollback := false
 	for _, record := range records {
 		record.Validate()
-		record.ToUpdate()
 		_, err = session.Where("salesperson_customer_id = ?", record.SalespersonCustomerId).Update(record)
 		if err != nil {
 			rollback = true
@@ -120,14 +118,12 @@ func (r *CmsCustomerSalespersonRepository) UpdateMany(records []*entities.CmsCus
 
 func (r *CmsCustomerSalespersonRepository) Delete(record *entities.CmsCustomerSalesperson) error {
 	record.ActiveStatus = 0
-	record.ToUpdate()
 	return r.Update(record)
 }
 
 func (r *CmsCustomerSalespersonRepository) DeleteMany(records []*entities.CmsCustomerSalesperson) error {
 	for _, record := range records {
 		record.ActiveStatus = 0
-		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
 }

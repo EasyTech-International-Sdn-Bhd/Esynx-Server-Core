@@ -40,10 +40,10 @@ func (m *CmsCustomerBranch) TableName() string {
 	return "cms_customer_branch"
 }
 
-func (m *CmsCustomerBranch) Validate() {
-
+func (m *CmsCustomerBranch) BeforeInsert() {
+	m.BeforeUpdate()
 }
 
-func (m *CmsCustomerBranch) ToUpdate() {
+func (m *CmsCustomerBranch) BeforeUpdate() {
 	m.UpdatedAt = time.Now()
 }

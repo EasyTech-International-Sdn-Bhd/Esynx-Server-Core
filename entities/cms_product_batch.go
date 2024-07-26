@@ -23,12 +23,13 @@ func (m *CmsProductBatch) TableName() string {
 	return "cms_product_batch"
 }
 
-func (m *CmsProductBatch) Validate() {
+func (m *CmsProductBatch) BeforeInsert() {
+	m.BeforeUpdate()
+}
+
+func (m *CmsProductBatch) BeforeUpdate() {
+	m.UpdatedAt = time.Now()
 	if m.ExpDate.IsZero() {
 		m.ExpDate = time.Now().AddDate(10, 1, 1)
 	}
-}
-
-func (m *CmsProductBatch) ToUpdate() {
-	m.UpdatedAt = time.Now()
 }

@@ -41,8 +41,6 @@ func (r *CmsProductBatchRepository) GetByWarehouse(productCode string, warehouse
 
 func (r *CmsProductBatchRepository) InsertMany(records []*entities.CmsProductBatch) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductBatch) *entities.CmsProductBatch {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -75,8 +73,6 @@ func (r *CmsProductBatchRepository) UpdateMany(records []*entities.CmsProductBat
 	var sessionErr error
 	rollback := false
 	for _, record := range records {
-		record.Validate()
-		record.ToUpdate()
 		_, err = session.Where("id = ?", record.Id).Update(record)
 		if err != nil {
 			rollback = true
@@ -103,14 +99,12 @@ func (r *CmsProductBatchRepository) UpdateMany(records []*entities.CmsProductBat
 
 func (r *CmsProductBatchRepository) Delete(record *entities.CmsProductBatch) error {
 	record.ActiveStatus = 0
-	record.ToUpdate()
 	return r.Update(record)
 }
 
 func (r *CmsProductBatchRepository) DeleteMany(records []*entities.CmsProductBatch) error {
 	for _, record := range records {
 		record.ActiveStatus = 0
-		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
 }

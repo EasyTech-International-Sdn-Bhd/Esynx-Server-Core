@@ -20,12 +20,13 @@ func (m *CmsProductImage) TableName() string {
 	return "cms_product_image"
 }
 
-func (m *CmsProductImage) Validate() {
+func (m *CmsProductImage) BeforeInsert() {
+	m.BeforeUpdate()
+}
+
+func (m *CmsProductImage) BeforeUpdate() {
 	if m.ProductImageCreatedDate.IsZero() {
 		m.ProductImageCreatedDate = time.Now()
 	}
-}
-
-func (m *CmsProductImage) ToUpdate() {
 	m.UpdatedAt = time.Now()
 }

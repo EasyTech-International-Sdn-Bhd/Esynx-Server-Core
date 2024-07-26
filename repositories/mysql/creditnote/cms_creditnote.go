@@ -93,8 +93,6 @@ func (r *CmsCreditNoteRepository) GetByDate(from time.Time, to time.Time) ([]*en
 
 func (r *CmsCreditNoteRepository) InsertMany(creditNotes []*entities.CmsCreditnote) error {
 	_, err := r.db.Insert(iterator.Map(creditNotes, func(item *entities.CmsCreditnote) *entities.CmsCreditnote {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -127,8 +125,6 @@ func (r *CmsCreditNoteRepository) UpdateMany(creditNotes []*entities.CmsCreditno
 	var sessionErr error
 	rollback := false
 	for _, cn := range creditNotes {
-		cn.Validate()
-		cn.ToUpdate()
 		_, err = session.Where("cn_code = ?", cn.CnCode).Update(cn)
 		if err != nil {
 			rollback = true
@@ -155,14 +151,12 @@ func (r *CmsCreditNoteRepository) UpdateMany(creditNotes []*entities.CmsCreditno
 
 func (r *CmsCreditNoteRepository) Delete(creditNote *entities.CmsCreditnote) error {
 	creditNote.Cancelled = "T"
-	creditNote.ToUpdate()
 	return r.Update(creditNote)
 }
 
 func (r *CmsCreditNoteRepository) DeleteMany(creditNotes []*entities.CmsCreditnote) error {
 	for _, cn := range creditNotes {
 		cn.Cancelled = "T"
-		cn.ToUpdate()
 	}
 	return r.UpdateMany(creditNotes)
 }

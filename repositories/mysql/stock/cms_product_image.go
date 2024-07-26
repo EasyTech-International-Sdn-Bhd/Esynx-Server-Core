@@ -41,8 +41,6 @@ func (r *CmsProductImageRepository) GetByProductCode(productCode string) ([]*ent
 
 func (r *CmsProductImageRepository) InsertMany(records []*entities.CmsProductImage) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductImage) *entities.CmsProductImage {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -75,8 +73,6 @@ func (r *CmsProductImageRepository) UpdateMany(records []*entities.CmsProductIma
 	var sessionErr error
 	rollback := false
 	for _, record := range records {
-		record.Validate()
-		record.ToUpdate()
 		_, err = session.Where("product_image_id = ?", record.ProductImageId).Update(record)
 		if err != nil {
 			rollback = true
@@ -103,14 +99,12 @@ func (r *CmsProductImageRepository) UpdateMany(records []*entities.CmsProductIma
 
 func (r *CmsProductImageRepository) Delete(record *entities.CmsProductImage) error {
 	record.ActiveStatus = 0
-	record.ToUpdate()
 	return r.Update(record)
 }
 
 func (r *CmsProductImageRepository) DeleteMany(records []*entities.CmsProductImage) error {
 	for _, record := range records {
 		record.ActiveStatus = 0
-		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
 }

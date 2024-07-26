@@ -31,8 +31,6 @@ func (r *CmsWarehouseStockRepository) Get(productCode string) ([]*entities.CmsWa
 
 func (r *CmsWarehouseStockRepository) InsertMany(records []*entities.CmsWarehouseStock) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsWarehouseStock) *entities.CmsWarehouseStock {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -65,8 +63,6 @@ func (r *CmsWarehouseStockRepository) UpdateMany(records []*entities.CmsWarehous
 	var sessionErr error
 	rollback := false
 	for _, record := range records {
-		record.Validate()
-		record.ToUpdate()
 		_, err = session.Where("id = ?", record.Id).Update(record)
 		if err != nil {
 			rollback = true
@@ -93,14 +89,12 @@ func (r *CmsWarehouseStockRepository) UpdateMany(records []*entities.CmsWarehous
 
 func (r *CmsWarehouseStockRepository) Delete(record *entities.CmsWarehouseStock) error {
 	record.ActiveStatus = 0
-	record.ToUpdate()
 	return r.Update(record)
 }
 
 func (r *CmsWarehouseStockRepository) DeleteMany(records []*entities.CmsWarehouseStock) error {
 	for _, record := range records {
 		record.ActiveStatus = 0
-		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
 }

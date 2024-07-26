@@ -59,8 +59,6 @@ func (r *CmsLoginRepository) GetAll() ([]*entities.CmsLogin, error) {
 
 func (r *CmsLoginRepository) InsertMany(records []*entities.CmsLogin) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsLogin) *entities.CmsLogin {
-		item.Validate()
-		item.ToUpdate()
 		return item
 	}))
 	if err != nil {
@@ -93,8 +91,6 @@ func (r *CmsLoginRepository) UpdateMany(records []*entities.CmsLogin) error {
 	var sessionErr error
 	rollback := false
 	for _, record := range records {
-		record.Validate()
-		record.ToUpdate()
 		_, err = session.Where("login_id = ?", record.LoginId).Update(record)
 		if err != nil {
 			rollback = true
@@ -121,14 +117,12 @@ func (r *CmsLoginRepository) UpdateMany(records []*entities.CmsLogin) error {
 
 func (r *CmsLoginRepository) Delete(record *entities.CmsLogin) error {
 	record.LoginStatus = 0
-	record.ToUpdate()
 	return r.Update(record)
 }
 
 func (r *CmsLoginRepository) DeleteMany(records []*entities.CmsLogin) error {
 	for _, record := range records {
 		record.LoginStatus = 0
-		record.ToUpdate()
 	}
 	return r.UpdateMany(records)
 }
