@@ -98,7 +98,6 @@ func (r *CmsCustomerBranchRepository) UpdateMany(records []*entities.CmsCustomer
 	var sessionErr error
 	rollback := false
 	for _, branch := range records {
-		branch.Validate()
 		_, err = session.Where("branch_code = ?", branch.BranchCode).Update(branch)
 		if err != nil {
 			rollback = true
