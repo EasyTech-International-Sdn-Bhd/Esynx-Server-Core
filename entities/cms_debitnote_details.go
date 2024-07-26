@@ -3,18 +3,18 @@ package entities
 import "time"
 
 type CmsDebitnoteDetails struct {
-	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
-	DnCode       string    `xorm:"VARCHAR(100)"`
-	ItemCode     string    `xorm:"VARCHAR(200)"`
-	ItemName     string    `xorm:"VARCHAR(200)"`
-	ItemPrice    string    `xorm:"VARCHAR(200)"`
-	Quantity     string    `xorm:"VARCHAR(200)"`
-	Uom          string    `xorm:"VARCHAR(200)"`
-	TotalPrice   string    `xorm:"VARCHAR(200)"`
-	Discount     string    `xorm:"comment('0%+10+50%') VARCHAR(100)"`
-	ActiveStatus int       `xorm:"default 1 comment('0=inactive, 1=active') INT"`
-	UpdatedAt    time.Time `xorm:"not null default CURRENT_TIMESTAMP TIMESTAMP"`
-	RefNo        string    `xorm:"unique VARCHAR(200)"`
+	Id           uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT" json:"id,omitempty" xml:"id"`
+	DnCode       string    `xorm:"VARCHAR(100)" json:"dnCode,omitempty" xml:"dnCode"`
+	ItemCode     string    `xorm:"VARCHAR(200)" json:"itemCode,omitempty" xml:"itemCode"`
+	ItemName     string    `xorm:"VARCHAR(200)" json:"itemName,omitempty" xml:"itemName"`
+	ItemPrice    string    `xorm:"VARCHAR(200)" json:"itemPrice,omitempty" xml:"itemPrice"`
+	Quantity     string    `xorm:"VARCHAR(200)" json:"quantity,omitempty" xml:"quantity"`
+	Uom          string    `xorm:"VARCHAR(200)" json:"uom,omitempty" xml:"uom"`
+	TotalPrice   string    `xorm:"VARCHAR(200)" json:"totalPrice,omitempty" xml:"totalPrice"`
+	Discount     string    `xorm:"comment('0%+10+50%') VARCHAR(100)" json:"discount,omitempty" xml:"discount"`
+	ActiveStatus int       `xorm:"default 1 comment('0=inactive, 1=active') INT" json:"activeStatus,omitempty" xml:"activeStatus"`
+	UpdatedAt    time.Time `xorm:"not null default CURRENT_TIMESTAMP TIMESTAMP" json:"updatedAt,omitempty" xml:"updatedAt"`
+	RefNo        string    `xorm:"unique VARCHAR(200)" json:"refNo,omitempty" xml:"refNo"`
 }
 
 func (m *CmsDebitnoteDetails) TableName() string {

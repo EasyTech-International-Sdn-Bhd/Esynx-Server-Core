@@ -5,23 +5,23 @@ import (
 )
 
 type CmsInvoiceSales struct {
-	InvoiceId         uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
-	InvoiceCode       string    `xorm:"not null default '' unique VARCHAR(200)"`
-	CustCode          string    `xorm:"VARCHAR(20)"`
-	InvoiceDate       time.Time `xorm:"TIMESTAMP"`
-	InvoiceDueDate    time.Time `xorm:"TIMESTAMP"`
-	InvoiceAmount     float64   `xorm:"DOUBLE"`
-	OutstandingAmount float64   `xorm:"DOUBLE"`
-	Approved          int       `xorm:"default 0 INT"`
-	Approver          string    `xorm:"VARCHAR(800)"`
-	ApprovedAt        time.Time `xorm:"DATETIME"`
-	SalespersonId     int       `xorm:"default 0 INT"`
-	InvUdf            string    `xorm:"not null JSON"`
-	Cancelled         string    `xorm:"CHAR(1)"`
-	UpdatedAt         time.Time `xorm:"not null default CURRENT_TIMESTAMP TIMESTAMP"`
-	CreatedBy         string    `xorm:"VARCHAR(20)"`
-	RefNo             int       `xorm:"INT"`
-	Termcode          string    `xorm:"VARCHAR(20)"`
+	InvoiceId         uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT" json:"invoiceId,omitempty" xml:"invoiceId"`
+	InvoiceCode       string    `xorm:"not null default '' unique VARCHAR(200)" json:"invoiceCode,omitempty" xml:"invoiceCode"`
+	CustCode          string    `xorm:"VARCHAR(20)" json:"custCode,omitempty" xml:"custCode"`
+	InvoiceDate       time.Time `xorm:"TIMESTAMP" json:"invoiceDate,omitempty" xml:"invoiceDate"`
+	InvoiceDueDate    time.Time `xorm:"TIMESTAMP" json:"invoiceDueDate,omitempty" xml:"invoiceDueDate"`
+	InvoiceAmount     float64   `xorm:"DOUBLE" json:"invoiceAmount,omitempty" xml:"invoiceAmount"`
+	OutstandingAmount float64   `xorm:"DOUBLE" json:"outstandingAmount,omitempty" xml:"outstandingAmount"`
+	Approved          int       `xorm:"default 0 INT" json:"approved,omitempty" xml:"approved"`
+	Approver          string    `xorm:"VARCHAR(800)" json:"approver,omitempty" xml:"approver"`
+	ApprovedAt        time.Time `xorm:"DATETIME" json:"approvedAt,omitempty" xml:"approvedAt"`
+	SalespersonId     int       `xorm:"default 0 INT" json:"salespersonId,omitempty" xml:"salespersonId"`
+	InvUdf            string    `xorm:"not null JSON" json:"invUdf,omitempty" xml:"invUdf"`
+	Cancelled         string    `xorm:"CHAR(1)" json:"cancelled,omitempty" xml:"cancelled"`
+	UpdatedAt         time.Time `xorm:"not null default CURRENT_TIMESTAMP TIMESTAMP" json:"updatedAt,omitempty" xml:"updatedAt"`
+	CreatedBy         string    `xorm:"VARCHAR(20)" json:"createdBy,omitempty" xml:"createdBy"`
+	RefNo             int       `xorm:"INT" json:"refNo,omitempty" xml:"refNo"`
+	Termcode          string    `xorm:"VARCHAR(20)" json:"termcode,omitempty" xml:"termcode"`
 }
 
 func (m *CmsInvoiceSales) TableName() string {

@@ -5,29 +5,29 @@ import (
 )
 
 type CmsDoDetails struct {
-	Id                  uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT"`
-	DoCode              string    `xorm:"not null default '' unique(unq_key) VARCHAR(50)"`
-	ItemCode            string    `xorm:"not null VARCHAR(20)"`
-	ItemName            string    `xorm:"not null VARCHAR(200)"`
-	ItemPrice           float64   `xorm:"default 0 DOUBLE"`
-	Quantity            float64   `xorm:"default 0 DOUBLE"`
-	TotalPrice          float64   `xorm:"default 0 DOUBLE"`
-	Uom                 string    `xorm:"not null VARCHAR(20)"`
-	Discount            string    `xorm:"default '0' VARCHAR(50)"`
-	PackingStatus       int       `xorm:"default 0 INT"`
-	QrCode              string    `xorm:"VARCHAR(200)"`
-	PackedQty           int       `xorm:"default 0 INT"`
-	CheckedQty          int       `xorm:"default 0 INT"`
-	PackConfirmedStatus int       `xorm:"default 0 INT"`
-	PackConfirmedBy     string    `xorm:"default '' VARCHAR(20)"`
-	PackedBy            string    `xorm:"VARCHAR(200)"`
-	PickerNote          string    `xorm:"VARCHAR(200)"`
-	Location            string    `xorm:"VARCHAR(200)"`
-	ActiveStatus        int       `xorm:"default 1 INT"`
-	RefNo               string    `xorm:"comment('dtlkey') unique(unq_key) VARCHAR(50)"`
-	UpdatedAt           time.Time `xorm:"not null default CURRENT_TIMESTAMP TIMESTAMP"`
-	SequenceNo          int       `xorm:"default 0 INT"`
-	DoDtlUdf            string    `xorm:"JSON"`
+	Id                  uint64    `xorm:"pk autoincr unique UNSIGNED BIGINT" json:"id,omitempty" xml:"id"`
+	DoCode              string    `xorm:"not null default '' unique(unq_key) VARCHAR(50)" json:"doCode,omitempty" xml:"doCode"`
+	ItemCode            string    `xorm:"not null VARCHAR(20)" json:"itemCode,omitempty" xml:"itemCode"`
+	ItemName            string    `xorm:"not null VARCHAR(200)" json:"itemName,omitempty" xml:"itemName"`
+	ItemPrice           float64   `xorm:"default 0 DOUBLE" json:"itemPrice,omitempty" xml:"itemPrice"`
+	Quantity            float64   `xorm:"default 0 DOUBLE" json:"quantity,omitempty" xml:"quantity"`
+	TotalPrice          float64   `xorm:"default 0 DOUBLE" json:"totalPrice,omitempty" xml:"totalPrice"`
+	Uom                 string    `xorm:"not null VARCHAR(20)" json:"uom,omitempty" xml:"uom"`
+	Discount            string    `xorm:"default '0' VARCHAR(50)" json:"discount,omitempty" xml:"discount"`
+	PackingStatus       int       `xorm:"default 0 INT" json:"packingStatus,omitempty" xml:"packingStatus"`
+	QrCode              string    `xorm:"VARCHAR(200)" json:"qrCode,omitempty" xml:"qrCode"`
+	PackedQty           int       `xorm:"default 0 INT" json:"packedQty,omitempty" xml:"packedQty"`
+	CheckedQty          int       `xorm:"default 0 INT" json:"checkedQty,omitempty" xml:"checkedQty"`
+	PackConfirmedStatus int       `xorm:"default 0 INT" json:"packConfirmedStatus,omitempty" xml:"packConfirmedStatus"`
+	PackConfirmedBy     string    `xorm:"default '' VARCHAR(20)" json:"packConfirmedBy,omitempty" xml:"packConfirmedBy"`
+	PackedBy            string    `xorm:"VARCHAR(200)" json:"packedBy,omitempty" xml:"packedBy"`
+	PickerNote          string    `xorm:"VARCHAR(200)" json:"pickerNote,omitempty" xml:"pickerNote"`
+	Location            string    `xorm:"VARCHAR(200)" json:"location,omitempty" xml:"location"`
+	ActiveStatus        int       `xorm:"default 1 INT" json:"activeStatus,omitempty" xml:"activeStatus"`
+	RefNo               string    `xorm:"comment('dtlkey') unique(unq_key) VARCHAR(50)" json:"refNo,omitempty" xml:"refNo"`
+	UpdatedAt           time.Time `xorm:"not null default CURRENT_TIMESTAMP TIMESTAMP" json:"updatedAt,omitempty" xml:"updatedAt"`
+	SequenceNo          int       `xorm:"default 0 INT" json:"sequenceNo,omitempty" xml:"sequenceNo"`
+	DoDtlUdf            string    `xorm:"JSON" json:"doDtlUdf,omitempty" xml:"doDtlUdf"`
 }
 
 func (m *CmsDoDetails) TableName() string {
