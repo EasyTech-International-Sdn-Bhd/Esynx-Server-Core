@@ -1,8 +1,8 @@
 package invoice
 
 import (
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/customer"
 	"github.com/goccy/go-json"

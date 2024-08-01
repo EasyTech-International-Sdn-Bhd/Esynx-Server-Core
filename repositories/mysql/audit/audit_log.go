@@ -2,8 +2,8 @@ package audit
 
 import (
 	"fmt"
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
 	iterator "github.com/ledongthuc/goterators"
 	"time"
 	"xorm.io/xorm"

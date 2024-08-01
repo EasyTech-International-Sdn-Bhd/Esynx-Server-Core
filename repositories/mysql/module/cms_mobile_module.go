@@ -2,8 +2,8 @@ package module
 
 import (
 	"encoding/json"
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/agent"
 	"xorm.io/xorm"
 )

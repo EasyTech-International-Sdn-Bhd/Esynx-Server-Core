@@ -1,6 +1,6 @@
 package contracts
 
-import "github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
+import "github.com/easytech-international-sdn-bhd/esynx-common/entities"
 
 type ICmsProductBatch interface {
 	Get(productCode string) ([]*entities.CmsProductBatch, error)

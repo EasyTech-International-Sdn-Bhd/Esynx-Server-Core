@@ -1,7 +1,7 @@
 package contracts
 
 import (
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 )
 

@@ -1,6 +1,6 @@
 package models
 
-import "github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
+import "github.com/easytech-international-sdn-bhd/esynx-common/entities"
 
 type InvoiceDetailsWithProduct struct {
 	D *entities.CmsInvoiceDetails

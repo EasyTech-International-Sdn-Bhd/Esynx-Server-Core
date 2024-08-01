@@ -2,8 +2,8 @@ package customer
 
 import (
 	"fmt"
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/entities"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/xorm"
