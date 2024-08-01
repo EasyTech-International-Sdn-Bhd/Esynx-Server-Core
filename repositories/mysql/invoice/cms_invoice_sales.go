@@ -12,6 +12,8 @@ import (
 	"xorm.io/xorm"
 )
 
+// CmsInvoiceSalesRepository represents a repository for managing sales invoices in a CMS.
+// It contains a database engine, an audit logger, a customer repository, and an invoice details repository.
 type CmsInvoiceSalesRepository struct {
 	db    *xorm.Engine
 	audit contracts.IAuditLog
@@ -19,6 +21,16 @@ type CmsInvoiceSalesRepository struct {
 	d     *CmsInvoiceDetailsRepository
 }
 
+// NewCmsInvoiceSalesRepository creates a new instance of CmsInvoiceSalesRepository
+// with the provided IRepository option. It initializes the db, audit, c, and d
+// fields of the CmsInvoiceSalesRepository struct.
+//
+// Parameters:
+//   - option: Pointer to the IRepository struct that specifies the database engine,
+//     user, app name, and audit log.
+//
+// Returns:
+// - Pointer to the created CmsInvoiceSalesRepository instance.
 func NewCmsInvoiceSalesRepository(option *contracts.IRepository) *CmsInvoiceSalesRepository {
 	return &CmsInvoiceSalesRepository{
 		db:    option.Db,
@@ -28,6 +40,9 @@ func NewCmsInvoiceSalesRepository(option *contracts.IRepository) *CmsInvoiceSale
 	}
 }
 
+// Get retrieves an instance of CmsInvoiceSales with the given invoice code.
+// It returns a pointer to the retrieved CmsInvoiceSales and an error.
+// If the invoice is not found, it returns nil and nil.
 func (r *CmsInvoiceSalesRepository) Get(invoiceCode string) (*entities.CmsInvoiceSales, error) {
 	var cmsInvoice entities.CmsInvoiceSales
 	has, err := r.db.Where("invoice_code = ?", invoiceCode).Get(&cmsInvoice)
@@ -40,6 +55,10 @@ func (r *CmsInvoiceSalesRepository) Get(invoiceCode string) (*entities.CmsInvoic
 	return &cmsInvoice, nil
 }
 
+// GetWithCustomer retrieves an `InvoiceSalesWithCustomer` object by the given `invoiceCode`.
+// It fetches the corresponding `CmsInvoiceSales` record using the `Get` method.
+// Then, it retrieves the associated `CmsCustomer` record using the `Get` method.
+// Finally, it creates and returns an `InvoiceSalesWithCustomer` object containing the fetched records.
 func (r *CmsInvoiceSalesRepository) GetWithCustomer(invoiceCode string) (*models.InvoiceSalesWithCustomer, error) {
 	invoice, err := r.Get(invoiceCode)
 	if err != nil {
@@ -58,6 +77,10 @@ func (r *CmsInvoiceSalesRepository) GetWithCustomer(invoiceCode string) (*models
 	}, nil
 }
 
+// GetWithItems returns an InvoiceSalesWithItems object containing the invoice sales details and the associated invoice items.
+// It retrieves the invoice sales by the provided invoice code using the Get method.
+// Then, it retrieves the invoice details by the same invoice code using the Get method of the CmsInvoiceDetailsRepository.
+// It returns a pointer to the InvoiceSalesWithItems object and error if any occurred.
 func (r *CmsInvoiceSalesRepository) GetWithItems(invoiceCode string) (*models.InvoiceSalesWithItems, error) {
 	iv, err := r.Get(invoiceCode)
 	if err != nil {
@@ -73,6 +96,10 @@ func (r *CmsInvoiceSalesRepository) GetWithItems(invoiceCode string) (*models.In
 	}, nil
 }
 
+// GetByCustomer retrieves a list of invoices for a specific customer.
+// It queries the database using the provided custCode, filtering out cancelled invoices.
+// The results are ordered by invoice_date in descending order and limited to 100 records.
+// It returns a slice of entities.CmsInvoiceSales and an error if any.
 func (r *CmsInvoiceSalesRepository) GetByCustomer(custCode string) ([]*entities.CmsInvoiceSales, error) {
 	var records []*entities.CmsInvoiceSales
 	err := r.db.Where("cust_code = ? AND cancelled = ?", custCode, "F").OrderBy("invoice_date DESC").Limit(100).Find(&records)
@@ -82,6 +109,9 @@ func (r *CmsInvoiceSalesRepository) GetByCustomer(custCode string) ([]*entities.
 	return records, nil
 }
 
+// GetByDate retrieves a list of CmsInvoiceSales records within a given date range.
+// It takes two parameters 'from' and 'to', representing the start and end date respectively.
+// It returns a slice of *entities.CmsInvoiceSales and an error if there was a problem retrieving the records.
 func (r *CmsInvoiceSalesRepository) GetByDate(from time.Time, to time.Time) ([]*entities.CmsInvoiceSales, error) {
 	var records []*entities.CmsInvoiceSales
 	err := r.db.Where(builder.Between{Col: "DATE(invoice_date)", LessVal: from.Format("2006-01-02"), MoreVal: to.Format("2006-01-02")}.And(builder.Eq{"cancelled": "F"})).OrderBy("invoice_date DESC").Limit(100).Find(&records)
@@ -91,6 +121,10 @@ func (r *CmsInvoiceSalesRepository) GetByDate(from time.Time, to time.Time) ([]*
 	return records, nil
 }
 
+// InsertMany inserts multiple invoices into the database. It takes a slice of CmsInvoiceSales
+// and inserts each item into the database using the db.Insert() method. If any error occurs during the insertion,
+// it returns the error. It then calls the log() method with the operation type "INSERT" and the inserted invoices.
+// Finally, it returns nil to indicate successful insertion.
 func (r *CmsInvoiceSalesRepository) InsertMany(invoices []*entities.CmsInvoiceSales) error {
 	_, err := r.db.Insert(iterator.Map(invoices, func(item *entities.CmsInvoiceSales) *entities.CmsInvoiceSales {
 		return item
@@ -104,6 +138,15 @@ func (r *CmsInvoiceSalesRepository) InsertMany(invoices []*entities.CmsInvoiceSa
 	return nil
 }
 
+// Update updates the given `invoice` in the `CmsInvoiceSalesRepository`.
+// It updates the corresponding record in the database table by matching the `invoice`'s `InvoiceCode` field.
+// If any error occurs during the update operation, it returns that error.
+// After the update, it logs the update operation with the `"UPDATE"` operation type and the updated invoice in the repository.
+// The logging is performed by calling the `log` method of the repository, passing in the `"UPDATE"` operation type and
+// a slice containing only the `invoice` as its payload.
+// The `log` method converts the payload into a JSON string and creates an `AuditLog` record
+// with the operation type, corresponding record table name, record ID (`InvoiceCode`), and the record body (JSON string).
+// Then, it logs this `AuditLog` record using the `Log` method of the `audit` field of the repository.
 func (r *CmsInvoiceSalesRepository) Update(invoice *entities.CmsInvoiceSales) error {
 	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Update(invoice)
 	if err != nil {
@@ -115,6 +158,11 @@ func (r *CmsInvoiceSalesRepository) Update(invoice *entities.CmsInvoiceSales) er
 	return nil
 }
 
+// UpdateMany updates multiple invoices in the database.
+// It starts a new session, loops through the invoices and updates each one.
+// If an error occurs during the update, the session is rolled back and the error is returned.
+// If all updates are successful, the session is committed.
+// Finally, the updated invoices are logged.
 func (r *CmsInvoiceSalesRepository) UpdateMany(invoices []*entities.CmsInvoiceSales) error {
 	session := r.db.NewSession()
 	defer session.Close()
@@ -149,11 +197,17 @@ func (r *CmsInvoiceSalesRepository) UpdateMany(invoices []*entities.CmsInvoiceSa
 	return nil
 }
 
+// Delete sets the "Cancelled" field of the provided invoice to "T" and
+// calls the "Update" method of the repository to persist the changes.
 func (r *CmsInvoiceSalesRepository) Delete(invoice *entities.CmsInvoiceSales) error {
 	invoice.Cancelled = "T"
 	return r.Update(invoice)
 }
 
+// DeleteMany sets the `Cancelled` field to "T" for each invoice in the provided slice
+// and then calls the `UpdateMany` method to update the invoices in the repository.
+// If an error occurs during the update, the function will roll back the transaction
+// and return the error. Otherwise, it will commit the transaction and return nil.
 func (r *CmsInvoiceSalesRepository) DeleteMany(invoices []*entities.CmsInvoiceSales) error {
 	for _, invoice := range invoices {
 		invoice.Cancelled = "T"
@@ -161,6 +215,17 @@ func (r *CmsInvoiceSalesRepository) DeleteMany(invoices []*entities.CmsInvoiceSa
 	return r.UpdateMany(invoices)
 }
 
+// log logs a given operation and payload to the audit log using the audit interface.
+// The payload is transformed into an array of AuditLog objects with each item containing information about the operation,
+// the record table, record ID, and record body. The record body is the JSON representation of the payload.
+// The log method is called by various methods in the CmsInvoiceSalesRepository to log operations such as INSERT and UPDATE.
+// The audit.Log method is responsible for sending the logs to the audit log storage.
+//
+// Parameters:
+// - op: The operation type to be logged (e.g., "INSERT", "UPDATE").
+// - payload: The array of CMS invoice sales entities to be logged.
+//
+// Note: This method does not return any values.
 func (r *CmsInvoiceSalesRepository) log(op string, payload []*entities.CmsInvoiceSales) {
 	record, _ := json.Marshal(payload)
 	body := iterator.Map(payload, func(item *entities.CmsInvoiceSales) *entities.AuditLog {

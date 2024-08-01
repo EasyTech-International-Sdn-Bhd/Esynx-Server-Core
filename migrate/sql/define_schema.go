@@ -8,11 +8,15 @@ import (
 	"xorm.io/xorm"
 )
 
+// DefineSchema creates and migrates the database schema using the provided xorm engine.
 func DefineSchema(db *xorm.Engine) error {
 	m := xormigrate.New(db, migrations())
 	return m.Migrate()
 }
 
+// migrations returns an array of xormigrate.Migration objects.
+// Each migration represents a schema to be applied to the database.
+// The schemas are generated based on the values returned by the defaults function.
 func migrations() []*xormigrate.Migration {
 	var schemas []*xormigrate.Migration
 	for i, schema := range defaults() {
@@ -29,6 +33,7 @@ func migrations() []*xormigrate.Migration {
 	return schemas
 }
 
+// defaults returns a slice of interface{} containing pointers to various entity structs that are used as default database schema in the application. The returned slice can be used to define database migrations.
 func defaults() []interface{} {
 	return []interface{}{
 		&entities.CmsAccExistingOrder{},

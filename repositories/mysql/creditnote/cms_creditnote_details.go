@@ -11,12 +11,20 @@ import (
 	"xorm.io/xorm"
 )
 
+// CmsCreditNoteDetailsRepository represents a repository for managing CMS credit note details.
+//
+// It contains references to the database engine, an audit log interface, and a product repository.
 type CmsCreditNoteDetailsRepository struct {
 	db    *xorm.Engine
 	audit contracts.IAuditLog
 	p     *stock.CmsProductRepository
 }
 
+// NewCmsCreditNoteDetailsRepository creates a new instance of CmsCreditNoteDetailsRepository
+// with the given IRepository option. It initializes the db, audit, and p fields of the repository.
+// The db field holds the xorm.Engine instance of the IRepository. The audit field holds the IAuditLog instance
+// of the IRepository. The p field holds the CmsProductRepository instance created using NewCmsProductRepository function
+// with the given IRepository option.
 func NewCmsCreditNoteDetailsRepository(option *contracts.IRepository) *CmsCreditNoteDetailsRepository {
 	return &CmsCreditNoteDetailsRepository{
 		db:    option.Db,
@@ -25,6 +33,14 @@ func NewCmsCreditNoteDetailsRepository(option *contracts.IRepository) *CmsCredit
 	}
 }
 
+// Get retrieves credit note details by the given creditNoteCode.
+//
+// It returns a slice of *entities.CmsCreditnoteDetails and an error.
+// If the credit note details are not found, it returns nil as the result with a non-nil error.
+// If there is an error when retrieving the credit note details, it returns nil as the result
+// with the non-nil error.
+//
+// The creditNoteCode parameter is the code of the credit note.
 func (r *CmsCreditNoteDetailsRepository) Get(creditNoteCode string) ([]*entities.CmsCreditnoteDetails, error) {
 	var details []*entities.CmsCreditnoteDetails
 	err := r.db.Where("cn_code = ? AND active_status = ?", creditNoteCode, 1).Find(&details)
@@ -34,6 +50,9 @@ func (r *CmsCreditNoteDetailsRepository) Get(creditNoteCode string) ([]*entities
 	return details, nil
 }
 
+// GetMany retrieves multiple credit note details based on the given credit note codes.
+// It returns an array of CmsCreditnoteDetails and an error if any.
+// The credit note codes are used to filter the results, and only active details are returned.
 func (r *CmsCreditNoteDetailsRepository) GetMany(creditNoteCodes []string) ([]*entities.CmsCreditnoteDetails, error) {
 	var details []*entities.CmsCreditnoteDetails
 	err := r.db.In("cn_code", creditNoteCodes).Where("active_status = ?", 1).Find(&details)
@@ -43,6 +62,12 @@ func (r *CmsCreditNoteDetailsRepository) GetMany(creditNoteCodes []string) ([]*e
 	return details, nil
 }
 
+// GetWithProduct retrieves credit note details with associated products based on the credit note code.
+// It first calls the Get method to obtain the details of the credit note.
+// Then, it extracts the item codes from the details and calls the GetMany method to retrieve the associated products.
+// Finally, it creates instances of CreditNoteDetailsWithProduct by combining each detail with its corresponding product.
+// It returns the results as a slice of CreditNoteDetailsWithProduct instances.
+// An error is returned if there is an issue with obtaining the credit note details or the associated products.
 func (r *CmsCreditNoteDetailsRepository) GetWithProduct(creditNoteCode string) ([]*models.CreditNoteDetailsWithProduct, error) {
 	details, err := r.Get(creditNoteCode)
 	if err != nil {
@@ -72,6 +97,9 @@ func (r *CmsCreditNoteDetailsRepository) GetWithProduct(creditNoteCode string) (
 	return results, nil
 }
 
+// InsertMany inserts multiple CmsCreditnoteDetails into the repository's database.
+// It returns an error if the insertion operation fails. After successfully inserting
+// the details, it logs the operation as "INSERT" along with the inserted details.
 func (r *CmsCreditNoteDetailsRepository) InsertMany(details []*entities.CmsCreditnoteDetails) error {
 	_, err := r.db.Insert(iterator.Map(details, func(item *entities.CmsCreditnoteDetails) *entities.CmsCreditnoteDetails {
 		return item
@@ -85,6 +113,11 @@ func (r *CmsCreditNoteDetailsRepository) InsertMany(details []*entities.CmsCredi
 	return nil
 }
 
+// Update updates the given `CmsCreditnoteDetails` object in the repository.
+// It updates the corresponding record in the database based on the `id` field of the `details` object.
+// If the update operation fails, it returns an error. Otherwise, it logs the UPDATE operation.
+// Preconditions: `details` is not nil.
+// Postconditions: The `details` object is updated in the repository.
 func (r *CmsCreditNoteDetailsRepository) Update(details *entities.CmsCreditnoteDetails) error {
 	_, err := r.db.Where("id = ?", details.Id).Update(details)
 	if err != nil {
@@ -96,6 +129,13 @@ func (r *CmsCreditNoteDetailsRepository) Update(details *entities.CmsCreditnoteD
 	return nil
 }
 
+// UpdateMany updates multiple CmsCreditnoteDetails records in the database.
+// It starts a new database session before beginning a transaction.
+// It iterates over the provided details, updating each record individually using its Id.
+// If an error occurs during the update, the transaction is rolled back
+// and the error is returned.
+// Otherwise, the transaction is committed.
+// Finally, the updated details are logged using the "UPDATE" operation type.
 func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCreditnoteDetails) error {
 	session := r.db.NewSession()
 	defer session.Close()
@@ -130,11 +170,15 @@ func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCredi
 	return nil
 }
 
+// Delete sets the ActiveStatus of the given CmsCreditnoteDetails to 0 and calls the Update method to persist the changes.
 func (r *CmsCreditNoteDetailsRepository) Delete(details *entities.CmsCreditnoteDetails) error {
 	details.ActiveStatus = 0
 	return r.Update(details)
 }
 
+// DeleteMany sets the ActiveStatus field of each CmsCreditnoteDetails item in the details slice to 0,
+// and then calls the UpdateMany method to update the database with the modified details.
+// It returns an error if any error occurs during the update process.
 func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCreditnoteDetails) error {
 	for _, detail := range details {
 		detail.ActiveStatus = 0
@@ -142,6 +186,26 @@ func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCredi
 	return r.UpdateMany(details)
 }
 
+// log is a method that is used to log an operation and its payload to the audit log.
+//
+// Parameters:
+//   - op: a string representing the operation type.
+//   - payload: a slice of *entities.CmsCreditnoteDetails representing the payload of the operation.
+//
+// Description:
+//   - The method serializes the payload into a JSON record and creates an audit log entry for each item in the payload.
+//   - Each audit log entry contains the operation type, record table, record ID, and record body.
+//   - The created audit log entries are then passed to the r.audit.Log method for logging.
+//
+// Example:
+//
+//   - The log method can be used to log an "INSERT" operation with a slice of *entities.CmsCreditnoteDetails, as shown here:
+//
+//     err := r.log("INSERT", details)
+//
+//   - Another example is logging an "UPDATE" operation with a slice of *entities.CmsCreditnoteDetails, as shown here:
+//
+//     err := r.log("UPDATE", []*entities.CmsCreditnoteDetails{details})
 func (r *CmsCreditNoteDetailsRepository) log(op string, payload []*entities.CmsCreditnoteDetails) {
 	record, _ := json.Marshal(payload)
 	body := iterator.Map(payload, func(item *entities.CmsCreditnoteDetails) *entities.AuditLog {

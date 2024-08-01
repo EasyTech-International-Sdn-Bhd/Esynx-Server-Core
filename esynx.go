@@ -14,6 +14,9 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/stock"
 )
 
+// ESynx represents a struct with various contracts/interfaces for database operations.
+// The contracts are related to credit notes, customers, branches, salespersons, debit notes,
+// invoices, products, warehouse stocks, etc.
 type ESynx struct {
 	engine                contracts.IDatabase
 	CreditNote            contracts.ICmsCreditNote
@@ -37,6 +40,13 @@ type ESynx struct {
 	ProductWarehouseStock contracts.ICmsWarehouseStock
 }
 
+// NewEsynxProvider creates a new instance of ESynx with the given database user session.
+// It checks the database store type from the session and initializes the appropriate database engine.
+// If the store type is MySQL, it creates a new instance of MySqlDb and opens a connection to the MySQL database.
+// Then it creates an IRepository instance with the database engine, user, app name, and audit log repository.
+// Finally, it returns the initialized ESynx instance with all the repository instances.
+// If the store type is not MySQL, it returns nil and no error.
+// If there's an error opening the MySQL connection, it returns nil and the error.
 func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
 	if session.GetStore() == options.MySQL {
 		db := mysql.NewMySqlDb()
@@ -79,6 +89,8 @@ func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
 	return nil, nil
 }
 
+// Destroy closes the database connection used by the ESynx instance.
+// It returns an error if there is an issue closing the connection.
 func (e *ESynx) Destroy() error {
 	return e.engine.Close()
 }

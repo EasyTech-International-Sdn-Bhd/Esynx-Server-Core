@@ -8,11 +8,13 @@ import (
 	"xorm.io/xorm"
 )
 
+// CmsWarehouseStockRepository represents a repository for managing CMS warehouse stock records.
 type CmsWarehouseStockRepository struct {
 	db    *xorm.Engine
 	audit contracts.IAuditLog
 }
 
+// NewCmsWarehouseStockRepository creates a new instance of CmsWarehouseStockRepository
 func NewCmsWarehouseStockRepository(option *contracts.IRepository) *CmsWarehouseStockRepository {
 	return &CmsWarehouseStockRepository{
 		db:    option.Db,
@@ -20,6 +22,10 @@ func NewCmsWarehouseStockRepository(option *contracts.IRepository) *CmsWarehouse
 	}
 }
 
+// Get retrieves the warehouse stock records for a given product code.
+// It queries the database to find records where the product code matches the given code
+// and the active status is set to 1.
+// If successful, it returns a slice of CmsWarehouseStock records. Otherwise, it returns an error.
 func (r *CmsWarehouseStockRepository) Get(productCode string) ([]*entities.CmsWarehouseStock, error) {
 	var records []*entities.CmsWarehouseStock
 	err := r.db.Where("product_code = ? AND active_status = ?", productCode, 1).Find(&records)
@@ -29,6 +35,12 @@ func (r *CmsWarehouseStockRepository) Get(productCode string) ([]*entities.CmsWa
 	return records, nil
 }
 
+// InsertMany inserts multiple records into the CmsWarehouseStock table.
+// It takes a slice of pointers to CmsWarehouseStock entities as input.
+// The method maps each entity to itself and then inserts the mapped records
+// into the database using the database engine db.
+// If the insert operation fails, it returns an error. Otherwise, it logs the
+// insert operation and returns nil.
 func (r *CmsWarehouseStockRepository) InsertMany(records []*entities.CmsWarehouseStock) error {
 	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsWarehouseStock) *entities.CmsWarehouseStock {
 		return item
@@ -42,6 +54,11 @@ func (r *CmsWarehouseStockRepository) InsertMany(records []*entities.CmsWarehous
 	return nil
 }
 
+// Update updates a record in the CmsWarehouseStockRepository with the provided data.
+// It updates the record in the database by matching the record's id and updates it with the provided data.
+// If the update operation encounters an error, it returns the error.
+// After successful update, it logs the "UPDATE" operation and the updated record using the log method.
+// It returns nil if the update operation is successful.
 func (r *CmsWarehouseStockRepository) Update(record *entities.CmsWarehouseStock) error {
 	_, err := r.db.Where("id = ?", record.Id).Update(record)
 	if err != nil {
@@ -53,6 +70,18 @@ func (r *CmsWarehouseStockRepository) Update(record *entities.CmsWarehouseStock)
 	return nil
 }
 
+// UpdateMany updates multiple CmsWarehouseStock records in the database.
+// It begins a database session, updates each record using the session,
+// commits the changes, and logs the update operation.
+// If an error occurs during the update process, the session is rolled back,
+// the error is returned, and the changes are not persisted.
+//
+// Parameters:
+//   - records: The slice of CmsWarehouseStock records to update.
+//     Each record must have a valid Id field for identification.
+//
+// Returns:
+// - error: An error if the update fails, nil otherwise.
 func (r *CmsWarehouseStockRepository) UpdateMany(records []*entities.CmsWarehouseStock) error {
 	session := r.db.NewSession()
 	defer session.Close()
@@ -87,11 +116,15 @@ func (r *CmsWarehouseStockRepository) UpdateMany(records []*entities.CmsWarehous
 	return nil
 }
 
+// Delete sets the ActiveStatus of the given record to 0 and updates it using the Update method.
 func (r *CmsWarehouseStockRepository) Delete(record *entities.CmsWarehouseStock) error {
 	record.ActiveStatus = 0
 	return r.Update(record)
 }
 
+// DeleteMany deletes multiple records by setting their ActiveStatus to 0 and then updating the database.
+// It takes in a slice of records as a parameter.
+// It returns an error if the deletion process fails.
 func (r *CmsWarehouseStockRepository) DeleteMany(records []*entities.CmsWarehouseStock) error {
 	for _, record := range records {
 		record.ActiveStatus = 0
@@ -99,6 +132,11 @@ func (r *CmsWarehouseStockRepository) DeleteMany(records []*entities.CmsWarehous
 	return r.UpdateMany(records)
 }
 
+// log method logs the operation and payload to the audit log using the provided audit logger.
+// It takes an operation string (op) and an array of CmsWarehouseStock objects (payload).
+// It marshals the payload to JSON and creates an AuditLog object for each item in the payload.
+// The AuditLog object contains the operation type, table name, product code, and the marshalled payload.
+// The array of AuditLog objects is then passed to the audit logger for logging.
 func (r *CmsWarehouseStockRepository) log(op string, payload []*entities.CmsWarehouseStock) {
 	record, _ := json.Marshal(payload)
 	body := iterator.Map(payload, func(item *entities.CmsWarehouseStock) *entities.AuditLog {
