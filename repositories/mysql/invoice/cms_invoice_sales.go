@@ -121,6 +121,18 @@ func (r *CmsInvoiceSalesRepository) GetByDate(from time.Time, to time.Time) ([]*
 	return records, nil
 }
 
+func (r *CmsInvoiceSalesRepository) Find(predicate interface{}) ([]*entities.CmsInvoiceSales, error) {
+	var records []*entities.CmsInvoiceSales
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple invoices into the database. It takes a slice of CmsInvoiceSales
 // and inserts each item into the database using the db.Insert() method. If any error occurs during the insertion,
 // it returns the error. It then calls the log() method with the operation type "INSERT" and the inserted invoices.

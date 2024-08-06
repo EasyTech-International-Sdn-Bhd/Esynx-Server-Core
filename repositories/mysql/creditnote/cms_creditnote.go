@@ -120,6 +120,18 @@ func (r *CmsCreditNoteRepository) GetByDate(from time.Time, to time.Time) ([]*en
 	return records, nil
 }
 
+func (r *CmsCreditNoteRepository) Find(predicate interface{}) ([]*entities.CmsCreditnote, error) {
+	var records []*entities.CmsCreditnote
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple credit notes into the database.
 // It receives a slice of credit notes and inserts each item using the db.Insert function.
 // If any error occurs during the insertion, it returns the error.

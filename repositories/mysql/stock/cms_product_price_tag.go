@@ -63,6 +63,18 @@ func (r *CmsProductPriceTagRepository) GetByPriceType(productCode string, priceT
 	return records, nil
 }
 
+func (r *CmsProductPriceTagRepository) Find(predicate interface{}) ([]*entities.CmsProductPriceV2, error) {
+	var records []*entities.CmsProductPriceV2
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple records into the CmsProductPriceTagRepository database table. It takes an array
 // of CmsProductPriceV2 entities as a parameter and returns an error if the database operation fails. The
 // method first maps the records using the iterator.Map function, which returns the same records. Then,

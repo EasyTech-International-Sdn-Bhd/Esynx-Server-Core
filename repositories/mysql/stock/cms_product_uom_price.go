@@ -43,6 +43,18 @@ func (r *CmsProductUomPriceRepository) Get(productCode string) ([]*entities.CmsP
 	return records, nil
 }
 
+func (r *CmsProductUomPriceRepository) Find(predicate interface{}) ([]*entities.CmsProductUomPriceV2, error) {
+	var records []*entities.CmsProductUomPriceV2
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple records into the CmsProductUomPriceV2 table.
 // It takes a slice of records as input and returns an error if there was a problem during insertion.
 // Each record is inserted using the database engine's Insert function.

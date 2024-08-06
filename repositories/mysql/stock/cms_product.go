@@ -74,6 +74,18 @@ func (r *CmsProductRepository) GetMany(productCodes []string) ([]*entities.CmsPr
 	return cmsProducts, nil
 }
 
+func (r *CmsProductRepository) Find(predicate interface{}) ([]*entities.CmsProduct, error) {
+	var records []*entities.CmsProduct
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // Search searches for CmsProduct records matching the given predicate.
 // It splits the predicate into tokens and constructs a list of conditions
 // for the product_code and product_name columns using the builder.Like operator.

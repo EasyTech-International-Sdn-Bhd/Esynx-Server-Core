@@ -97,6 +97,18 @@ func (r *CmsCreditNoteDetailsRepository) GetWithProduct(creditNoteCode string) (
 	return results, nil
 }
 
+func (r *CmsCreditNoteDetailsRepository) Find(predicate interface{}) ([]*entities.CmsCreditnoteDetails, error) {
+	var records []*entities.CmsCreditnoteDetails
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple CmsCreditnoteDetails into the repository's database.
 // It returns an error if the insertion operation fails. After successfully inserting
 // the details, it logs the operation as "INSERT" along with the inserted details.

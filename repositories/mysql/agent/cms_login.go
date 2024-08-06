@@ -76,6 +76,22 @@ func (r *CmsLoginRepository) GetAll() ([]*entities.CmsLogin, error) {
 	return records, nil
 }
 
+// Find retrieves CmsLogin records from the repository based on the given predicate. `builder`
+// If records are found, they are returned along with nil error. If no records are found,
+// both the return value will be nil. If an error occurs during the retrieval process,
+// nil records and the corresponding error is returned.
+func (r *CmsLoginRepository) Find(predicate interface{}) ([]*entities.CmsLogin, error) {
+	var records []*entities.CmsLogin
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple records into the CmsLoginRepository table.
 // It accepts a slice of CmsLogin records as a parameter. It uses the db.Insert
 // method to insert the records into the table. After the insertion, it calls the log method
@@ -119,7 +135,7 @@ func (r *CmsLoginRepository) InsertMany(records []*entities.CmsLogin) error {
 // The contracts.IAuditLog interface should have a Log method that takes a slice of
 // entities.AuditLog as its parameter.
 func (r *CmsLoginRepository) Update(record *entities.CmsLogin) error {
-	_, err := r.db.Where("login_id = ?", record.LoginId).Update(record)
+	_, err := r.db.Where("staff_code = ?", record.StaffCode).Update(record)
 	if err != nil {
 		return err
 	}
@@ -144,7 +160,7 @@ func (r *CmsLoginRepository) UpdateMany(records []*entities.CmsLogin) error {
 	var sessionErr error
 	rollback := false
 	for _, record := range records {
-		_, err = session.Where("login_id = ?", record.LoginId).Update(record)
+		_, err = session.Where("staff_code = ?", record.StaffCode).Update(record)
 		if err != nil {
 			rollback = true
 			sessionErr = err

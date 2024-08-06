@@ -100,6 +100,18 @@ func (r *CmsInvoiceDetailsRepository) GetWithProduct(invoiceCode string) ([]*mod
 	return results, nil
 }
 
+func (r *CmsInvoiceDetailsRepository) Find(predicate interface{}) ([]*entities.CmsInvoiceDetails, error) {
+	var records []*entities.CmsInvoiceDetails
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple CmsInvoiceDetails into the database.
 // It returns an error if the insertion fails.
 func (r *CmsInvoiceDetailsRepository) InsertMany(details []*entities.CmsInvoiceDetails) error {

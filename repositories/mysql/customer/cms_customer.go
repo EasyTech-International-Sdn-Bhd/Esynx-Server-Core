@@ -183,6 +183,18 @@ func (r *CmsCustomerRepository) GetCustomerById(custId string) (*entities.CmsCus
 	return &record, nil
 }
 
+func (r *CmsCustomerRepository) Find(predicate interface{}) ([]*entities.CmsCustomer, error) {
+	var records []*entities.CmsCustomer
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple records into the CmsCustomerRepository database table.
 // It takes a slice of *entities.CmsCustomer records as parameter and maps them to a new slice.
 // The new slice is then passed to the Insert method of the database engine.

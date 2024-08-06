@@ -48,6 +48,18 @@ func (r *CmsProductImageRepository) GetByProductCode(productCode string) ([]*ent
 	return records, nil
 }
 
+func (r *CmsProductImageRepository) Find(predicate interface{}) ([]*entities.CmsProductImage, error) {
+	var records []*entities.CmsProductImage
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple records into the CmsProductImageRepository.
 // It takes a slice of *entities.CmsProductImage as input and returns an error if any.
 // The records are inserted into the database using the underlying ORM engine r.db.

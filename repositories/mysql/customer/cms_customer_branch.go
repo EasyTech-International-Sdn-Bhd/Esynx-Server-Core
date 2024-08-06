@@ -82,6 +82,18 @@ func (r *CmsCustomerBranchRepository) GetAllStatusByAgentId(agentId int64) ([]*e
 	return branches, nil
 }
 
+func (r *CmsCustomerBranchRepository) Find(predicate interface{}) ([]*entities.CmsCustomerBranch, error) {
+	var records []*entities.CmsCustomerBranch
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple records into the CmsCustomerBranchRepository table.
 // It takes a slice of *entities.CmsCustomerBranch records as input.
 // It maps the records using the Map function from the iterator package,

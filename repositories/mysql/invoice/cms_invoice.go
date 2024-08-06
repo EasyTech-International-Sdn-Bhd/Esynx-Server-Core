@@ -133,6 +133,18 @@ func (r *CmsInvoiceRepository) GetByDate(from time.Time, to time.Time) ([]*entit
 	return records, nil
 }
 
+func (r *CmsInvoiceRepository) Find(predicate interface{}) ([]*entities.CmsInvoice, error) {
+	var records []*entities.CmsInvoice
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple CmsInvoice entities into the database.
 // The method takes a slice of pointers to CmsInvoice entities as input.
 // It uses the `db` field of the CmsInvoiceRepository to perform the insertion.

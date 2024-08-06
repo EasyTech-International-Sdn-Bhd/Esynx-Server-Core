@@ -35,6 +35,18 @@ func (r *CmsWarehouseStockRepository) Get(productCode string) ([]*entities.CmsWa
 	return records, nil
 }
 
+func (r *CmsWarehouseStockRepository) Find(predicate interface{}) ([]*entities.CmsWarehouseStock, error) {
+	var records []*entities.CmsWarehouseStock
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple records into the CmsWarehouseStock table.
 // It takes a slice of pointers to CmsWarehouseStock entities as input.
 // The method maps each entity to itself and then inserts the mapped records

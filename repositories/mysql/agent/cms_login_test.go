@@ -3,6 +3,7 @@ package agent
 import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/test"
 	"testing"
+	"xorm.io/builder"
 )
 
 func TestResolve(t *testing.T) {
@@ -12,7 +13,7 @@ func TestResolve(t *testing.T) {
 		t.Fail()
 	}
 	repo := NewCmsLoginRepository(option)
-	res, err := repo.GetAll()
+	res, err := repo.Find(builder.Like{"staff_code", "alor"})
 	if err != nil {
 		t.Error(err)
 		t.Fail()

@@ -89,6 +89,18 @@ func (r *CmsDebitNoteDetailsRepository) GetWithProduct(debitNoteCode string) ([]
 	return results, nil
 }
 
+func (r *CmsDebitNoteDetailsRepository) Find(predicate interface{}) ([]*entities.CmsDebitnoteDetails, error) {
+	var records []*entities.CmsDebitnoteDetails
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple CmsDebitnoteDetails into the database.
 // It takes an array of CmsDebitnoteDetails as input and maps each item using iterator.Map.
 // The mapped items are then inserted into the database using the Insert function of the db object.

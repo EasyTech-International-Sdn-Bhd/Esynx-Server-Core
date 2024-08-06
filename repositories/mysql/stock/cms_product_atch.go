@@ -38,6 +38,18 @@ func (r *CmsProductAtchRepository) Get(productCode string) ([]*entities.CmsProdu
 	return record, nil
 }
 
+func (r *CmsProductAtchRepository) Find(predicate interface{}) ([]*entities.CmsProductAtch, error) {
+	var records []*entities.CmsProductAtch
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple records into the database.
 // It takes a slice of *entities.CmsProductAtch records as input.
 // It uses a map function to convert each record to the appropriate type.

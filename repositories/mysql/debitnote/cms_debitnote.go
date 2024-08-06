@@ -114,6 +114,18 @@ func (r *CmsDebitNoteRepository) GetByDate(from time.Time, to time.Time) ([]*ent
 	return records, nil
 }
 
+func (r *CmsDebitNoteRepository) Find(predicate interface{}) ([]*entities.CmsDebitnote, error) {
+	var records []*entities.CmsDebitnote
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple debit notes into the database.
 // It takes a slice of debit notes as parameter and returns an error if any.
 // It maps each debit note to itself using the iterator.Map function.

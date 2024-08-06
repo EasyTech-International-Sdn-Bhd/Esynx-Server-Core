@@ -50,6 +50,18 @@ func (r *CmsProductBatchRepository) GetByWarehouse(productCode string, warehouse
 	return records, nil
 }
 
+func (r *CmsProductBatchRepository) Find(predicate interface{}) ([]*entities.CmsProductBatch, error) {
+	var records []*entities.CmsProductBatch
+	err := r.db.Where(predicate).Find(&records)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, nil
+	}
+	return records, nil
+}
+
 // InsertMany inserts multiple records of type *entities.CmsProductBatch into the repository.
 // It calls the Insert method of the underlying database engine to insert the records.
 // If an error occurs during the insertion, it returns the error.
