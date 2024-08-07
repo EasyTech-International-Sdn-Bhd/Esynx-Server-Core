@@ -3,6 +3,7 @@ package contracts
 import (
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
+	"xorm.io/builder"
 )
 
 type ICmsInvoiceDetails interface {
@@ -14,4 +15,5 @@ type ICmsInvoiceDetails interface {
 	UpdateMany(details []*entities.CmsInvoiceDetails) error
 	Delete(details *entities.CmsInvoiceDetails) error
 	DeleteMany(details []*entities.CmsInvoiceDetails) error
+	Find(predicate *builder.Builder) ([]*entities.CmsInvoiceDetails, error)
 }

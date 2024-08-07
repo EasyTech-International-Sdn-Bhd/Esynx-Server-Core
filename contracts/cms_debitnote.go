@@ -4,6 +4,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"time"
+	"xorm.io/builder"
 )
 
 type ICmsDebitNote interface {
@@ -17,4 +18,5 @@ type ICmsDebitNote interface {
 	UpdateMany(debitNotes []*entities.CmsDebitnote) error
 	Delete(debitNote *entities.CmsDebitnote) error
 	DeleteMany(debitNotes []*entities.CmsDebitnote) error
+	Find(predicate *builder.Builder) ([]*entities.CmsDebitnote, error)
 }

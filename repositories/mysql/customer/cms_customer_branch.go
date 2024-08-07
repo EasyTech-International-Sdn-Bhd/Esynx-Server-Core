@@ -6,6 +6,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
+	"xorm.io/builder"
 	"xorm.io/xorm"
 )
 
@@ -82,9 +83,10 @@ func (r *CmsCustomerBranchRepository) GetAllStatusByAgentId(agentId int64) ([]*e
 	return branches, nil
 }
 
-func (r *CmsCustomerBranchRepository) Find(predicate interface{}) ([]*entities.CmsCustomerBranch, error) {
+func (r *CmsCustomerBranchRepository) Find(predicate *builder.Builder) ([]*entities.CmsCustomerBranch, error) {
 	var records []*entities.CmsCustomerBranch
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsCustomerBranch
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}

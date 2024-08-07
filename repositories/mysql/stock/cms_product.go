@@ -74,9 +74,10 @@ func (r *CmsProductRepository) GetMany(productCodes []string) ([]*entities.CmsPr
 	return cmsProducts, nil
 }
 
-func (r *CmsProductRepository) Find(predicate interface{}) ([]*entities.CmsProduct, error) {
+func (r *CmsProductRepository) Find(predicate *builder.Builder) ([]*entities.CmsProduct, error) {
 	var records []*entities.CmsProduct
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsProduct
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}

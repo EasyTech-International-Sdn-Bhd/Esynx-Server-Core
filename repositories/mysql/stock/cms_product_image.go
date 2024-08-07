@@ -6,6 +6,7 @@ import (
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"strconv"
+	"xorm.io/builder"
 	"xorm.io/xorm"
 )
 
@@ -48,9 +49,10 @@ func (r *CmsProductImageRepository) GetByProductCode(productCode string) ([]*ent
 	return records, nil
 }
 
-func (r *CmsProductImageRepository) Find(predicate interface{}) ([]*entities.CmsProductImage, error) {
+func (r *CmsProductImageRepository) Find(predicate *builder.Builder) ([]*entities.CmsProductImage, error) {
 	var records []*entities.CmsProductImage
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsProductImage
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}

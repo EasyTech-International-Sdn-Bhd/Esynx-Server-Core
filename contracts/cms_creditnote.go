@@ -4,6 +4,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"time"
+	"xorm.io/builder"
 )
 
 type ICmsCreditNote interface {
@@ -17,4 +18,5 @@ type ICmsCreditNote interface {
 	UpdateMany(creditNotes []*entities.CmsCreditnote) error
 	Delete(creditNote *entities.CmsCreditnote) error
 	DeleteMany(creditNotes []*entities.CmsCreditnote) error
+	Find(predicate *builder.Builder) ([]*entities.CmsCreditnote, error)
 }

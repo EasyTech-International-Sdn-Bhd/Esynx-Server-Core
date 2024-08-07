@@ -183,9 +183,10 @@ func (r *CmsCustomerRepository) GetCustomerById(custId string) (*entities.CmsCus
 	return &record, nil
 }
 
-func (r *CmsCustomerRepository) Find(predicate interface{}) ([]*entities.CmsCustomer, error) {
+func (r *CmsCustomerRepository) Find(predicate *builder.Builder) ([]*entities.CmsCustomer, error) {
 	var records []*entities.CmsCustomer
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsCustomer
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}

@@ -120,9 +120,10 @@ func (r *CmsCreditNoteRepository) GetByDate(from time.Time, to time.Time) ([]*en
 	return records, nil
 }
 
-func (r *CmsCreditNoteRepository) Find(predicate interface{}) ([]*entities.CmsCreditnote, error) {
+func (r *CmsCreditNoteRepository) Find(predicate *builder.Builder) ([]*entities.CmsCreditnote, error) {
 	var records []*entities.CmsCreditnote
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsCreditnote
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}

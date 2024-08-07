@@ -1,6 +1,9 @@
 package contracts
 
-import "github.com/easytech-international-sdn-bhd/esynx-common/entities"
+import (
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
+	"xorm.io/builder"
+)
 
 type ICmsProductImage interface {
 	Get(productId string) ([]*entities.CmsProductImage, error)
@@ -10,4 +13,5 @@ type ICmsProductImage interface {
 	UpdateMany(records []*entities.CmsProductImage) error
 	Delete(record *entities.CmsProductImage) error
 	DeleteMany(records []*entities.CmsProductImage) error
+	Find(predicate *builder.Builder) ([]*entities.CmsProductImage, error)
 }

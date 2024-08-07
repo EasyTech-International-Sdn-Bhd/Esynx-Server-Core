@@ -5,6 +5,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
+	"xorm.io/builder"
 	"xorm.io/xorm"
 )
 
@@ -43,9 +44,10 @@ func (r *CmsProductUomPriceRepository) Get(productCode string) ([]*entities.CmsP
 	return records, nil
 }
 
-func (r *CmsProductUomPriceRepository) Find(predicate interface{}) ([]*entities.CmsProductUomPriceV2, error) {
+func (r *CmsProductUomPriceRepository) Find(predicate *builder.Builder) ([]*entities.CmsProductUomPriceV2, error) {
 	var records []*entities.CmsProductUomPriceV2
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsProductUomPriceV2
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}

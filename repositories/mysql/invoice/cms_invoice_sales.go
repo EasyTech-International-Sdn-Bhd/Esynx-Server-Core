@@ -121,9 +121,10 @@ func (r *CmsInvoiceSalesRepository) GetByDate(from time.Time, to time.Time) ([]*
 	return records, nil
 }
 
-func (r *CmsInvoiceSalesRepository) Find(predicate interface{}) ([]*entities.CmsInvoiceSales, error) {
+func (r *CmsInvoiceSalesRepository) Find(predicate *builder.Builder) ([]*entities.CmsInvoiceSales, error) {
 	var records []*entities.CmsInvoiceSales
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsInvoiceSales
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}

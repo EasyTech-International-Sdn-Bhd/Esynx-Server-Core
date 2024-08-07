@@ -1,6 +1,9 @@
 package contracts
 
-import "github.com/easytech-international-sdn-bhd/esynx-common/entities"
+import (
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
+	"xorm.io/builder"
+)
 
 type ICmsProductUomPrice interface {
 	Get(productCode string) ([]*entities.CmsProductUomPriceV2, error)
@@ -9,4 +12,5 @@ type ICmsProductUomPrice interface {
 	UpdateMany(records []*entities.CmsProductUomPriceV2) error
 	Delete(record *entities.CmsProductUomPriceV2) error
 	DeleteMany(records []*entities.CmsProductUomPriceV2) error
+	Find(predicate *builder.Builder) ([]*entities.CmsProductUomPriceV2, error)
 }

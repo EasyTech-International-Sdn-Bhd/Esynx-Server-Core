@@ -4,6 +4,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"time"
+	"xorm.io/builder"
 )
 
 type ICmsInvoiceSales interface {
@@ -17,4 +18,5 @@ type ICmsInvoiceSales interface {
 	UpdateMany(invoices []*entities.CmsInvoiceSales) error
 	Delete(invoice *entities.CmsInvoiceSales) error
 	DeleteMany(invoices []*entities.CmsInvoiceSales) error
+	Find(predicate *builder.Builder) ([]*entities.CmsInvoiceSales, error)
 }

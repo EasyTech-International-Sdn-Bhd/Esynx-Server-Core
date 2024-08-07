@@ -114,9 +114,10 @@ func (r *CmsDebitNoteRepository) GetByDate(from time.Time, to time.Time) ([]*ent
 	return records, nil
 }
 
-func (r *CmsDebitNoteRepository) Find(predicate interface{}) ([]*entities.CmsDebitnote, error) {
+func (r *CmsDebitNoteRepository) Find(predicate *builder.Builder) ([]*entities.CmsDebitnote, error) {
 	var records []*entities.CmsDebitnote
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsDebitnote
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}

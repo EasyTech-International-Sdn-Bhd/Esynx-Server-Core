@@ -8,6 +8,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/stock"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
+	"xorm.io/builder"
 	"xorm.io/xorm"
 )
 
@@ -97,9 +98,10 @@ func (r *CmsCreditNoteDetailsRepository) GetWithProduct(creditNoteCode string) (
 	return results, nil
 }
 
-func (r *CmsCreditNoteDetailsRepository) Find(predicate interface{}) ([]*entities.CmsCreditnoteDetails, error) {
+func (r *CmsCreditNoteDetailsRepository) Find(predicate *builder.Builder) ([]*entities.CmsCreditnoteDetails, error) {
 	var records []*entities.CmsCreditnoteDetails
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsCreditnoteDetails
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}

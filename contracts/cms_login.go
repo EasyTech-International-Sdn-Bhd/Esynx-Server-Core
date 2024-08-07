@@ -1,6 +1,9 @@
 package contracts
 
-import "github.com/easytech-international-sdn-bhd/esynx-common/entities"
+import (
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
+	"xorm.io/builder"
+)
 
 type ICmsLogin interface {
 	Get(agentId int64) (*entities.CmsLogin, error)
@@ -11,4 +14,5 @@ type ICmsLogin interface {
 	UpdateMany(records []*entities.CmsLogin) error
 	Delete(record *entities.CmsLogin) error
 	DeleteMany(records []*entities.CmsLogin) error
+	Find(predicate *builder.Builder) ([]*entities.CmsLogin, error)
 }
