@@ -89,6 +89,10 @@ func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
 	return nil, nil
 }
 
+func (e *ESynx) DefineSchema() error {
+	return e.engine.DefineSchema()
+}
+
 // Destroy closes the database connection used by the ESynx instance.
 // It returns an error if there is an issue closing the connection.
 func (e *ESynx) Destroy() error {
