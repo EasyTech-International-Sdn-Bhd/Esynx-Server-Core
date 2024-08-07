@@ -12,8 +12,9 @@ func TestResolve(t *testing.T) {
 		t.Error(err)
 		t.Fail()
 	}
+	cond := builder.Select("*")
 	repo := NewCmsLoginRepository(option)
-	res, err := repo.Find(builder.Like{"staff_code", "alor"})
+	res, err := repo.Find(cond)
 	if err != nil {
 		t.Error(err)
 		t.Fail()

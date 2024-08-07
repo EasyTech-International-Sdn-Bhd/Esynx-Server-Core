@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
+	"xorm.io/builder"
 	"xorm.io/xorm"
 )
 
@@ -80,9 +81,10 @@ func (r *CmsLoginRepository) GetAll() ([]*entities.CmsLogin, error) {
 // If records are found, they are returned along with nil error. If no records are found,
 // both the return value will be nil. If an error occurs during the retrieval process,
 // nil records and the corresponding error is returned.
-func (r *CmsLoginRepository) Find(predicate interface{}) ([]*entities.CmsLogin, error) {
+func (r *CmsLoginRepository) Find(predicate *builder.Builder) ([]*entities.CmsLogin, error) {
 	var records []*entities.CmsLogin
-	err := r.db.Where(predicate).Find(&records)
+	var t entities.CmsLogin
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
 	}
