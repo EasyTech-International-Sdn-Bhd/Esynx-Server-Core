@@ -25,6 +25,12 @@ github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240801052425-a9ed6bc9f623 h1:r+JaUMWnefNbRgn2JWk7zqizr5F+tOCLWSjRlgm8kpQ=
 github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240801052425-a9ed6bc9f623/go.mod h1:ezUz4FtmbEY4/EA45BgG/tE6GwMZiI+Yl9dC5YpT1VU=
+github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240809031100-415d068d7b52 h1:39l+fCQI9x8Jou+BLtlP/fCJ/I9CQw/scT/nfKSY8Z8=
+github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240809031100-415d068d7b52/go.mod h1:ZGWJAoVuKlJwP4lxCa/M3F6LeVVz1GYIeosQ1J4ogO8=
+github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240809065243-25e8230df76c h1:qWokMqwj8vKV44YIteKvACGVgTk3T3XYy86MdSdjXWw=
+github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240809065243-25e8230df76c/go.mod h1:UfAAGfXDlehrLwTYvNpHlpyW/aBgc8IMXJAauO9brx0=
+github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240809072253-73679af8a1d0 h1:U0rzwSfWG7knEOSg9TCkLnLolyuYomsOHFAj7ewlQaI=
+github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240809072253-73679af8a1d0/go.mod h1:UfAAGfXDlehrLwTYvNpHlpyW/aBgc8IMXJAauO9brx0=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/go-kit/log v0.1.0/go.mod h1:zbhenjAZHb184qTLMA9ZjW7ThYL0H2mk7Q6pNt4vbaY=
 github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG1KdI/P7A=

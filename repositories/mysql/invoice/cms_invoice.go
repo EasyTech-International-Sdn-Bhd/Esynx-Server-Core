@@ -7,6 +7,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/customer"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
+	"slices"
 	"time"
 	"xorm.io/builder"
 	"xorm.io/xorm"
@@ -21,6 +22,7 @@ type CmsInvoiceRepository struct {
 	audit contracts.IAuditLog
 	c     *customer.CmsCustomerRepository
 	d     *CmsInvoiceDetailsRepository
+	s     *CmsInvoiceSalesRepository
 }
 
 // NewCmsInvoiceRepository creates a new instance of CmsInvoiceRepository with the given IRepository option.
@@ -38,6 +40,7 @@ func NewCmsInvoiceRepository(option *contracts.IRepository) *CmsInvoiceRepositor
 		audit: option.Audit,
 		c:     customer.NewCmsCustomerRepository(option),
 		d:     NewCmsInvoiceDetailsRepository(option),
+		s:     NewCmsInvoiceSalesRepository(option),
 	}
 }
 
@@ -161,6 +164,12 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 		return err
 	}
 
+	dt := r.mapToSalesInvoice(invoices)
+	err = r.s.InsertMany(dt)
+	if err != nil {
+		return err
+	}
+
 	r.log("INSERT", invoices)
 
 	return nil
@@ -178,6 +187,12 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 // It does not return any value.
 func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Update(invoice)
+	if err != nil {
+		return err
+	}
+
+	dt := r.mapToSalesInvoice([]*entities.CmsInvoice{invoice})
+	err = r.s.Update(dt[0])
 	if err != nil {
 		return err
 	}
@@ -217,6 +232,12 @@ func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error
 		return sessionErr
 	}
 	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	dt := r.mapToSalesInvoice(invoices)
+	err = r.s.UpdateMany(dt)
 	if err != nil {
 		return err
 	}
@@ -273,4 +294,30 @@ func (r *CmsInvoiceRepository) log(op string, payload []*entities.CmsInvoice) {
 		}
 	})
 	r.audit.Log(body)
+}
+
+func (r *CmsInvoiceRepository) mapToSalesInvoice(invoices []*entities.CmsInvoice) []*entities.CmsInvoiceSales {
+	return iterator.Map(iterator.Filter(invoices, func(item *entities.CmsInvoice) bool {
+		if slices.Contains([]string{"SL", "CS"}, item.FromDoc) {
+			return true
+		}
+		return false
+	}), func(i *entities.CmsInvoice) *entities.CmsInvoiceSales {
+		return &entities.CmsInvoiceSales{
+			InvoiceCode:       i.InvoiceCode,
+			CustCode:          i.CustCode,
+			InvoiceDate:       i.InvoiceDate,
+			InvoiceDueDate:    i.InvoiceDueDate,
+			InvoiceAmount:     i.InvoiceAmount,
+			OutstandingAmount: i.OutstandingAmount,
+			Approved:          i.Approved,
+			Approver:          i.Approver,
+			ApprovedAt:        i.ApprovedAt,
+			SalespersonId:     i.SalespersonId,
+			InvUdf:            i.InvUdf,
+			Cancelled:         i.Cancelled,
+			RefNo:             i.RefNo,
+			Termcode:          i.Termcode,
+		}
+	})
 }
