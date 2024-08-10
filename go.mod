@@ -3,10 +3,11 @@ module github.com/easytech-international-sdn-bhd/esynx-server-core
 go 1.22
 
 require (
-	github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240809072253-73679af8a1d0
+	github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240809211438-6103c460f112
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/goccy/go-json v0.10.3
 	github.com/ledongthuc/goterators v1.0.2
+	github.com/mattn/go-sqlite3 v1.14.16
 	src.techknowlogick.com/xormigrate v1.7.1
 	xorm.io/builder v0.3.13
 	xorm.io/xorm v1.3.9

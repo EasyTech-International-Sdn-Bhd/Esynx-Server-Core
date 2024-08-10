@@ -13,6 +13,12 @@ func TestNewESynxCore(t *testing.T) {
 		t.Fail()
 		return
 	}
+	err = provider.DefineSchema()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+		return
+	}
 	err = provider.Destroy()
 	if err != nil {
 		t.Error(err)

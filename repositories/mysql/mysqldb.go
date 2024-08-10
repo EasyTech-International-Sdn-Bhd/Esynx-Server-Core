@@ -59,3 +59,7 @@ func (m *MySqlDb) Close() error {
 	}
 	return nil
 }
+
+func (m *MySqlDb) GetEngine() *xorm.Engine {
+	return m.Engine
+}

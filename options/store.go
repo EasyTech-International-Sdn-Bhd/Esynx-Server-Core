@@ -5,4 +5,5 @@ type DatabaseStore int
 const (
 	MySQL DatabaseStore = iota
 	Firestore
+	Mock
 )

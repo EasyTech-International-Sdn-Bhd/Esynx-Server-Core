@@ -2,8 +2,8 @@ package test
 
 import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/mock"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/options"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/audit"
 )
 
@@ -23,11 +23,11 @@ func (s *TestSession) GetApp() string {
 }
 
 func (s *TestSession) GetStore() options.DatabaseStore {
-	return options.MySQL
+	return options.Mock
 }
 
 func (s *TestSession) GetConnection() string {
-	return "root:mysql@tcp(127.0.0.1:3306)/easysale_vit?charset=utf8mb4&parseTime=True&loc=Local&timeout=2s"
+	return "./mock/mock.db"
 }
 
 func (s *TestSession) GetLogger() contracts.IDatabaseLogger {
@@ -36,7 +36,7 @@ func (s *TestSession) GetLogger() contracts.IDatabaseLogger {
 
 func TestOption() (*contracts.IRepository, error) {
 	session := NewTestSession()
-	db := mysql.NewMySqlDb()
+	db := mock.NewMockDb()
 	err := db.Open(session.GetConnection(), session.GetLogger())
 	if err != nil {
 		return nil, err
