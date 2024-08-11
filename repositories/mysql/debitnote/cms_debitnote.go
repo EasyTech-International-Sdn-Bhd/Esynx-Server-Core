@@ -144,9 +144,11 @@ func (r *CmsDebitNoteRepository) InsertMany(debitNotes []*entities.CmsDebitnote)
 	}
 
 	dt := r.mapToDebitNoteSales(debitNotes)
-	err = r.s.InsertMany(dt)
-	if err != nil {
-		return err
+	if len(dt) > 0 {
+		err = r.s.InsertMany(dt)
+		if err != nil {
+			return err
+		}
 	}
 
 	r.log("INSERT", debitNotes)
@@ -165,9 +167,11 @@ func (r *CmsDebitNoteRepository) Update(debitNote *entities.CmsDebitnote) error 
 	}
 
 	dt := r.mapToDebitNoteSales([]*entities.CmsDebitnote{debitNote})
-	err = r.s.Update(dt[0])
-	if err != nil {
-		return err
+	if len(dt) > 0 {
+		err = r.s.Update(dt[0])
+		if err != nil {
+			return err
+		}
 	}
 
 	r.log("UPDATE", []*entities.CmsDebitnote{debitNote})
@@ -206,9 +210,11 @@ func (r *CmsDebitNoteRepository) UpdateMany(debitNotes []*entities.CmsDebitnote)
 	}
 
 	dt := r.mapToDebitNoteSales(debitNotes)
-	err = r.s.UpdateMany(dt)
-	if err != nil {
-		return err
+	if len(dt) > 0 {
+		err = r.s.UpdateMany(dt)
+		if err != nil {
+			return err
+		}
 	}
 
 	r.log("UPDATE", debitNotes)

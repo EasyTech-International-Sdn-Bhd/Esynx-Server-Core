@@ -150,9 +150,11 @@ func (r *CmsCreditNoteRepository) InsertMany(creditNotes []*entities.CmsCreditno
 	}
 
 	dt := r.mapToCreditNoteSales(creditNotes)
-	err = r.s.InsertMany(dt)
-	if err != nil {
-		return err
+	if len(dt) > 0 {
+		err = r.s.InsertMany(dt)
+		if err != nil {
+			return err
+		}
 	}
 
 	r.log("INSERT", creditNotes)
@@ -174,9 +176,11 @@ func (r *CmsCreditNoteRepository) Update(creditNote *entities.CmsCreditnote) err
 	}
 
 	dt := r.mapToCreditNoteSales([]*entities.CmsCreditnote{creditNote})
-	err = r.s.Update(dt[0])
-	if err != nil {
-		return err
+	if len(dt) > 0 {
+		err = r.s.Update(dt[0])
+		if err != nil {
+			return err
+		}
 	}
 
 	r.log("UPDATE", []*entities.CmsCreditnote{creditNote})
@@ -216,9 +220,11 @@ func (r *CmsCreditNoteRepository) UpdateMany(creditNotes []*entities.CmsCreditno
 	}
 
 	dt := r.mapToCreditNoteSales(creditNotes)
-	err = r.s.UpdateMany(dt)
-	if err != nil {
-		return err
+	if len(dt) > 0 {
+		err = r.s.UpdateMany(dt)
+		if err != nil {
+			return err
+		}
 	}
 
 	r.log("UPDATE", creditNotes)

@@ -165,9 +165,11 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 	}
 
 	dt := r.mapToSalesInvoice(invoices)
-	err = r.s.InsertMany(dt)
-	if err != nil {
-		return err
+	if len(dt) > 0 {
+		err = r.s.InsertMany(dt)
+		if err != nil {
+			return err
+		}
 	}
 
 	r.log("INSERT", invoices)
@@ -192,9 +194,11 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 	}
 
 	dt := r.mapToSalesInvoice([]*entities.CmsInvoice{invoice})
-	err = r.s.Update(dt[0])
-	if err != nil {
-		return err
+	if len(dt) > 0 {
+		err = r.s.Update(dt[0])
+		if err != nil {
+			return err
+		}
 	}
 
 	r.log("UPDATE", []*entities.CmsInvoice{invoice})
@@ -237,9 +241,11 @@ func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error
 	}
 
 	dt := r.mapToSalesInvoice(invoices)
-	err = r.s.UpdateMany(dt)
-	if err != nil {
-		return err
+	if len(dt) > 0 {
+		err = r.s.UpdateMany(dt)
+		if err != nil {
+			return err
+		}
 	}
 
 	r.log("UPDATE", invoices)
