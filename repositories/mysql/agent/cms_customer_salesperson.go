@@ -103,7 +103,7 @@ func (r *CmsCustomerSalespersonRepository) InsertMany(records []*entities.CmsCus
 // Otherwise, it logs the update operation with the "UPDATE" operation type and the updated records by calling the log method.
 // Returns nil if the update is successful.
 func (r *CmsCustomerSalespersonRepository) Update(record *entities.CmsCustomerSalesperson) error {
-	_, err := r.db.Where("salesperson_customer_id = ?").Update(record.SalespersonCustomerId)
+	_, err := r.db.Table(record.TableName()).Where("salesperson_customer_id = ?").Update(record.SalespersonCustomerId)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func (r *CmsCustomerSalespersonRepository) UpdateMany(records []*entities.CmsCus
 	rollback := false
 	for _, record := range records {
 		record.Validate()
-		_, err = session.Where("salesperson_customer_id = ?", record.SalespersonCustomerId).Update(record)
+		_, err = session.Table(record.TableName()).Where("salesperson_customer_id = ?", record.SalespersonCustomerId).Update(record)
 		if err != nil {
 			rollback = true
 			sessionErr = err

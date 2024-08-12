@@ -159,7 +159,7 @@ func (r *CmsCreditNoteSalesRepository) InsertMany(creditNotes []*entities.CmsCre
 // Returns:
 // - error: An error if the update operation fails.
 func (r *CmsCreditNoteSalesRepository) Update(creditNote *entities.CmsCreditnoteSales) error {
-	_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Update(creditNote)
+	_, err := r.db.Table(creditNote.TableName()).Where("cn_code = ?", creditNote.CnCode).Update(creditNote)
 	if err != nil {
 		return err
 	}
@@ -181,7 +181,7 @@ func (r *CmsCreditNoteSalesRepository) UpdateMany(creditNotes []*entities.CmsCre
 	var sessionErr error
 	rollback := false
 	for _, cn := range creditNotes {
-		_, err = session.Where("cn_code = ?", cn.CnCode).Update(cn)
+		_, err = session.Table(cn.TableName()).Where("cn_code = ?", cn.CnCode).Update(cn)
 		if err != nil {
 			rollback = true
 			sessionErr = err

@@ -77,7 +77,7 @@ func (r *CmsProductAtchRepository) InsertMany(records []*entities.CmsProductAtch
 // If an error occurs during the update process, it returns the error.
 // After the update, it logs the operation type as "UPDATE" and the updated record.
 func (r *CmsProductAtchRepository) Update(record *entities.CmsProductAtch) error {
-	_, err := r.db.Where("id = ?", record.Id).Update(record)
+	_, err := r.db.Table(record.TableName()).Where("id = ?", record.Id).Update(record)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (r *CmsProductAtchRepository) UpdateMany(records []*entities.CmsProductAtch
 	var sessionErr error
 	rollback := false
 	for _, product := range records {
-		_, err = session.Where("id = ?", product.Id).Update(product)
+		_, err = session.Table(product.TableName()).Where("id = ?", product.Id).Update(product)
 		if err != nil {
 			rollback = true
 			sessionErr = err

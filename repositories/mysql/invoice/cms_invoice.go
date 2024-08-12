@@ -188,7 +188,7 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 // The `Update` method expects a pointer to a `CmsInvoice` struct as the input parameter.
 // It does not return any value.
 func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
-	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Update(invoice)
+	_, err := r.db.Table(invoice.TableName()).Where("invoice_code = ?", invoice.InvoiceCode).Update(invoice)
 	if err != nil {
 		return err
 	}
@@ -221,7 +221,7 @@ func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error
 	var sessionErr error
 	rollback := false
 	for _, inv := range invoices {
-		_, err = session.Where("invoice_code = ?", inv.InvoiceCode).Update(inv)
+		_, err = session.Table(inv.TableName()).Where("invoice_code = ?", inv.InvoiceCode).Update(inv)
 		if err != nil {
 			rollback = true
 			sessionErr = err
