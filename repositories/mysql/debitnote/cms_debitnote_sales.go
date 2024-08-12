@@ -150,7 +150,7 @@ func (r *CmsDebitNoteSalesRepository) InsertMany(debitNotes []*entities.CmsDebit
 // If there is an error during the update, it returns the error.
 // It also logs the "UPDATE" operation with the updated CmsDebitnote.
 func (r *CmsDebitNoteSalesRepository) Update(debitNote *entities.CmsDebitnoteSales) error {
-	_, err := r.db.Table(debitNote.TableName()).Where("dn_code = ?", debitNote.DnCode).Update(debitNote)
+	_, err := r.db.Where("dn_code = ?", debitNote.DnCode).Update(debitNote)
 	if err != nil {
 		return err
 	}
@@ -171,7 +171,7 @@ func (r *CmsDebitNoteSalesRepository) UpdateMany(debitNotes []*entities.CmsDebit
 	var sessionErr error
 	rollback := false
 	for _, dn := range debitNotes {
-		_, err = session.Table(dn.TableName()).Where("dn_code = ?", dn.DnCode).Update(dn)
+		_, err = session.Where("dn_code = ?", dn.DnCode).Update(dn)
 		if err != nil {
 			rollback = true
 			sessionErr = err

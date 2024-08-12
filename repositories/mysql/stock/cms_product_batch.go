@@ -97,7 +97,7 @@ func (r *CmsProductBatchRepository) InsertMany(records []*entities.CmsProductBat
 // and an array containing the updated record as the payload.
 // Finally, the method returns nil if the update is successful.
 func (r *CmsProductBatchRepository) Update(record *entities.CmsProductBatch) error {
-	_, err := r.db.Table(record.TableName()).Where("id = ?", record.Id).Update(record)
+	_, err := r.db.Where("id = ?", record.Id).Update(record)
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func (r *CmsProductBatchRepository) UpdateMany(records []*entities.CmsProductBat
 	var sessionErr error
 	rollback := false
 	for _, record := range records {
-		_, err = session.Table(record.TableName()).Where("id = ?", record.Id).Update(record)
+		_, err = session.Where("id = ?", record.Id).Update(record)
 		if err != nil {
 			rollback = true
 			sessionErr = err

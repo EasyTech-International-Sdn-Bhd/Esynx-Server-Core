@@ -121,7 +121,7 @@ func (r *CmsCustomerBranchRepository) InsertMany(records []*entities.CmsCustomer
 // If the update operation fails, it returns an error.
 // After a successful update, it logs the "UPDATE" operation along with the updated record.
 func (r *CmsCustomerBranchRepository) Update(record *entities.CmsCustomerBranch) error {
-	_, err := r.db.Table(record.TableName()).Where("branch_code = ?", record.BranchCode).Update(record)
+	_, err := r.db.Where("branch_code = ?", record.BranchCode).Update(record)
 	if err != nil {
 		return err
 	}
@@ -158,7 +158,7 @@ func (r *CmsCustomerBranchRepository) UpdateMany(records []*entities.CmsCustomer
 	var sessionErr error
 	rollback := false
 	for _, branch := range records {
-		_, err = session.Table(branch.TableName()).Where("branch_code = ?", branch.BranchCode).Update(branch)
+		_, err = session.Where("branch_code = ?", branch.BranchCode).Update(branch)
 		if err != nil {
 			rollback = true
 			sessionErr = err

@@ -90,7 +90,7 @@ func (r *CmsProductImageRepository) InsertMany(records []*entities.CmsProductIma
 //		   // handle error
 //	  }
 func (r *CmsProductImageRepository) Update(record *entities.CmsProductImage) error {
-	_, err := r.db.Table(record.TableName()).Where("product_image_id = ?", record.ProductImageId).Update(record)
+	_, err := r.db.Where("product_image_id = ?", record.ProductImageId).Update(record)
 	if err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func (r *CmsProductImageRepository) UpdateMany(records []*entities.CmsProductIma
 	var sessionErr error
 	rollback := false
 	for _, record := range records {
-		_, err = session.Table(record.TableName()).Where("product_image_id = ?", record.ProductImageId).Update(record)
+		_, err = session.Where("product_image_id = ?", record.ProductImageId).Update(record)
 		if err != nil {
 			rollback = true
 			sessionErr = err

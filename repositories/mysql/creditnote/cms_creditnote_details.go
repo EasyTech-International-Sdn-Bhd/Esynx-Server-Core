@@ -133,7 +133,7 @@ func (r *CmsCreditNoteDetailsRepository) InsertMany(details []*entities.CmsCredi
 // Preconditions: `details` is not nil.
 // Postconditions: The `details` object is updated in the repository.
 func (r *CmsCreditNoteDetailsRepository) Update(details *entities.CmsCreditnoteDetails) error {
-	_, err := r.db.Table(details.TableName()).Where("id = ?", details.Id).Update(details)
+	_, err := r.db.Where("ref_no = ?", details.RefNo).Update(details)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,7 @@ func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCredi
 	var sessionErr error
 	rollback := false
 	for _, detail := range details {
-		_, err = session.Table(detail.TableName()).Where("id = ?", detail.Id).Update(detail)
+		_, err = session.Where("ref_no = ?", detail.RefNo).Update(detail)
 		if err != nil {
 			rollback = true
 			sessionErr = err

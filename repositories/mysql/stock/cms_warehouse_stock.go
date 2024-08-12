@@ -74,7 +74,7 @@ func (r *CmsWarehouseStockRepository) InsertMany(records []*entities.CmsWarehous
 // After successful update, it logs the "UPDATE" operation and the updated record using the log method.
 // It returns nil if the update operation is successful.
 func (r *CmsWarehouseStockRepository) Update(record *entities.CmsWarehouseStock) error {
-	_, err := r.db.Table(record.TableName()).Where("id = ?", record.Id).Update(record)
+	_, err := r.db.Where("id = ?", record.Id).Update(record)
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func (r *CmsWarehouseStockRepository) UpdateMany(records []*entities.CmsWarehous
 	var sessionErr error
 	rollback := false
 	for _, record := range records {
-		_, err = session.Table(record.TableName()).Where("id = ?", record.Id).Update(record)
+		_, err = session.Where("id = ?", record.Id).Update(record)
 		if err != nil {
 			rollback = true
 			sessionErr = err

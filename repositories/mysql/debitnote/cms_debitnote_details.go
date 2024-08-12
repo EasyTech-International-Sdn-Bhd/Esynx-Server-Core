@@ -129,7 +129,7 @@ func (r *CmsDebitNoteDetailsRepository) InsertMany(details []*entities.CmsDebitn
 // If the update is successful, the method logs the operation as "UPDATE" with the updated details using the "log" method.
 // If any error occurs during the update or logging process, it is returned as an error.
 func (r *CmsDebitNoteDetailsRepository) Update(details *entities.CmsDebitnoteDetails) error {
-	_, err := r.db.Table(details.TableName()).Where("id = ?", details.Id).Update(details)
+	_, err := r.db.Where("ref_no = ?", details.RefNo).Update(details)
 	if err != nil {
 		return err
 	}
@@ -150,7 +150,7 @@ func (r *CmsDebitNoteDetailsRepository) UpdateMany(details []*entities.CmsDebitn
 	var sessionErr error
 	rollback := false
 	for _, detail := range details {
-		_, err = session.Table(detail.TableName()).Where("id = ?", detail.Id).Update(detail)
+		_, err = session.Where("ref_no = ?", detail.RefNo).Update(detail)
 		if err != nil {
 			rollback = true
 			sessionErr = err

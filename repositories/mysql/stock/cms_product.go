@@ -134,7 +134,7 @@ func (r *CmsProductRepository) InsertMany(records []*entities.CmsProduct) error 
 //	    fmt.Println("Error updating record:", err)
 //	}
 func (r *CmsProductRepository) Update(record *entities.CmsProduct) error {
-	_, err := r.db.Table(record.TableName()).Where("product_code = ?", record.ProductCode).Update(record)
+	_, err := r.db.Where("product_code = ?", record.ProductCode).Update(record)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,7 @@ func (r *CmsProductRepository) UpdateMany(records []*entities.CmsProduct) error 
 	var sessionErr error
 	rollback := false
 	for _, product := range records {
-		_, err = session.Table(product.TableName()).Where("product_code = ?", product.ProductCode).Update(product)
+		_, err = session.Where("product_code = ?", product.ProductCode).Update(product)
 		if err != nil {
 			rollback = true
 			sessionErr = err

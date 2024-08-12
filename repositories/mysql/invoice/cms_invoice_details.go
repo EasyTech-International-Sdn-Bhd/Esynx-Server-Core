@@ -133,7 +133,7 @@ func (r *CmsInvoiceDetailsRepository) InsertMany(details []*entities.CmsInvoiceD
 // It takes a pointer to the entities.CmsInvoiceDetails struct as input,
 // and returns an error if any.
 func (r *CmsInvoiceDetailsRepository) Update(details *entities.CmsInvoiceDetails) error {
-	_, err := r.db.Table(details.TableName()).Where("id = ?", details.Id).Update(details)
+	_, err := r.db.Where("ref_no = ?", details.RefNo).Update(details)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,7 @@ func (r *CmsInvoiceDetailsRepository) UpdateMany(details []*entities.CmsInvoiceD
 	var sessionErr error
 	rollback := false
 	for _, detail := range details {
-		_, err = session.Table(detail.TableName()).Where("id = ?", detail.Id).Update(detail)
+		_, err = session.Where("ref_no = ?", detail.RefNo).Update(detail)
 		if err != nil {
 			rollback = true
 			sessionErr = err
