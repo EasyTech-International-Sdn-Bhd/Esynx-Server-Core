@@ -161,7 +161,7 @@ func (r *CmsInvoiceSalesRepository) InsertMany(invoices []*entities.CmsInvoiceSa
 // with the operation type, corresponding record table name, record ID (`InvoiceCode`), and the record body (JSON string).
 // Then, it logs this `AuditLog` record using the `Log` method of the `audit` field of the repository.
 func (r *CmsInvoiceSalesRepository) Update(invoice *entities.CmsInvoiceSales) error {
-	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Update(invoice)
+	_, err := r.db.Table(invoice.TableName()).Where("invoice_code = ?", invoice.InvoiceCode).Update(invoice)
 	if err != nil {
 		return err
 	}
@@ -186,7 +186,7 @@ func (r *CmsInvoiceSalesRepository) UpdateMany(invoices []*entities.CmsInvoiceSa
 	var sessionErr error
 	rollback := false
 	for _, inv := range invoices {
-		_, err = session.Where("invoice_code = ?", inv.InvoiceCode).Update(inv)
+		_, err = session.Table(inv.TableName()).Where("invoice_code = ?", inv.InvoiceCode).Update(inv)
 		if err != nil {
 			rollback = true
 			sessionErr = err
