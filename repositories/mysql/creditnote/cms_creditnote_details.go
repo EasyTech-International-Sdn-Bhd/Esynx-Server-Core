@@ -184,20 +184,54 @@ func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCredi
 	return nil
 }
 
-// Delete sets the ActiveStatus of the given CmsCreditnoteDetails to 0 and calls the Update method to persist the changes.
+// Delete sets the active status of the given CmsCreditnoteDetails record to 0
+// and updates it using the Update method of the CmsCreditNoteDetailsRepository.
+// It returns an error if the update operation fails.
 func (r *CmsCreditNoteDetailsRepository) Delete(details *entities.CmsCreditnoteDetails) error {
 	details.ActiveStatus = 0
-	return r.Update(details)
+	_, err := r.db.Where("id = ?", details.Id).Cols("active_status").Update(details)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsCreditnoteDetails{details})
+	}
+	return err
 }
 
-// DeleteMany sets the ActiveStatus field of each CmsCreditnoteDetails item in the details slice to 0,
-// and then calls the UpdateMany method to update the database with the modified details.
-// It returns an error if any error occurs during the update process.
+// DeleteMany sets the active status of each record in the input slice to 0
+// and updates them using the UpdateMany method. It returns an error if
+// the update operation fails.
 func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCreditnoteDetails) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, detail := range details {
 		detail.ActiveStatus = 0
+		_, err = session.Where("id = ?", detail.Id).Cols("active_status").Update(detail)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(details)
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", details)
+
+	return nil
 }
 
 // log is a method that is used to log an operation and its payload to the audit log.

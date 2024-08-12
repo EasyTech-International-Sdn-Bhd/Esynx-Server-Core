@@ -195,22 +195,56 @@ func (r *CmsDebitNoteSalesRepository) UpdateMany(debitNotes []*entities.CmsDebit
 	return nil
 }
 
-// Delete sets the "Cancelled" attribute of the debitNote to "T" and then calls the Update method to save the changes.
-// If the update operation fails, an error is returned.
+// Delete sets the "Cancelled" attribute of the debitNote to "T" where dn_code matches.
+// It logs the operation as "DELETE".
 func (r *CmsDebitNoteSalesRepository) Delete(debitNote *entities.CmsDebitnoteSales) error {
 	debitNote.Cancelled = "T"
-	return r.Update(debitNote)
+	_, err := r.db.Where("dn_code = ?", debitNote.DnCode).Cols("cancelled").Update(debitNote)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsDebitnoteSales{debitNote})
+	}
+	return err
 }
 
 // DeleteMany sets the `Cancelled` field of each debit note in the given slice to "T".
-// Then, it calls the `UpdateMany` method to update the changed debit notes in the database.
+// It uses a session to ensure the operation is atomic.
 // If any error occurs during the update process, it rolls back the session and returns the error.
-// Otherwise, it commits the session and returns nil.
+// Otherwise, it commits the session and logs the operation as "DELETE".
 func (r *CmsDebitNoteSalesRepository) DeleteMany(debitNotes []*entities.CmsDebitnoteSales) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+
+	var sessionErr error
+	rollback := false
 	for _, debitNote := range debitNotes {
 		debitNote.Cancelled = "T"
+		_, err = session.Where("dn_code = ?", debitNote.DnCode).Cols("cancelled").Update(debitNote)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(debitNotes)
+
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", debitNotes)
+	return nil
 }
 
 // log logs an audit record for a given operation and payload.

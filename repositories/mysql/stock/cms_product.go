@@ -184,19 +184,54 @@ func (r *CmsProductRepository) UpdateMany(records []*entities.CmsProduct) error 
 	return nil
 }
 
-// Delete sets the product status of the given record to 0 and updates the record in the CmsProductRepository.
+// Delete sets the product status of the given CmsProduct record to 0
+// and updates it using the Update method of the CmsProductRepository.
 // It returns an error if the update operation fails.
 func (r *CmsProductRepository) Delete(record *entities.CmsProduct) error {
 	record.ProductStatus = 0
-	return r.Update(record)
+	_, err := r.db.Where("product_code = ?", record.ProductCode).Cols("product_status").Update(record)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsProduct{record})
+	}
+	return err
 }
 
-// DeleteMany deletes multiple records by setting their ProductStatus to 0 and calling UpdateMany.
+// DeleteMany sets the ProductStatus of each record in the input slice to 0
+// and updates them using the UpdateMany method. It returns an error if
+// the update operation fails.
 func (r *CmsProductRepository) DeleteMany(records []*entities.CmsProduct) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, record := range records {
 		record.ProductStatus = 0
+		_, err = session.Where("product_code = ?", record.ProductCode).Cols("product_status").Update(record)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(records)
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", records)
+
+	return nil
 }
 
 // GetWithDetails retrieves a product with all its details based on the provided product code.

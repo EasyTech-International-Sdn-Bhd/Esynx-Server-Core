@@ -210,22 +210,54 @@ func (r *CmsInvoiceSalesRepository) UpdateMany(invoices []*entities.CmsInvoiceSa
 	return nil
 }
 
-// Delete sets the "Cancelled" field of the provided invoice to "T" and
-// calls the "Update" method of the repository to persist the changes.
+// Delete sets the "Cancelled" field of the provided invoice to "T" and updates
+// it using the Update method of the CmsInvoiceSalesRepository. It returns an error
+// if the update operation fails.
 func (r *CmsInvoiceSalesRepository) Delete(invoice *entities.CmsInvoiceSales) error {
 	invoice.Cancelled = "T"
-	return r.Update(invoice)
+	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Cols("cancelled").Update(invoice)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsInvoiceSales{invoice})
+	}
+	return err
 }
 
-// DeleteMany sets the `Cancelled` field to "T" for each invoice in the provided slice
-// and then calls the `UpdateMany` method to update the invoices in the repository.
-// If an error occurs during the update, the function will roll back the transaction
-// and return the error. Otherwise, it will commit the transaction and return nil.
+// DeleteMany sets the "Cancelled" field to "T" for each invoice in the provided slice
+// and updates them using the UpdateMany method. It returns an error if the update
+// operation fails.
 func (r *CmsInvoiceSalesRepository) DeleteMany(invoices []*entities.CmsInvoiceSales) error {
-	for _, invoice := range invoices {
-		invoice.Cancelled = "T"
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
 	}
-	return r.UpdateMany(invoices)
+	var sessionErr error
+	rollback := false
+	for _, inv := range invoices {
+		inv.Cancelled = "T"
+		_, err = session.Where("invoice_code = ?", inv.InvoiceCode).Cols("cancelled").Update(inv)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
+	}
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", invoices)
+
+	return nil
 }
 
 // log logs a given operation and payload to the audit log using the audit interface.

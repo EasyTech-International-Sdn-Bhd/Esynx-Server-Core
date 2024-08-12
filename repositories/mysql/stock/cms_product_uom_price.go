@@ -127,18 +127,54 @@ func (r *CmsProductUomPriceRepository) UpdateMany(records []*entities.CmsProduct
 	return nil
 }
 
-// Delete sets the ActiveStatus of the given record to 0 and updates it using the Update method.
+// Delete sets the ActiveStatus of the given CmsProductUomPriceV2 record to 0
+// and updates it using the Update method of the CmsProductUomPriceRepository.
+// It returns an error if the update operation fails.
 func (r *CmsProductUomPriceRepository) Delete(record *entities.CmsProductUomPriceV2) error {
 	record.ActiveStatus = 0
-	return r.Update(record)
+	_, err := r.db.Where("product_uom_price_id = ?", record.ProductUomPriceId).Cols("active_status").Update(record)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsProductUomPriceV2{record})
+	}
+	return err
 }
 
-// DeleteMany sets the ActiveStatus of each record in the given slice to 0, and calls UpdateMany to update the records in the repository.
+// DeleteMany sets the ActiveStatus of each record in the input slice to 0
+// and updates them using the UpdateMany method. It returns an error if
+// the update operation fails.
 func (r *CmsProductUomPriceRepository) DeleteMany(records []*entities.CmsProductUomPriceV2) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, record := range records {
 		record.ActiveStatus = 0
+		_, err = session.Where("product_uom_price_id = ?", record.ProductUomPriceId).Cols("active_status").Update(record)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(records)
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", records)
+
+	return nil
 }
 
 // log logs the provided operation and payload to the audit log.

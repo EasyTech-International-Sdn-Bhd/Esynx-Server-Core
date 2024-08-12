@@ -27,7 +27,7 @@ func (s *TestSession) GetStore() options.DatabaseStore {
 }
 
 func (s *TestSession) GetConnection() string {
-	return "./mock/mock.db"
+	return "/Users/julfikar/Documents/Personal.nosync/esynx/esynx-server/var/logs/mock.db" //"./mock/mock.db"
 }
 
 func (s *TestSession) GetLogger() contracts.IDatabaseLogger {

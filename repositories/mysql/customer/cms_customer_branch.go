@@ -183,20 +183,52 @@ func (r *CmsCustomerBranchRepository) UpdateMany(records []*entities.CmsCustomer
 }
 
 // Delete sets the BranchActive field of the provided CmsCustomerBranch record to 0
-// and calls the Update method to persist the changes.
-// Returns an error if the Update operation failed.
+// and updates the database record directly using r.db.
+// Returns an error if the update operation failed.
 func (r *CmsCustomerBranchRepository) Delete(record *entities.CmsCustomerBranch) error {
 	record.BranchActive = 0
-	return r.Update(record)
+	_, err := r.db.Where("branch_code = ?", record.BranchCode).Cols("branch_active").Update(record)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsCustomerBranch{record})
+	}
+	return err
 }
 
 // DeleteMany deletes multiple records by setting their BranchActive field to 0
-// and calling the UpdateMany method.
+// and updating the database records directly using a session.
 func (r *CmsCustomerBranchRepository) DeleteMany(records []*entities.CmsCustomerBranch) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, record := range records {
 		record.BranchActive = 0
+		_, err = session.Where("branch_code = ?", record.BranchCode).Cols("branch_active").Update(record)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(records)
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", records)
+
+	return nil
 }
 
 // log writes an audit log record for the given operation and payload.

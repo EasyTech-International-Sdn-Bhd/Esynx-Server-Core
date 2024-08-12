@@ -232,19 +232,53 @@ func (r *CmsCreditNoteRepository) UpdateMany(creditNotes []*entities.CmsCreditno
 	return nil
 }
 
-// Delete sets the "Cancelled" attribute of the given creditNote to "T" and updates it using the Update method.
+// Delete sets the "Cancelled" attribute of the given creditNote to "T"
+// and updates it directly using r.db. It returns an error if the update operation fails.
 func (r *CmsCreditNoteRepository) Delete(creditNote *entities.CmsCreditnote) error {
 	creditNote.Cancelled = "T"
-	return r.Update(creditNote)
+	_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Cols("cancelled").Update(creditNote)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsCreditnote{creditNote})
+	}
+	return err
 }
 
-// DeleteMany deletes multiple credit notes by marking them as "Cancelled" and calling UpdateMany.
-// It takes a slice of credit notes as input and returns an error if any operation fails.
+// DeleteMany sets the "Cancelled" attribute of multiple credit notes to "T"
+// and updates them directly using a session. It takes a slice of credit notes
+// as input and returns an error if any operation fails.
 func (r *CmsCreditNoteRepository) DeleteMany(creditNotes []*entities.CmsCreditnote) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, cn := range creditNotes {
 		cn.Cancelled = "T"
+		_, err = session.Where("cn_code = ?", cn.CnCode).Cols("cancelled").Update(cn)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(creditNotes)
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", creditNotes)
+
+	return nil
 }
 
 // log logs the operation and payload to the audit log.

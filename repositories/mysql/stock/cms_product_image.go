@@ -136,20 +136,54 @@ func (r *CmsProductImageRepository) UpdateMany(records []*entities.CmsProductIma
 	return nil
 }
 
-// Delete sets the ActiveStatus of the given record to 0 and calls the Update method.
-// If an error occurs during the update, it will be returned.
+// Delete sets the ActiveStatus of the given CmsProductImage record to 0
+// and updates it using the Update method of the CmsProductImageRepository.
+// It returns an error if the update operation fails.
 func (r *CmsProductImageRepository) Delete(record *entities.CmsProductImage) error {
 	record.ActiveStatus = 0
-	return r.Update(record)
+	_, err := r.db.Where("product_image_id = ?", record.ProductImageId).Cols("active_status").Update(record)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsProductImage{record})
+	}
+	return err
 }
 
-// DeleteMany deletes multiple records from the CmsProductImageRepository by setting their ActiveStatus to 0
-// and then calls the UpdateMany method to update the records.
+// DeleteMany sets the ActiveStatus of each record in the input slice to 0
+// and updates them using the UpdateMany method. It returns an error if
+// the update operation fails.
 func (r *CmsProductImageRepository) DeleteMany(records []*entities.CmsProductImage) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, record := range records {
 		record.ActiveStatus = 0
+		_, err = session.Where("product_image_id = ?", record.ProductImageId).Cols("active_status").Update(record)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(records)
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", records)
+
+	return nil
 }
 
 // log logs the given operation and payload to the audit log.

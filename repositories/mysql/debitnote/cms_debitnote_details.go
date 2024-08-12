@@ -174,20 +174,54 @@ func (r *CmsDebitNoteDetailsRepository) UpdateMany(details []*entities.CmsDebitn
 	return nil
 }
 
-// Delete sets the ActiveStatus of the given CmsDebitnoteDetails object to 0 and updates it in the repository database. It returns an error if the update fails.
-func (r *CmsDebitNoteDetailsRepository) Delete(details *entities.CmsDebitnoteDetails) error {
-	details.ActiveStatus = 0
-	return r.Update(details)
+// Delete sets the ActiveStatus of the given CmsDebitnoteDetails object to 0
+// and updates it using the Update method of the CmsDebitNoteDetailsRepository.
+// It returns an error if the update operation fails.
+func (r *CmsDebitNoteDetailsRepository) Delete(record *entities.CmsDebitnoteDetails) error {
+	record.ActiveStatus = 0
+	_, err := r.db.Where("id = ?", record.Id).Cols("active_status").Update(record)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsDebitnoteDetails{record})
+	}
+	return err
 }
 
-// DeleteMany deletes multiple CmsDebitnoteDetails by setting their ActiveStatus to 0.
-// It then calls the UpdateMany method to update the changes in the database.
-// Returns an error if there is any error during the update process.
-func (r *CmsDebitNoteDetailsRepository) DeleteMany(details []*entities.CmsDebitnoteDetails) error {
-	for _, detail := range details {
-		detail.ActiveStatus = 0
+// DeleteMany sets the ActiveStatus of each record in the input slice to 0
+// and updates them using the UpdateMany method. It returns an error if
+// the update operation fails.
+func (r *CmsDebitNoteDetailsRepository) DeleteMany(records []*entities.CmsDebitnoteDetails) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
 	}
-	return r.UpdateMany(details)
+	var sessionErr error
+	rollback := false
+	for _, record := range records {
+		record.ActiveStatus = 0
+		_, err = session.Where("id = ?", record.Id).Cols("active_status").Update(record)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
+	}
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", records)
+
+	return nil
 }
 
 // log logs the specified operation and payload to the audit log. It marshals the payload into JSON format

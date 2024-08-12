@@ -186,18 +186,48 @@ func (r *CmsLoginRepository) UpdateMany(records []*entities.CmsLogin) error {
 	return nil
 }
 
-// Delete sets the login status of the given record to 0 and updates it using the Update method.
+// Delete sets the login status of the given CmsLogin record to 0
+// and updates it using the Update method. It returns an error if the update operation fails.
 func (r *CmsLoginRepository) Delete(record *entities.CmsLogin) error {
 	record.LoginStatus = 0
-	return r.Update(record)
+	_, err := r.db.Where("staff_code = ?", record.StaffCode).Cols("login_status").Update(record)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsLogin{record})
+	}
+	return err
 }
 
-// DeleteMany deletes multiple records by setting their LoginStatus to 0 and calling UpdateMany.
+// DeleteMany deletes multiple records by setting their LoginStatus to 0 and calling UpdateMany within a session,
+// and logs the operation with op = "DELETE".
 func (r *CmsLoginRepository) DeleteMany(records []*entities.CmsLogin) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, record := range records {
 		record.LoginStatus = 0
+		_, err = session.Where("staff_code = ?", record.StaffCode).Cols("login_status").Update(record)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(records)
+	if rollback {
+		if err := session.Rollback(); err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	if err := session.Commit(); err != nil {
+		return err
+	}
+	r.log("DELETE", records)
+	return nil
 }
 
 // log logs the operation and payload to the audit log.

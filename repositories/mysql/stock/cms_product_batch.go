@@ -148,18 +148,54 @@ func (r *CmsProductBatchRepository) UpdateMany(records []*entities.CmsProductBat
 	return nil
 }
 
-// Delete sets the active status of the given record to 0 and calls the Update method to save the changes.
+// Delete sets the active status of the given CmsProductBatch record to 0
+// and updates it using the Update method of the CmsProductBatchRepository.
+// It returns an error if the update operation fails.
 func (r *CmsProductBatchRepository) Delete(record *entities.CmsProductBatch) error {
 	record.ActiveStatus = 0
-	return r.Update(record)
+	_, err := r.db.Where("id = ?", record.Id).Cols("active_status").Update(record)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsProductBatch{record})
+	}
+	return err
 }
 
-// DeleteMany updates the ActiveStatus of multiple records to 0 and then calls UpdateMany to persist the changes.
+// DeleteMany sets the ActiveStatus of each record in the input slice to 0
+// and updates them using the UpdateMany method. It returns an error if
+// the update operation fails.
 func (r *CmsProductBatchRepository) DeleteMany(records []*entities.CmsProductBatch) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, record := range records {
 		record.ActiveStatus = 0
+		_, err = session.Where("id = ?", record.Id).Cols("active_status").Update(record)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(records)
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", records)
+
+	return nil
 }
 
 // log logs the operation and payload to an audit log.

@@ -222,22 +222,56 @@ func (r *CmsDebitNoteRepository) UpdateMany(debitNotes []*entities.CmsDebitnote)
 	return nil
 }
 
-// Delete sets the "Cancelled" attribute of the debitNote to "T" and then calls the Update method to save the changes.
-// If the update operation fails, an error is returned.
+// Delete sets the "Cancelled" attribute of the debitNote to "T"
+// and then updates the corresponding record in the database.
+// If the update operation fails, an error is returned. It also logs
+// the "DELETE" operation.
 func (r *CmsDebitNoteRepository) Delete(debitNote *entities.CmsDebitnote) error {
 	debitNote.Cancelled = "T"
-	return r.Update(debitNote)
+	_, err := r.db.Where("dn_code = ?", debitNote.DnCode).Cols("cancelled").Update(debitNote)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsDebitnote{debitNote})
+	}
+	return err
 }
 
-// DeleteMany sets the `Cancelled` field of each debit note in the given slice to "T".
-// Then, it calls the `UpdateMany` method to update the changed debit notes in the database.
-// If any error occurs during the update process, it rolls back the session and returns the error.
+// DeleteMany sets the `Cancelled` field of each debit note in the
+// given slice to "T". Using a session, it updates the changed debit
+// notes in the database individually. If any error occurs during
+// the update process, it rolls back the session and returns the error.
 // Otherwise, it commits the session and returns nil.
 func (r *CmsDebitNoteRepository) DeleteMany(debitNotes []*entities.CmsDebitnote) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	if err := session.Begin(); err != nil {
+		return err
+	}
+
+	var sessionErr error
+	rollback := false
 	for _, debitNote := range debitNotes {
 		debitNote.Cancelled = "T"
+		_, err := session.Where("dn_code = ?", debitNote.DnCode).Cols("cancelled").Update(debitNote)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(debitNotes)
+
+	if rollback {
+		if err := session.Rollback(); err != nil {
+			return err
+		}
+		return sessionErr
+	}
+
+	if err := session.Commit(); err != nil {
+		return err
+	}
+
+	r.log("DELETE", debitNotes)
+	return nil
 }
 
 // log logs an audit record for a given operation and payload.

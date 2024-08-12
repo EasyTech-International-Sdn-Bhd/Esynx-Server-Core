@@ -253,22 +253,54 @@ func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error
 	return nil
 }
 
-// Delete marks the given invoice as cancelled by setting the "Cancelled" field to "T".
-// It then calls the Update method to persist the changes.
-// This method returns an error if the update operation fails.
+// Delete sets the Cancelled field of the given CmsInvoice record to "T"
+// and updates it using the Update method. It returns an error if the
+// update operation fails.
 func (r *CmsInvoiceRepository) Delete(invoice *entities.CmsInvoice) error {
 	invoice.Cancelled = "T"
-	return r.Update(invoice)
+	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Cols("Cancelled").Update(invoice)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsInvoice{invoice})
+	}
+	return err
 }
 
-// DeleteMany sets the `Cancelled` field of each invoice in the `invoices` slice to "T",
-// and then calls the `UpdateMany` method with the updated invoices as input. This method
-// updates the invoices in the database and logs the operation.
+// DeleteMany sets the Cancelled field of each record in the input slice to "T"
+// and updates them using the UpdateMany method. It returns an error if the
+// update operation fails.
 func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, invoice := range invoices {
 		invoice.Cancelled = "T"
+		_, err = session.Where("invoice_code = ?", invoice.InvoiceCode).Cols("Cancelled").Update(invoice)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(invoices)
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", invoices)
+
+	return nil
 }
 
 // log is a method used to record audit logs for operations performed on CmsInvoiceRepository.

@@ -184,19 +184,52 @@ func (r *CmsInvoiceDetailsRepository) UpdateMany(details []*entities.CmsInvoiceD
 	return nil
 }
 
-// Delete sets the ActiveStatus of the given CmsInvoiceDetails to 0 and calls the Update method to persist the changes.
+// Delete sets the ActiveStatus of the given CmsInvoiceDetails to 0 by updating the specific column directly.
+// It also logs the DELETE operation.
 func (r *CmsInvoiceDetailsRepository) Delete(details *entities.CmsInvoiceDetails) error {
 	details.ActiveStatus = 0
-	return r.Update(details)
+	_, err := r.db.Where("id = ?", details.Id).Cols("active_status").Update(details)
+	if err == nil {
+		r.log("DELETE", []*entities.CmsInvoiceDetails{details})
+	}
+	return err
 }
 
 // DeleteMany deletes multiple CmsInvoiceDetails by setting their ActiveStatus to 0
-// and calling the UpdateMany method to update them in the repository.
+// and updating the specific column directly. It uses a session to handle the transaction.
+// It also logs the DELETE operation.
 func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceDetails) error {
+	session := r.db.NewSession()
+	defer session.Close()
+	err := session.Begin()
+	if err != nil {
+		return err
+	}
+	var sessionErr error
+	rollback := false
 	for _, detail := range details {
 		detail.ActiveStatus = 0
+		_, err = session.Where("id = ?", detail.Id).Cols("active_status").Update(detail)
+		if err != nil {
+			rollback = true
+			sessionErr = err
+			break
+		}
 	}
-	return r.UpdateMany(details)
+	if rollback {
+		err := session.Rollback()
+		if err != nil {
+			return err
+		}
+		return sessionErr
+	}
+	err = session.Commit()
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", details)
+	return nil
 }
 
 // log logs the operation and payload to the audit log.
