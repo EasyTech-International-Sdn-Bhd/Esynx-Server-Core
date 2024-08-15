@@ -74,6 +74,6 @@ func TestCmsCustomerRepository_Update(t *testing.T) {
 }
 
 func dbConn() (db *xorm.Engine, err error) {
-	conn := fmt.Sprintf("root:mysql@tcp(127.0.0.1:3306)/easysale_elk?charset=utf8mb4&parseTime=True&loc=Local&timeout=2s")
-	return xorm.NewEngine("mysql", conn)
+	conn := fmt.Sprintf("root:sql@tcp(127.0.0.1:3306)/easysale_elk?charset=utf8mb4&parseTime=True&loc=Local&timeout=2s")
+	return xorm.NewEngine("sql", conn)
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/agent"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/agent"
 	"xorm.io/xorm"
 )
 

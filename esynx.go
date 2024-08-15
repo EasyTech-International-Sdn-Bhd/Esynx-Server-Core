@@ -4,15 +4,15 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/mock"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/options"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/agent"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/audit"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/creditnote"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/customer"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/debitnote"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/invoice"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/module"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/stock"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/agent"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/audit"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/creditnote"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/customer"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/debitnote"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/invoice"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/module"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/stock"
 )
 
 // ESynx represents a struct with various contracts/interfaces for database operations.
@@ -45,8 +45,8 @@ func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
 	var err error
 
 	switch session.GetStore() {
-	case options.MySQL:
-		db = mysql.NewMySqlDb()
+	case options.SqlDb:
+		db = sql.NewSqlDb()
 		err = db.Open(session.GetConnection(), session.GetLogger())
 	case options.Mock:
 		db = mock.NewMockDb()

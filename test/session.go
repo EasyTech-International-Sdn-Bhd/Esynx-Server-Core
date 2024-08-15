@@ -4,7 +4,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/mock"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/options"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/mysql/audit"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/audit"
 )
 
 type TestSession struct {
