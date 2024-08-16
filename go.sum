@@ -29,6 +29,8 @@ github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240816032826-8d6
 github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240816032826-8d649649a422/go.mod h1:10L3zH3K8o5Gj+NArlFDuRoWuzR2xytB4N4Ya5I4tso=
 github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240816224943-dbe0fb74e208 h1:hl7zGLnQ122NfKxn+j9Wl0h95aGf+CU6JasO9qlmquM=
 github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240816224943-dbe0fb74e208/go.mod h1:10L3zH3K8o5Gj+NArlFDuRoWuzR2xytB4N4Ya5I4tso=
+github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240816230102-00ae42f4165e h1:f2NIIgaj4xJZOzDm1O/lhj7pApr2PuGvukiWBfIniy8=
+github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240816230102-00ae42f4165e/go.mod h1:10L3zH3K8o5Gj+NArlFDuRoWuzR2xytB4N4Ya5I4tso=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/go-kit/log v0.1.0/go.mod h1:zbhenjAZHb184qTLMA9ZjW7ThYL0H2mk7Q6pNt4vbaY=
 github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG1KdI/P7A=
