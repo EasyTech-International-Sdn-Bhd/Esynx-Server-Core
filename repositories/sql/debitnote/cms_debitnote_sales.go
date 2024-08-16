@@ -160,41 +160,6 @@ func (r *CmsDebitNoteSalesRepository) Update(debitNote *entities.CmsDebitnoteSal
 	return nil
 }
 
-// UpdateMany updates multiple debit notes in the database.
-func (r *CmsDebitNoteSalesRepository) UpdateMany(debitNotes []*entities.CmsDebitnoteSales) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, dn := range debitNotes {
-		_, err = session.Where("dn_code = ?", dn.DnCode).Update(dn)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", debitNotes)
-
-	return nil
-}
-
 // Delete sets the "Cancelled" attribute of the debitNote to "T" where dn_code matches.
 // It logs the operation as "DELETE".
 func (r *CmsDebitNoteSalesRepository) Delete(debitNote *entities.CmsDebitnoteSales) error {
@@ -206,39 +171,29 @@ func (r *CmsDebitNoteSalesRepository) Delete(debitNote *entities.CmsDebitnoteSal
 	return err
 }
 
-// DeleteMany sets the `Cancelled` field of each debit note in the given slice to "T".
-// It uses a session to ensure the operation is atomic.
-// If any error occurs during the update process, it rolls back the session and returns the error.
-// Otherwise, it commits the session and logs the operation as "DELETE".
-func (r *CmsDebitNoteSalesRepository) DeleteMany(debitNotes []*entities.CmsDebitnoteSales) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-
-	var sessionErr error
-	rollback := false
-	for _, debitNote := range debitNotes {
-		debitNote.Cancelled = "T"
-		_, err = session.Where("dn_code = ?", debitNote.DnCode).Cols("cancelled").Update(debitNote)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-
-	if rollback {
-		err := session.Rollback()
+// UpdateMany updates multiple debit notes in the database.
+func (r *CmsDebitNoteSalesRepository) UpdateMany(debitNotes []*entities.CmsDebitnoteSales) error {
+	for _, dn := range debitNotes {
+		_, err := r.db.Where("dn_code = ?", dn.DnCode).Update(dn)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
 
-	err = session.Commit()
+	r.log("UPDATE", debitNotes)
+
+	return nil
+}
+
+// DeleteMany sets the `Cancelled` field of each debit note in the given slice to "T".
+func (r *CmsDebitNoteSalesRepository) DeleteMany(debitNotes []*entities.CmsDebitnoteSales) error {
+	ids := iterator.Map(debitNotes, func(item *entities.CmsDebitnoteSales) string {
+		return item.DnCode
+	})
+
+	_, err := r.db.In("dn_code", ids).Cols("cancelled").Update(&entities.CmsDebitnoteSales{
+		Cancelled: "T",
+	})
 	if err != nil {
 		return err
 	}

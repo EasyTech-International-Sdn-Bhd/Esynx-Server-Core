@@ -1,9 +1,10 @@
 package test
 
 import (
+	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
-	"github.com/easytech-international-sdn-bhd/esynx-server-core/mock"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/options"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/audit"
 )
 
@@ -27,7 +28,13 @@ func (s *TestSession) GetStore() options.DatabaseStore {
 }
 
 func (s *TestSession) GetConnection() string {
-	return "/Users/julfikar/Documents/Personal.nosync/esynx/esynx-server/var/logs/mock.db" //"./mock/mock.db"
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=2s",
+		"root",
+		"mysql",
+		"localhost",
+		3306,
+		"esynx_vit",
+	)
 }
 
 func (s *TestSession) GetLogger() contracts.IDatabaseLogger {
@@ -36,7 +43,7 @@ func (s *TestSession) GetLogger() contracts.IDatabaseLogger {
 
 func TestOption() (*contracts.IRepository, error) {
 	session := NewTestSession()
-	db := mock.NewMockDb()
+	db := sql.NewSqlDb()
 	err := db.Open(session.GetConnection(), session.GetLogger())
 	if err != nil {
 		return nil, err

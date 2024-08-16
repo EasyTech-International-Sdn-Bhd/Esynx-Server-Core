@@ -131,57 +131,6 @@ func (r *CmsCustomerBranchRepository) Update(record *entities.CmsCustomerBranch)
 	return nil
 }
 
-// UpdateMany updates multiple records in the CmsCustomerBranchRepository.
-// It begins a session, updates each record in the provided slice, and commits
-// the changes if all updates are successful. If any update fails, it rolls
-// back the session and returns the error. It logs the "UPDATE" operation and
-// the updated records using the log method.
-//
-// If an error occurs when beginning the session, it returns the error.
-//
-// If an error occurs during an update, it sets the rollback flag to true, sets
-// the sessionErr to the error, and breaks out of the loop.
-//
-// After updating all records, if the rollback flag is set to true, it
-// rolls back the session and returns the sessionErr.
-//
-// If an error occurs when committing the session, it returns the error.
-//
-// Finally, it returns nil, indicating that the updates were successful.
-func (r *CmsCustomerBranchRepository) UpdateMany(records []*entities.CmsCustomerBranch) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, branch := range records {
-		_, err = session.Where("branch_code = ?", branch.BranchCode).Update(branch)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", records)
-
-	return nil
-}
-
 // Delete sets the BranchActive field of the provided CmsCustomerBranch record to 0
 // and updates the database record directly using r.db.
 // Returns an error if the update operation failed.
@@ -194,40 +143,32 @@ func (r *CmsCustomerBranchRepository) Delete(record *entities.CmsCustomerBranch)
 	return err
 }
 
-// DeleteMany deletes multiple records by setting their BranchActive field to 0
-// and updating the database records directly using a session.
-func (r *CmsCustomerBranchRepository) DeleteMany(records []*entities.CmsCustomerBranch) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
+func (r *CmsCustomerBranchRepository) UpdateMany(records []*entities.CmsCustomerBranch) error {
 	for _, record := range records {
-		record.BranchActive = 0
-		_, err = session.Where("branch_code = ?", record.BranchCode).Cols("branch_active").Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
+		_, err := r.db.Where("branch_code = ?", record.BranchCode).Update(record)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
-	err = session.Commit()
+
+	r.log("UPDATE", records)
+
+	return nil
+}
+
+func (r *CmsCustomerBranchRepository) DeleteMany(records []*entities.CmsCustomerBranch) error {
+	ids := iterator.Map(records, func(item *entities.CmsCustomerBranch) string {
+		return item.BranchCode
+	})
+
+	_, err := r.db.In("branch_code", ids).Cols("branch_active").Update(&entities.CmsCustomerBranch{
+		BranchActive: 0,
+	})
 	if err != nil {
 		return err
 	}
 
 	r.log("DELETE", records)
-
 	return nil
 }
 

@@ -113,46 +113,6 @@ func (r *CmsCustomerSalespersonRepository) Update(record *entities.CmsCustomerSa
 	return nil
 }
 
-// UpdateMany updates multiple `CmsCustomerSalesperson` records in the database.
-// It validates each record, begins a new session, and iterates over the records
-// to update them individually. If any update fails, it triggers a rollback of the session
-// and returns the error. Otherwise, the updates are committed, and the method logs
-// the updated records.
-func (r *CmsCustomerSalespersonRepository) UpdateMany(records []*entities.CmsCustomerSalesperson) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, record := range records {
-		record.Validate()
-		_, err = session.Where("salesperson_customer_id = ?", record.SalespersonCustomerId).Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", records)
-
-	return nil
-}
-
 // Delete sets the active status of the given CmsCustomerSalesperson record to 0
 // and updates it using the Update method of the CmsCustomerSalespersonRepository.
 // It returns an error if the update operation fails.
@@ -165,35 +125,33 @@ func (r *CmsCustomerSalespersonRepository) Delete(record *entities.CmsCustomerSa
 	return err
 }
 
-// DeleteMany sets the ActiveStatus of each record in the input slice to 0
-// and updates them using the UpdateMany method. It returns an error if
-// the update operation fails.
-func (r *CmsCustomerSalespersonRepository) DeleteMany(records []*entities.CmsCustomerSalesperson) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
+// UpdateMany updates multiple `CmsCustomerSalesperson` records in the database.
+// It validates each record and iterates over them to update individually.
+// If any update fails, it returns the error. Otherwise, it logs the updated records.
+func (r *CmsCustomerSalespersonRepository) UpdateMany(records []*entities.CmsCustomerSalesperson) error {
 	for _, record := range records {
-		record.ActiveStatus = 0
-		_, err = session.Where("salesperson_customer_id = ?", record.SalespersonCustomerId).Cols("active_status").Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
+		record.Validate()
+		_, err := r.db.Where("salesperson_customer_id = ?", record.SalespersonCustomerId).Update(record)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
-	err = session.Commit()
+
+	r.log("UPDATE", records)
+
+	return nil
+}
+
+// DeleteMany deletes multiple `CmsCustomerSalesperson` records by setting their ActiveStatus to 0 in a bulk update operation,
+// and logs the operation as "DELETE".
+func (r *CmsCustomerSalespersonRepository) DeleteMany(records []*entities.CmsCustomerSalesperson) error {
+	ids := iterator.Map(records, func(item *entities.CmsCustomerSalesperson) interface{} {
+		return item.SalespersonCustomerId
+	})
+
+	_, err := r.db.In("salesperson_customer_id", ids).Cols("active_status").Update(&entities.CmsCustomerSalesperson{
+		ActiveStatus: 0,
+	})
 	if err != nil {
 		return err
 	}

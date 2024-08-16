@@ -87,48 +87,6 @@ func (r *CmsProductAtchRepository) Update(record *entities.CmsProductAtch) error
 	return nil
 }
 
-// UpdateMany updates multiple records in the CmsProductAtch table using a transaction.
-// It takes a slice of CmsProductAtch records as input and returns an error if any occurs.
-// The method starts a new session, begins a transaction, and iterates over each record
-// to update them individually. If an error occurs during the update, it sets a rollback flag,
-// stores the error, and breaks the loop. If the rollback flag is set, it rolls back the transaction
-// and returns the stored error. Otherwise, it commits the transaction and returns nil.
-// Finally, it logs the "UPDATE" operation with the updated records.
-// The method is part of the CmsProductAtchRepository struct.
-func (r *CmsProductAtchRepository) UpdateMany(records []*entities.CmsProductAtch) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, product := range records {
-		_, err = session.Where("id = ?", product.Id).Update(product)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", records)
-
-	return nil
-}
-
 // Delete sets the active status of the given CmsProductAtch record to 0
 // and updates it using the Update method of the CmsProductAtchRepository.
 // It returns an error if the update operation fails.
@@ -141,41 +99,32 @@ func (r *CmsProductAtchRepository) Delete(record *entities.CmsProductAtch) error
 	return err
 }
 
-// DeleteMany sets the ActiveStatus of each record in the input slice to 0
-// and updates them using the UpdateMany method. It returns an error if
-// the update operation fails.
-func (r *CmsProductAtchRepository) DeleteMany(records []*entities.CmsProductAtch) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
+func (r *CmsProductAtchRepository) UpdateMany(records []*entities.CmsProductAtch) error {
 	for _, record := range records {
-		record.ActiveStatus = 0
-		_, err = session.Where("id = ?", record.Id).Cols("active_status").Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
+		_, err := r.db.Where("id = ?", record.Id).Update(record)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
-	err = session.Commit()
+
+	r.log("UPDATE", records)
+
+	return nil
+}
+
+func (r *CmsProductAtchRepository) DeleteMany(records []*entities.CmsProductAtch) error {
+	ids := iterator.Map(records, func(item *entities.CmsProductAtch) uint64 {
+		return item.Id
+	})
+
+	_, err := r.db.In("id", ids).Cols("active_status").Update(&entities.CmsProductAtch{
+		ActiveStatus: 0,
+	})
 	if err != nil {
 		return err
 	}
 
 	r.log("DELETE", records)
-
 	return nil
 }
 

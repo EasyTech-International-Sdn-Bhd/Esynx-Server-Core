@@ -169,42 +169,6 @@ func (r *CmsCreditNoteSalesRepository) Update(creditNote *entities.CmsCreditnote
 	return nil
 }
 
-// UpdateMany updates multiple credit notes in the database.
-// It takes a slice of credit notes as the input and returns an error if any.
-func (r *CmsCreditNoteSalesRepository) UpdateMany(creditNotes []*entities.CmsCreditnoteSales) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, cn := range creditNotes {
-		_, err = session.Where("cn_code = ?", cn.CnCode).Update(cn)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", creditNotes)
-
-	return nil
-}
-
 // Delete sets the "Cancelled" attribute of the given creditNote to "T"
 // and updates it using the Update method. It returns an error if the update operation fails.
 func (r *CmsCreditNoteSalesRepository) Delete(creditNote *entities.CmsCreditnoteSales) error {
@@ -216,42 +180,36 @@ func (r *CmsCreditNoteSalesRepository) Delete(creditNote *entities.CmsCreditnote
 	return err
 }
 
-// DeleteMany sets the "Cancelled" attribute of each credit note in the input slice to "T"
-// and updates them using a session. It returns an error if the update operation fails.
-func (r *CmsCreditNoteSalesRepository) DeleteMany(creditNotes []*entities.CmsCreditnoteSales) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-
-	var sessionErr error
-	rollback := false
-	for _, cn := range creditNotes {
-		cn.Cancelled = "T"
-		_, err = session.Where("cn_code = ?", cn.CnCode).Cols("cancelled").Update(cn)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err = session.Rollback()
+// UpdateMany updates multiple credit notes in the database.
+// It takes a slice of credit notes as the input and returns an error if any.
+func (r *CmsCreditNoteSalesRepository) UpdateMany(creditNotes []*entities.CmsCreditnoteSales) error {
+	for _, creditNote := range creditNotes {
+		_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Update(creditNote)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
 
-	err = session.Commit()
+	r.log("UPDATE", creditNotes)
+
+	return nil
+}
+
+// DeleteMany sets the "Cancelled" attribute of each credit note in the input slice to "T"
+// and updates them using a session. It returns an error if the update operation fails.
+func (r *CmsCreditNoteSalesRepository) DeleteMany(creditNotes []*entities.CmsCreditnoteSales) error {
+	ids := iterator.Map(creditNotes, func(item *entities.CmsCreditnoteSales) string {
+		return item.CnCode
+	})
+
+	_, err := r.db.In("cn_code", ids).Cols("cancelled").Update(&entities.CmsCreditnoteSales{
+		Cancelled: "T",
+	})
 	if err != nil {
 		return err
 	}
 
 	r.log("DELETE", creditNotes)
-
 	return nil
 }
 

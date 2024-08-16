@@ -84,52 +84,6 @@ func (r *CmsWarehouseStockRepository) Update(record *entities.CmsWarehouseStock)
 	return nil
 }
 
-// UpdateMany updates multiple CmsWarehouseStock records in the database.
-// It begins a database session, updates each record using the session,
-// commits the changes, and logs the update operation.
-// If an error occurs during the update process, the session is rolled back,
-// the error is returned, and the changes are not persisted.
-//
-// Parameters:
-//   - records: The slice of CmsWarehouseStock records to update.
-//     Each record must have a valid Id field for identification.
-//
-// Returns:
-// - error: An error if the update fails, nil otherwise.
-func (r *CmsWarehouseStockRepository) UpdateMany(records []*entities.CmsWarehouseStock) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, record := range records {
-		_, err = session.Where("id = ?", record.Id).Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", records)
-
-	return nil
-}
-
 // Delete sets the ActiveStatus of the given CmsWarehouseStock record to 0
 // and updates it using the Update method. It returns an error if the update operation fails.
 func (r *CmsWarehouseStockRepository) Delete(record *entities.CmsWarehouseStock) error {
@@ -141,40 +95,35 @@ func (r *CmsWarehouseStockRepository) Delete(record *entities.CmsWarehouseStock)
 	return err
 }
 
-// DeleteMany sets the ActiveStatus of each record in the input slice to 0
-// and updates them using a database session. It returns an error if the update operation fails.
-func (r *CmsWarehouseStockRepository) DeleteMany(records []*entities.CmsWarehouseStock) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
+// UpdateMany updates multiple CmsWarehouseStock records in the database.
+func (r *CmsWarehouseStockRepository) UpdateMany(records []*entities.CmsWarehouseStock) error {
 	for _, record := range records {
-		record.ActiveStatus = 0
-		_, err = session.Where("id = ?", record.Id).Cols("active_status").Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
+		_, err := r.db.Where("id = ?", record.Id).Update(record)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
-	err = session.Commit()
+
+	r.log("UPDATE", records)
+
+	return nil
+}
+
+// DeleteMany sets the ActiveStatus of each record in the input slice to 0
+// and updates them using a database session. It returns an error if the update operation fails.
+func (r *CmsWarehouseStockRepository) DeleteMany(records []*entities.CmsWarehouseStock) error {
+	ids := iterator.Map(records, func(item *entities.CmsWarehouseStock) uint64 {
+		return item.Id
+	})
+
+	_, err := r.db.In("id", ids).Cols("active_status").Update(&entities.CmsWarehouseStock{
+		ActiveStatus: 0,
+	})
 	if err != nil {
 		return err
 	}
 
 	r.log("DELETE", records)
-
 	return nil
 }
 

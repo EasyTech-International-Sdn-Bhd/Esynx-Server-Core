@@ -139,41 +139,6 @@ func (r *CmsDebitNoteDetailsRepository) Update(details *entities.CmsDebitnoteDet
 	return nil
 }
 
-// UpdateMany updates multiple `CmsDebitnoteDetails` records in the database.
-func (r *CmsDebitNoteDetailsRepository) UpdateMany(details []*entities.CmsDebitnoteDetails) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, detail := range details {
-		_, err = session.Where("ref_no = ?", detail.RefNo).Update(detail)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", details)
-
-	return nil
-}
-
 // Delete sets the ActiveStatus of the given CmsDebitnoteDetails object to 0
 // and updates it using the Update method of the CmsDebitNoteDetailsRepository.
 // It returns an error if the update operation fails.
@@ -186,41 +151,36 @@ func (r *CmsDebitNoteDetailsRepository) Delete(record *entities.CmsDebitnoteDeta
 	return err
 }
 
+// UpdateMany updates multiple `CmsDebitnoteDetails` records in the database.
+func (r *CmsDebitNoteDetailsRepository) UpdateMany(details []*entities.CmsDebitnoteDetails) error {
+	for _, detail := range details {
+		_, err := r.db.Where("ref_no = ?", detail.RefNo).Update(detail)
+		if err != nil {
+			return err
+		}
+	}
+
+	r.log("UPDATE", details)
+
+	return nil
+}
+
 // DeleteMany sets the ActiveStatus of each record in the input slice to 0
 // and updates them using the UpdateMany method. It returns an error if
 // the update operation fails.
 func (r *CmsDebitNoteDetailsRepository) DeleteMany(records []*entities.CmsDebitnoteDetails) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, record := range records {
-		record.ActiveStatus = 0
-		_, err = session.Where("id = ?", record.Id).Cols("active_status").Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
+	ids := iterator.Map(records, func(item *entities.CmsDebitnoteDetails) uint64 {
+		return item.Id
+	})
+
+	_, err := r.db.In("id", ids).Cols("active_status").Update(&entities.CmsDebitnoteDetails{
+		ActiveStatus: 0,
+	})
 	if err != nil {
 		return err
 	}
 
 	r.log("DELETE", records)
-
 	return nil
 }
 

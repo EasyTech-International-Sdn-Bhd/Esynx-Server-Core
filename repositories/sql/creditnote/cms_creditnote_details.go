@@ -143,47 +143,6 @@ func (r *CmsCreditNoteDetailsRepository) Update(details *entities.CmsCreditnoteD
 	return nil
 }
 
-// UpdateMany updates multiple CmsCreditnoteDetails records in the database.
-// It starts a new database session before beginning a transaction.
-// It iterates over the provided details, updating each record individually using its Id.
-// If an error occurs during the update, the transaction is rolled back
-// and the error is returned.
-// Otherwise, the transaction is committed.
-// Finally, the updated details are logged using the "UPDATE" operation type.
-func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCreditnoteDetails) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, detail := range details {
-		_, err = session.Where("ref_no = ?", detail.RefNo).Update(detail)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", details)
-
-	return nil
-}
-
 // Delete sets the active status of the given CmsCreditnoteDetails record to 0
 // and updates it using the Update method of the CmsCreditNoteDetailsRepository.
 // It returns an error if the update operation fails.
@@ -196,41 +155,39 @@ func (r *CmsCreditNoteDetailsRepository) Delete(details *entities.CmsCreditnoteD
 	return err
 }
 
-// DeleteMany sets the active status of each record in the input slice to 0
-// and updates them using the UpdateMany method. It returns an error if
-// the update operation fails.
-func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCreditnoteDetails) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
+// UpdateMany updates multiple CmsCreditnoteDetails records in the database.
+// It takes a slice of CmsCreditnoteDetails records as input and applies the updates individually.
+// If any error occurs during the update process, it returns the error. Otherwise, it returns nil.
+// Finally, the updated details are logged using the "UPDATE" operation type.
+func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCreditnoteDetails) error {
 	for _, detail := range details {
-		detail.ActiveStatus = 0
-		_, err = session.Where("id = ?", detail.Id).Cols("active_status").Update(detail)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
+		_, err := r.db.Where("ref_no = ?", detail.RefNo).Update(detail)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
-	err = session.Commit()
+
+	r.log("UPDATE", details)
+
+	return nil
+}
+
+// DeleteMany sets the active status of each record in the input slice to 0
+// and updates them in a bulk update operation. It returns an error if
+// the update operation fails. Finally, it logs the operation with op = "DELETE".
+func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCreditnoteDetails) error {
+	ids := iterator.Map(details, func(item *entities.CmsCreditnoteDetails) uint64 {
+		return item.Id
+	})
+
+	_, err := r.db.In("id", ids).Cols("active_status").Update(&entities.CmsCreditnoteDetails{
+		ActiveStatus: 0,
+	})
 	if err != nil {
 		return err
 	}
 
 	r.log("DELETE", details)
-
 	return nil
 }
 

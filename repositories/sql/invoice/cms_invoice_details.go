@@ -143,47 +143,6 @@ func (r *CmsInvoiceDetailsRepository) Update(details *entities.CmsInvoiceDetails
 	return nil
 }
 
-// UpdateMany updates multiple CmsInvoiceDetails in a transaction.
-// It begins a session, updates each detail one by one using their ID,
-// and commits the transaction if all updates are successful.
-// If any error occurs during the updates, the transaction is rolled back and
-// the first encountered error is returned.
-// The method also logs the update operation and the updated details.
-// It returns an error if the transaction fails to begin or commit.
-func (r *CmsInvoiceDetailsRepository) UpdateMany(details []*entities.CmsInvoiceDetails) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, detail := range details {
-		_, err = session.Where("ref_no = ?", detail.RefNo).Update(detail)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", details)
-
-	return nil
-}
-
 // Delete sets the ActiveStatus of the given CmsInvoiceDetails to 0 by updating the specific column directly.
 // It also logs the DELETE operation.
 func (r *CmsInvoiceDetailsRepository) Delete(details *entities.CmsInvoiceDetails) error {
@@ -195,35 +154,29 @@ func (r *CmsInvoiceDetailsRepository) Delete(details *entities.CmsInvoiceDetails
 	return err
 }
 
-// DeleteMany deletes multiple CmsInvoiceDetails by setting their ActiveStatus to 0
-// and updating the specific column directly. It uses a session to handle the transaction.
-// It also logs the DELETE operation.
-func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceDetails) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
+// UpdateMany updates multiple CmsInvoiceDetails.
+func (r *CmsInvoiceDetailsRepository) UpdateMany(details []*entities.CmsInvoiceDetails) error {
 	for _, detail := range details {
-		detail.ActiveStatus = 0
-		_, err = session.Where("id = ?", detail.Id).Cols("active_status").Update(detail)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
+		_, err := r.db.Where("ref_no = ?", detail.RefNo).Update(detail)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
-	err = session.Commit()
+
+	r.log("UPDATE", details)
+
+	return nil
+}
+
+// DeleteMany sets the ActiveStatus of multiple CmsInvoiceDetails to 0 and updates the specific column directly.
+func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceDetails) error {
+	ids := iterator.Map(details, func(item *entities.CmsInvoiceDetails) uint64 {
+		return item.Id
+	})
+
+	_, err := r.db.In("id", ids).Cols("active_status").Update(&entities.CmsInvoiceDetails{
+		ActiveStatus: 0,
+	})
 	if err != nil {
 		return err
 	}

@@ -144,46 +144,6 @@ func (r *CmsProductRepository) Update(record *entities.CmsProduct) error {
 	return nil
 }
 
-// UpdateMany updates multiple records in the CmsProductRepository.
-// It starts a new session, updates each record in the given array,
-// and commits the changes at the end. If any error occurs during
-// the update process, it rolls back the session and returns the error.
-// The method returns a nil error if all updates are successful.
-// It logs the "UPDATE" operation with the updated records.
-func (r *CmsProductRepository) UpdateMany(records []*entities.CmsProduct) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, product := range records {
-		_, err = session.Where("product_code = ?", product.ProductCode).Update(product)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", records)
-
-	return nil
-}
-
 // Delete sets the product status of the given CmsProduct record to 0
 // and updates it using the Update method of the CmsProductRepository.
 // It returns an error if the update operation fails.
@@ -196,35 +156,34 @@ func (r *CmsProductRepository) Delete(record *entities.CmsProduct) error {
 	return err
 }
 
+// UpdateMany updates multiple records in the CmsProductRepository.
+// It iterates through the given array and updates each record.
+// The method returns a nil error if all updates are successful.
+// It logs the "UPDATE" operation with the updated records.
+func (r *CmsProductRepository) UpdateMany(records []*entities.CmsProduct) error {
+	for _, product := range records {
+		_, err := r.db.Where("product_code = ?", product.ProductCode).Update(product)
+		if err != nil {
+			return err
+		}
+	}
+
+	r.log("UPDATE", records)
+
+	return nil
+}
+
 // DeleteMany sets the ProductStatus of each record in the input slice to 0
 // and updates them using the UpdateMany method. It returns an error if
 // the update operation fails.
 func (r *CmsProductRepository) DeleteMany(records []*entities.CmsProduct) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, record := range records {
-		record.ProductStatus = 0
-		_, err = session.Where("product_code = ?", record.ProductCode).Cols("product_status").Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
+	ids := iterator.Map(records, func(item *entities.CmsProduct) string {
+		return item.ProductCode
+	})
+
+	_, err := r.db.In("product_code", ids).Cols("product_status").Update(&entities.CmsProduct{
+		ProductStatus: 0,
+	})
 	if err != nil {
 		return err
 	}

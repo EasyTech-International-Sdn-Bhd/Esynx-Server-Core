@@ -107,47 +107,6 @@ func (r *CmsProductBatchRepository) Update(record *entities.CmsProductBatch) err
 	return nil
 }
 
-// UpdateMany updates multiple records in the CmsProductBatch table using a transaction.
-// It takes an array of CmsProductBatch records as input.
-// It begins a session, updates each record in the session,
-// and commits the changes if all updates are successful.
-// If any update fails, it rolls back the session and returns the error.
-// Finally, it logs the UPDATE operation and returns nil if all updates are successful,
-// or the error encountered during the session if any update fails.
-func (r *CmsProductBatchRepository) UpdateMany(records []*entities.CmsProductBatch) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, record := range records {
-		_, err = session.Where("id = ?", record.Id).Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", records)
-
-	return nil
-}
-
 // Delete sets the active status of the given CmsProductBatch record to 0
 // and updates it using the Update method of the CmsProductBatchRepository.
 // It returns an error if the update operation fails.
@@ -160,41 +119,40 @@ func (r *CmsProductBatchRepository) Delete(record *entities.CmsProductBatch) err
 	return err
 }
 
-// DeleteMany sets the ActiveStatus of each record in the input slice to 0
-// and updates them using the UpdateMany method. It returns an error if
-// the update operation fails.
-func (r *CmsProductBatchRepository) DeleteMany(records []*entities.CmsProductBatch) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
+// UpdateMany updates multiple records in the CmsProductBatch table.
+// It takes an array of CmsProductBatch records as input.
+// It iterates over each record and performs the update operation.
+// If any update fails, it returns the error.
+// Finally, it logs the UPDATE operation and returns nil if all updates are successful.
+func (r *CmsProductBatchRepository) UpdateMany(records []*entities.CmsProductBatch) error {
 	for _, record := range records {
-		record.ActiveStatus = 0
-		_, err = session.Where("id = ?", record.Id).Cols("active_status").Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
+		_, err := r.db.Where("id = ?", record.Id).Update(record)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
-	err = session.Commit()
+
+	r.log("UPDATE", records)
+
+	return nil
+}
+
+// DeleteMany sets the ActiveStatus of each record in the input slice to 0
+// and updates them in the CmsProductBatch table. It returns an error if
+// the update operation fails.
+func (r *CmsProductBatchRepository) DeleteMany(records []*entities.CmsProductBatch) error {
+	ids := iterator.Map(records, func(item *entities.CmsProductBatch) uint64 {
+		return item.Id
+	})
+
+	_, err := r.db.In("id", ids).Cols("active_status").Update(&entities.CmsProductBatch{
+		ActiveStatus: 0,
+	})
 	if err != nil {
 		return err
 	}
 
 	r.log("DELETE", records)
-
 	return nil
 }
 

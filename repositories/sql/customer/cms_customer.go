@@ -230,45 +230,6 @@ func (r *CmsCustomerRepository) Update(customer *entities.CmsCustomer) error {
 	return nil
 }
 
-// UpdateMany updates multiple customer records in the database.
-// It takes a slice of customer entities as input and updates each record based on the cust_code field.
-// If any update fails, it rolls back the transaction and returns the error.
-// Otherwise, it commits the transaction and logs the update operation.
-// This method returns an error if the transaction fails or encounters any other error during the update process.
-func (r *CmsCustomerRepository) UpdateMany(customers []*entities.CmsCustomer) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, customer := range customers {
-		_, err = session.Where("cust_code = ?", customer.CustCode).Update(customer)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", customers)
-
-	return nil
-}
-
 // Delete sets the customer's `CustomerStatus` to 0.
 // This effectively marks the customer as deleted in the database.
 //
@@ -286,40 +247,39 @@ func (r *CmsCustomerRepository) Delete(customer *entities.CmsCustomer) error {
 	return err
 }
 
-// DeleteMany sets the CustomerStatus field to 0 for each customer in the provided slice,
-// and then updates the customers in the database using a session.
-func (r *CmsCustomerRepository) DeleteMany(customers []*entities.CmsCustomer) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
+// UpdateMany updates multiple customer records in the database.
+// It takes a slice of customer entities as input and updates each record based on the cust_code field.
+// If any update fails, it rolls back the transaction and returns the error.
+// Otherwise, it commits the transaction and logs the update operation.
+// This method returns an error if the transaction fails or encounters any other error during the update process.
+func (r *CmsCustomerRepository) UpdateMany(customers []*entities.CmsCustomer) error {
 	for _, customer := range customers {
-		customer.CustomerStatus = 0
-		_, err = session.Where("cust_code = ?", customer.CustCode).Cols("customer_status").Update(customer)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
+		_, err := r.db.Where("cust_code = ?", customer.CustCode).Update(customer)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
-	err = session.Commit()
+
+	r.log("UPDATE", customers)
+
+	return nil
+}
+
+// DeleteMany sets the CustomerStatus field to 0 for each customer in the provided slice,
+// and then updates the customers in the database using a session.
+func (r *CmsCustomerRepository) DeleteMany(customers []*entities.CmsCustomer) error {
+	ids := iterator.Map(customers, func(item *entities.CmsCustomer) string {
+		return item.CustCode
+	})
+
+	_, err := r.db.In("cust_code", ids).Cols("customer_status").Update(&entities.CmsCustomer{
+		CustomerStatus: 0,
+	})
 	if err != nil {
 		return err
 	}
 
 	r.log("DELETE", customers)
-
 	return nil
 }
 

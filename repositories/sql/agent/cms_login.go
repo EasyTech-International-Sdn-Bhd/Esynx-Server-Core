@@ -147,45 +147,6 @@ func (r *CmsLoginRepository) Update(record *entities.CmsLogin) error {
 	return nil
 }
 
-// UpdateMany updates multiple records in the CmsLogin table.
-// It takes a slice of CmsLogin records as input and applies the updates within a transaction.
-// If any error occurs during the update process, it rolls back the transaction and returns the error.
-// Otherwise, it commits the transaction and returns nil.
-// After updating the records, it logs the operation as "UPDATE" along with the updated records.
-func (r *CmsLoginRepository) UpdateMany(records []*entities.CmsLogin) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, record := range records {
-		_, err = session.Where("staff_code = ?", record.StaffCode).Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", records)
-
-	return nil
-}
-
 // Delete sets the login status of the given CmsLogin record to 0
 // and updates it using the Update method. It returns an error if the update operation fails.
 func (r *CmsLoginRepository) Delete(record *entities.CmsLogin) error {
@@ -197,35 +158,37 @@ func (r *CmsLoginRepository) Delete(record *entities.CmsLogin) error {
 	return err
 }
 
-// DeleteMany deletes multiple records by setting their LoginStatus to 0 and calling UpdateMany within a session,
+// UpdateMany updates multiple records in the CmsLogin table.
+// It takes a slice of CmsLogin records as input and applies the updates in a bulk operation.
+// If any error occurs during the update process, it returns the error. Otherwise, it returns nil.
+// After updating the records, it logs the operation as "UPDATE" along with the updated records.
+func (r *CmsLoginRepository) UpdateMany(records []*entities.CmsLogin) error {
+	for _, record := range records {
+		_, err := r.db.Where("staff_code = ?", record.StaffCode).Update(record)
+		if err != nil {
+			return err
+		}
+	}
+
+	r.log("UPDATE", records)
+
+	return nil
+}
+
+// DeleteMany deletes multiple records by setting their LoginStatus to 0 in a bulk update operation,
 // and logs the operation with op = "DELETE".
 func (r *CmsLoginRepository) DeleteMany(records []*entities.CmsLogin) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
+	ids := iterator.Map(records, func(item *entities.CmsLogin) string {
+		return item.StaffCode
+	})
+
+	_, err := r.db.In("staff_code", ids).Cols("login_status").Update(&entities.CmsLogin{
+		LoginStatus: 0,
+	})
 	if err != nil {
 		return err
 	}
-	var sessionErr error
-	rollback := false
-	for _, record := range records {
-		record.LoginStatus = 0
-		_, err = session.Where("staff_code = ?", record.StaffCode).Cols("login_status").Update(record)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		if err := session.Rollback(); err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	if err := session.Commit(); err != nil {
-		return err
-	}
+
 	r.log("DELETE", records)
 	return nil
 }

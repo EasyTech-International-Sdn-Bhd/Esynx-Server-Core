@@ -171,45 +171,6 @@ func (r *CmsInvoiceSalesRepository) Update(invoice *entities.CmsInvoiceSales) er
 	return nil
 }
 
-// UpdateMany updates multiple invoices in the database.
-// It starts a new session, loops through the invoices and updates each one.
-// If an error occurs during the update, the session is rolled back and the error is returned.
-// If all updates are successful, the session is committed.
-// Finally, the updated invoices are logged.
-func (r *CmsInvoiceSalesRepository) UpdateMany(invoices []*entities.CmsInvoiceSales) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
-	for _, inv := range invoices {
-		_, err = session.Where("invoice_code = ?", inv.InvoiceCode).Update(inv)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
-		if err != nil {
-			return err
-		}
-		return sessionErr
-	}
-	err = session.Commit()
-	if err != nil {
-		return err
-	}
-
-	r.log("UPDATE", invoices)
-
-	return nil
-}
-
 // Delete sets the "Cancelled" field of the provided invoice to "T" and updates
 // it using the Update method of the CmsInvoiceSalesRepository. It returns an error
 // if the update operation fails.
@@ -222,41 +183,39 @@ func (r *CmsInvoiceSalesRepository) Delete(invoice *entities.CmsInvoiceSales) er
 	return err
 }
 
-// DeleteMany sets the "Cancelled" field to "T" for each invoice in the provided slice
-// and updates them using the UpdateMany method. It returns an error if the update
-// operation fails.
-func (r *CmsInvoiceSalesRepository) DeleteMany(invoices []*entities.CmsInvoiceSales) error {
-	session := r.db.NewSession()
-	defer session.Close()
-	err := session.Begin()
-	if err != nil {
-		return err
-	}
-	var sessionErr error
-	rollback := false
+// UpdateMany updates multiple invoices in the database.
+// It loops through the invoices and updates each one.
+// If an error occurs during the update, it returns the error.
+// Finally, the updated invoices are logged.
+func (r *CmsInvoiceSalesRepository) UpdateMany(invoices []*entities.CmsInvoiceSales) error {
 	for _, inv := range invoices {
-		inv.Cancelled = "T"
-		_, err = session.Where("invoice_code = ?", inv.InvoiceCode).Cols("cancelled").Update(inv)
-		if err != nil {
-			rollback = true
-			sessionErr = err
-			break
-		}
-	}
-	if rollback {
-		err := session.Rollback()
+		_, err := r.db.Where("invoice_code = ?", inv.InvoiceCode).Update(inv)
 		if err != nil {
 			return err
 		}
-		return sessionErr
 	}
-	err = session.Commit()
+
+	r.log("UPDATE", invoices)
+
+	return nil
+}
+
+// DeleteMany sets the "Cancelled" field to "T" for each invoice in the provided slice
+// and updates them in the database using a single bulk operation. It returns an error if the update
+// operation fails.
+func (r *CmsInvoiceSalesRepository) DeleteMany(invoices []*entities.CmsInvoiceSales) error {
+	ids := iterator.Map(invoices, func(item *entities.CmsInvoiceSales) string {
+		return item.InvoiceCode
+	})
+
+	_, err := r.db.In("invoice_code", ids).Cols("cancelled").Update(&entities.CmsInvoiceSales{
+		Cancelled: "T",
+	})
 	if err != nil {
 		return err
 	}
 
 	r.log("DELETE", invoices)
-
 	return nil
 }
 
