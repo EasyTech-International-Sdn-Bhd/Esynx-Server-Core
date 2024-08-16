@@ -149,6 +149,8 @@ func (r *CmsCreditNoteRepository) InsertMany(creditNotes []*entities.CmsCreditno
 		return err
 	}
 
+	r.log("INSERT", creditNotes)
+
 	dt := r.mapToCreditNoteSales(creditNotes)
 	if len(dt) > 0 {
 		err = r.s.InsertMany(dt)
@@ -156,8 +158,6 @@ func (r *CmsCreditNoteRepository) InsertMany(creditNotes []*entities.CmsCreditno
 			return err
 		}
 	}
-
-	r.log("INSERT", creditNotes)
 
 	return nil
 }
@@ -175,6 +175,8 @@ func (r *CmsCreditNoteRepository) Update(creditNote *entities.CmsCreditnote) err
 		return err
 	}
 
+	r.log("UPDATE", []*entities.CmsCreditnote{creditNote})
+
 	dt := r.mapToCreditNoteSales([]*entities.CmsCreditnote{creditNote})
 	if len(dt) > 0 {
 		err = r.s.Update(dt[0])
@@ -182,8 +184,6 @@ func (r *CmsCreditNoteRepository) Update(creditNote *entities.CmsCreditnote) err
 			return err
 		}
 	}
-
-	r.log("UPDATE", []*entities.CmsCreditnote{creditNote})
 
 	return nil
 }
@@ -195,6 +195,14 @@ func (r *CmsCreditNoteRepository) Delete(creditNote *entities.CmsCreditnote) err
 	_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Cols("cancelled").Update(creditNote)
 	if err == nil {
 		r.log("DELETE", []*entities.CmsCreditnote{creditNote})
+
+		dt := r.mapToCreditNoteSales([]*entities.CmsCreditnote{creditNote})
+		if len(dt) > 0 {
+			err = r.s.Delete(dt[0])
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return err
 }
@@ -209,6 +217,8 @@ func (r *CmsCreditNoteRepository) UpdateMany(creditNotes []*entities.CmsCreditno
 		}
 	}
 
+	r.log("UPDATE", creditNotes)
+
 	dt := r.mapToCreditNoteSales(creditNotes)
 	if len(dt) > 0 {
 		err := r.s.UpdateMany(dt)
@@ -216,8 +226,6 @@ func (r *CmsCreditNoteRepository) UpdateMany(creditNotes []*entities.CmsCreditno
 			return err
 		}
 	}
-
-	r.log("UPDATE", creditNotes)
 
 	return nil
 }
@@ -238,6 +246,14 @@ func (r *CmsCreditNoteRepository) DeleteMany(creditNotes []*entities.CmsCreditno
 	}
 
 	r.log("DELETE", creditNotes)
+
+	dt := r.mapToCreditNoteSales(creditNotes)
+	if len(dt) > 0 {
+		err := r.s.DeleteMany(dt)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

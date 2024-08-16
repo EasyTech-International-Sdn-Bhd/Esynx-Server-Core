@@ -164,6 +164,8 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 		return err
 	}
 
+	r.log("INSERT", invoices)
+
 	dt := r.mapToSalesInvoice(invoices)
 	if len(dt) > 0 {
 		err = r.s.InsertMany(dt)
@@ -171,8 +173,6 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 			return err
 		}
 	}
-
-	r.log("INSERT", invoices)
 
 	return nil
 }
@@ -193,6 +193,8 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 		return err
 	}
 
+	r.log("UPDATE", []*entities.CmsInvoice{invoice})
+
 	dt := r.mapToSalesInvoice([]*entities.CmsInvoice{invoice})
 	if len(dt) > 0 {
 		err = r.s.Update(dt[0])
@@ -200,8 +202,6 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 			return err
 		}
 	}
-
-	r.log("UPDATE", []*entities.CmsInvoice{invoice})
 
 	return nil
 }
@@ -214,6 +214,14 @@ func (r *CmsInvoiceRepository) Delete(invoice *entities.CmsInvoice) error {
 	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Cols("Cancelled").Update(invoice)
 	if err == nil {
 		r.log("DELETE", []*entities.CmsInvoice{invoice})
+
+		dt := r.mapToSalesInvoice([]*entities.CmsInvoice{invoice})
+		if len(dt) > 0 {
+			err = r.s.Delete(dt[0])
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return err
 }
@@ -230,6 +238,8 @@ func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error
 		}
 	}
 
+	r.log("UPDATE", invoices)
+
 	dt := r.mapToSalesInvoice(invoices)
 	if len(dt) > 0 {
 		err := r.s.UpdateMany(dt)
@@ -237,8 +247,6 @@ func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error
 			return err
 		}
 	}
-
-	r.log("UPDATE", invoices)
 
 	return nil
 }
@@ -259,6 +267,15 @@ func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error
 	}
 
 	r.log("DELETE", invoices)
+
+	dt := r.mapToSalesInvoice(invoices)
+	if len(dt) > 0 {
+		err := r.s.DeleteMany(dt)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

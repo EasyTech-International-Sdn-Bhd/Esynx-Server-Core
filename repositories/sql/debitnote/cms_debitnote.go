@@ -143,6 +143,8 @@ func (r *CmsDebitNoteRepository) InsertMany(debitNotes []*entities.CmsDebitnote)
 		return err
 	}
 
+	r.log("INSERT", debitNotes)
+
 	dt := r.mapToDebitNoteSales(debitNotes)
 	if len(dt) > 0 {
 		err = r.s.InsertMany(dt)
@@ -150,8 +152,6 @@ func (r *CmsDebitNoteRepository) InsertMany(debitNotes []*entities.CmsDebitnote)
 			return err
 		}
 	}
-
-	r.log("INSERT", debitNotes)
 
 	return nil
 }
@@ -166,6 +166,8 @@ func (r *CmsDebitNoteRepository) Update(debitNote *entities.CmsDebitnote) error 
 		return err
 	}
 
+	r.log("UPDATE", []*entities.CmsDebitnote{debitNote})
+
 	dt := r.mapToDebitNoteSales([]*entities.CmsDebitnote{debitNote})
 	if len(dt) > 0 {
 		err = r.s.Update(dt[0])
@@ -173,8 +175,6 @@ func (r *CmsDebitNoteRepository) Update(debitNote *entities.CmsDebitnote) error 
 			return err
 		}
 	}
-
-	r.log("UPDATE", []*entities.CmsDebitnote{debitNote})
 
 	return nil
 }
@@ -188,6 +188,14 @@ func (r *CmsDebitNoteRepository) Delete(debitNote *entities.CmsDebitnote) error 
 	_, err := r.db.Where("dn_code = ?", debitNote.DnCode).Cols("cancelled").Update(debitNote)
 	if err == nil {
 		r.log("DELETE", []*entities.CmsDebitnote{debitNote})
+
+		dt := r.mapToDebitNoteSales([]*entities.CmsDebitnote{debitNote})
+		if len(dt) > 0 {
+			err = r.s.Delete(dt[0])
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return err
 }
@@ -201,6 +209,8 @@ func (r *CmsDebitNoteRepository) UpdateMany(debitNotes []*entities.CmsDebitnote)
 		}
 	}
 
+	r.log("UPDATE", debitNotes)
+
 	dt := r.mapToDebitNoteSales(debitNotes)
 	if len(dt) > 0 {
 		err := r.s.UpdateMany(dt)
@@ -208,8 +218,6 @@ func (r *CmsDebitNoteRepository) UpdateMany(debitNotes []*entities.CmsDebitnote)
 			return err
 		}
 	}
-
-	r.log("UPDATE", debitNotes)
 
 	return nil
 }
@@ -230,6 +238,15 @@ func (r *CmsDebitNoteRepository) DeleteMany(debitNotes []*entities.CmsDebitnote)
 	}
 
 	r.log("DELETE", debitNotes)
+
+	dt := r.mapToDebitNoteSales(debitNotes)
+	if len(dt) > 0 {
+		err := r.s.DeleteMany(dt)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
