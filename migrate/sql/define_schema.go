@@ -40,7 +40,6 @@ func defaults() []interface{} {
 		&entities.CmsAccExistingOrderItem{},
 		&entities.CmsAppAdvertisement{},
 		&entities.CmsAppAnnouncement{},
-		&entities.CmsArCreditnoteDetails{},
 		&entities.CmsCreditnote{},
 		&entities.CmsCreditnoteDetails{},
 		&entities.CmsCreditnoteSales{},
