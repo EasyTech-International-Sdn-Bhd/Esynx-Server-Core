@@ -7,7 +7,6 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/customer"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
-	"slices"
 	"time"
 	"xorm.io/builder"
 	"xorm.io/xorm"
@@ -312,7 +311,7 @@ func (r *CmsInvoiceRepository) log(op string, payload []*entities.CmsInvoice) {
 
 func (r *CmsInvoiceRepository) mapToSalesInvoice(invoices []*entities.CmsInvoice) []*entities.CmsInvoiceSales {
 	return iterator.Map(iterator.Filter(invoices, func(item *entities.CmsInvoice) bool {
-		if slices.Contains([]string{"SL", "CS"}, item.FromDoc) {
+		if item.FromDoc == "SL" && item.DocType == "IV" {
 			return true
 		}
 		return false
