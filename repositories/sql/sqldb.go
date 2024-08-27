@@ -5,6 +5,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	migrate "github.com/easytech-international-sdn-bhd/esynx-server-core/migrate/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"time"
 	"xorm.io/xorm"
 )
 
@@ -25,8 +26,8 @@ func NewSqlDb() *SqlDb {
 func (m *SqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error) {
 	m.Engine, err = xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
 		db.SetMaxOpenConns(1)
-		db.SetMaxIdleConns(1)
-		db.SetConnMaxLifetime(-1)
+		db.SetMaxIdleConns(0)
+		db.SetConnMaxLifetime(time.Second * 5)
 		err := db.Ping()
 		if err != nil {
 			return err
