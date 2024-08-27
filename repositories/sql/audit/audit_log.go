@@ -4,6 +4,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	iterator "github.com/ledongthuc/goterators"
+	"log"
 	"time"
 	"xorm.io/xorm"
 )
@@ -28,10 +29,13 @@ func NewAuditLogRepository(db *xorm.Engine, session contracts.IDatabaseUserSessi
 // The AppName and UserCode fields of each audit log are set based on the
 // options provided in the AuditLogRepository.
 func (r *AuditLogRepository) Log(audits []*entities.AuditLog) {
-	_, _ = r.db.Insert(iterator.Map(audits, func(item *entities.AuditLog) *entities.AuditLog {
+	_, err := r.db.Insert(iterator.Map(audits, func(item *entities.AuditLog) *entities.AuditLog {
 		item.OperationTime = time.Now()
 		item.AppName = r.opt.GetApp()
 		item.UserCode = r.opt.GetUser()
 		return item
 	}))
+	if err != nil {
+		log.Println("AuditLogRepository.Log:", err)
+	}
 }

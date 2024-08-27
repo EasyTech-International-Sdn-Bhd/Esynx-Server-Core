@@ -116,5 +116,6 @@ func defaults() []interface{} {
 		&entities.CmsWarehouse{},
 		&entities.CmsWarehouseStock{},
 		&entities.AuditLog{},
+		&entities.EsynxConfig{},
 	}
 }
