@@ -21,7 +21,6 @@ type CmsInvoiceRepository struct {
 	audit contracts.IAuditLog
 	c     *customer.CmsCustomerRepository
 	d     *CmsInvoiceDetailsRepository
-	s     *CmsInvoiceSalesRepository
 }
 
 // NewCmsInvoiceRepository creates a new instance of CmsInvoiceRepository with the given IRepository option.
@@ -39,7 +38,6 @@ func NewCmsInvoiceRepository(option *contracts.IRepository) *CmsInvoiceRepositor
 		audit: option.Audit,
 		c:     customer.NewCmsCustomerRepository(option),
 		d:     NewCmsInvoiceDetailsRepository(option),
-		s:     NewCmsInvoiceSalesRepository(option),
 	}
 }
 
@@ -165,14 +163,6 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 
 	r.log("INSERT", invoices)
 
-	dt := r.mapToSalesInvoice(invoices)
-	if len(dt) > 0 {
-		err = r.s.InsertMany(dt)
-		if err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -194,14 +184,6 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 
 	r.log("UPDATE", []*entities.CmsInvoice{invoice})
 
-	dt := r.mapToSalesInvoice([]*entities.CmsInvoice{invoice})
-	if len(dt) > 0 {
-		err = r.s.Update(dt[0])
-		if err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -213,14 +195,6 @@ func (r *CmsInvoiceRepository) Delete(invoice *entities.CmsInvoice) error {
 	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Cols("Cancelled").Update(invoice)
 	if err == nil {
 		r.log("DELETE", []*entities.CmsInvoice{invoice})
-
-		dt := r.mapToSalesInvoice([]*entities.CmsInvoice{invoice})
-		if len(dt) > 0 {
-			err = r.s.Delete(dt[0])
-			if err != nil {
-				return err
-			}
-		}
 	}
 	return err
 }
@@ -238,14 +212,6 @@ func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error
 	}
 
 	r.log("UPDATE", invoices)
-
-	dt := r.mapToSalesInvoice(invoices)
-	if len(dt) > 0 {
-		err := r.s.UpdateMany(dt)
-		if err != nil {
-			return err
-		}
-	}
 
 	return nil
 }
@@ -266,14 +232,6 @@ func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error
 	}
 
 	r.log("DELETE", invoices)
-
-	dt := r.mapToSalesInvoice(invoices)
-	if len(dt) > 0 {
-		err := r.s.DeleteMany(dt)
-		if err != nil {
-			return err
-		}
-	}
 
 	return nil
 }
@@ -307,30 +265,4 @@ func (r *CmsInvoiceRepository) log(op string, payload []*entities.CmsInvoice) {
 		}
 	})
 	r.audit.Log(body)
-}
-
-func (r *CmsInvoiceRepository) mapToSalesInvoice(invoices []*entities.CmsInvoice) []*entities.CmsInvoiceSales {
-	return iterator.Map(iterator.Filter(invoices, func(item *entities.CmsInvoice) bool {
-		if item.FromDoc == "SL" && item.DocType == "IV" {
-			return true
-		}
-		return false
-	}), func(i *entities.CmsInvoice) *entities.CmsInvoiceSales {
-		return &entities.CmsInvoiceSales{
-			InvoiceCode:       i.InvoiceCode,
-			CustCode:          i.CustCode,
-			InvoiceDate:       i.InvoiceDate,
-			InvoiceDueDate:    i.InvoiceDueDate,
-			InvoiceAmount:     i.InvoiceAmount,
-			OutstandingAmount: i.OutstandingAmount,
-			Approved:          i.Approved,
-			Approver:          i.Approver,
-			ApprovedAt:        i.ApprovedAt,
-			SalespersonId:     i.SalespersonId,
-			InvUdf:            i.InvUdf,
-			Cancelled:         i.Cancelled,
-			RefNo:             i.RefNo,
-			Termcode:          i.Termcode,
-		}
-	})
 }

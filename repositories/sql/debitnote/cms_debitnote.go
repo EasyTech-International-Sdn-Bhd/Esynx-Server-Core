@@ -7,7 +7,6 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/customer"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
-	"slices"
 	"time"
 	"xorm.io/builder"
 	"xorm.io/xorm"
@@ -19,7 +18,6 @@ type CmsDebitNoteRepository struct {
 	audit contracts.IAuditLog
 	c     *customer.CmsCustomerRepository
 	d     *CmsDebitNoteDetailsRepository
-	s     *CmsDebitNoteSalesRepository
 }
 
 // NewCmsDebitNoteRepository creates a new instance of CmsDebitNoteRepository with the given IRepository option.
@@ -29,7 +27,6 @@ func NewCmsDebitNoteRepository(option *contracts.IRepository) *CmsDebitNoteRepos
 		audit: option.Audit,
 		c:     customer.NewCmsCustomerRepository(option),
 		d:     NewCmsDebitNoteDetailsRepository(option),
-		s:     NewCmsDebitNoteSalesRepository(option),
 	}
 }
 
@@ -145,14 +142,6 @@ func (r *CmsDebitNoteRepository) InsertMany(debitNotes []*entities.CmsDebitnote)
 
 	r.log("INSERT", debitNotes)
 
-	dt := r.mapToDebitNoteSales(debitNotes)
-	if len(dt) > 0 {
-		err = r.s.InsertMany(dt)
-		if err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -168,14 +157,6 @@ func (r *CmsDebitNoteRepository) Update(debitNote *entities.CmsDebitnote) error 
 
 	r.log("UPDATE", []*entities.CmsDebitnote{debitNote})
 
-	dt := r.mapToDebitNoteSales([]*entities.CmsDebitnote{debitNote})
-	if len(dt) > 0 {
-		err = r.s.Update(dt[0])
-		if err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -188,14 +169,6 @@ func (r *CmsDebitNoteRepository) Delete(debitNote *entities.CmsDebitnote) error 
 	_, err := r.db.Where("dn_code = ?", debitNote.DnCode).Cols("cancelled").Update(debitNote)
 	if err == nil {
 		r.log("DELETE", []*entities.CmsDebitnote{debitNote})
-
-		dt := r.mapToDebitNoteSales([]*entities.CmsDebitnote{debitNote})
-		if len(dt) > 0 {
-			err = r.s.Delete(dt[0])
-			if err != nil {
-				return err
-			}
-		}
 	}
 	return err
 }
@@ -210,14 +183,6 @@ func (r *CmsDebitNoteRepository) UpdateMany(debitNotes []*entities.CmsDebitnote)
 	}
 
 	r.log("UPDATE", debitNotes)
-
-	dt := r.mapToDebitNoteSales(debitNotes)
-	if len(dt) > 0 {
-		err := r.s.UpdateMany(dt)
-		if err != nil {
-			return err
-		}
-	}
 
 	return nil
 }
@@ -238,14 +203,6 @@ func (r *CmsDebitNoteRepository) DeleteMany(debitNotes []*entities.CmsDebitnote)
 	}
 
 	r.log("DELETE", debitNotes)
-
-	dt := r.mapToDebitNoteSales(debitNotes)
-	if len(dt) > 0 {
-		err := r.s.DeleteMany(dt)
-		if err != nil {
-			return err
-		}
-	}
 
 	return nil
 }
@@ -281,28 +238,4 @@ func (r *CmsDebitNoteRepository) log(op string, payload []*entities.CmsDebitnote
 		}
 	})
 	r.audit.Log(body)
-}
-
-func (r *CmsDebitNoteRepository) mapToDebitNoteSales(invoices []*entities.CmsDebitnote) []*entities.CmsDebitnoteSales {
-	return iterator.Map(iterator.Filter(invoices, func(item *entities.CmsDebitnote) bool {
-		if slices.Contains([]string{"SL"}, item.FromDoc) {
-			return true
-		}
-		return false
-	}), func(i *entities.CmsDebitnote) *entities.CmsDebitnoteSales {
-		return &entities.CmsDebitnoteSales{
-			DnCode:            i.DnCode,
-			CustCode:          i.CustCode,
-			DnDate:            i.DnDate,
-			DnAmount:          i.DnAmount,
-			OutstandingAmount: i.OutstandingAmount,
-			Approved:          i.Approved,
-			Approver:          i.Approver,
-			ApprovedAt:        i.ApprovedAt,
-			SalespersonId:     i.SalespersonId,
-			DnUdf:             i.DnUdf,
-			Cancelled:         i.Cancelled,
-			RefNo:             i.RefNo,
-		}
-	})
 }
