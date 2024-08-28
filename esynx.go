@@ -80,7 +80,6 @@ func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
 		DebitNoteDetails:      debitnote.NewCmsDebitNoteDetailsRepository(&userOptions),
 		Invoice:               invoice.NewCmsInvoiceRepository(&userOptions),
 		InvoiceDetails:        invoice.NewCmsInvoiceDetailsRepository(&userOptions),
-		InvoiceSales:          invoice.NewCmsInvoiceSalesRepository(&userOptions),
 		Agent:                 agent.NewCmsLoginRepository(&userOptions),
 		MobileAppModule:       module.NewCmsMobileModuleRepository(&userOptions),
 		Product:               stock.NewCmsProductRepository(&userOptions),
