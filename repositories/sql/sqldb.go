@@ -24,10 +24,10 @@ func NewSqlDb() *SqlDb {
 // Open initializes a connection to the MySQL database using the provided connection string and logger.
 // Returns an error if the connection fails.
 func (m *SqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error) {
-	m.Engine, err = xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
-		db.SetMaxOpenConns(1)
+	engine, err := xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
+		db.SetMaxOpenConns(3)
 		db.SetMaxIdleConns(0)
-		db.SetConnMaxLifetime(time.Second * 5)
+		db.SetConnMaxLifetime(time.Second * 15)
 		err := db.Ping()
 		if err != nil {
 			return err
@@ -37,6 +37,7 @@ func (m *SqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error) 
 	if err != nil {
 		return err
 	}
+	m.Engine = engine
 	if logger != nil {
 		m.Engine.SetLogger(logger)
 	}
