@@ -1,6 +1,7 @@
 package contracts
 
 import (
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/options"
 	"xorm.io/xorm"
 	"xorm.io/xorm/log"
@@ -19,6 +20,11 @@ type IDatabaseUserSession interface {
 	GetStore() options.DatabaseStore
 	GetConnection() string
 	GetLogger() IDatabaseLogger
+	GetAuditLogger() IAuditLogger
+}
+
+type IAuditLogger interface {
+	Insert(data []*entities.AuditLog)
 }
 
 type IDatabaseLogger interface {

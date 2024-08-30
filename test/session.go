@@ -2,13 +2,27 @@ package test
 
 import (
 	"fmt"
+	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/options"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/audit"
 )
 
+type fakeAuditLogger struct{}
+
+func newFakeAuditLogger() *fakeAuditLogger {
+	return &fakeAuditLogger{}
+}
+func (l *fakeAuditLogger) Insert(data []*entities.AuditLog) {
+
+}
+
 type TestSession struct {
+}
+
+func (s *TestSession) GetAuditLogger() contracts.IAuditLogger {
+	return newFakeAuditLogger()
 }
 
 func NewTestSession() *TestSession {
@@ -52,6 +66,6 @@ func TestOption() (*contracts.IRepository, error) {
 		Db:      db.Engine,
 		User:    session.GetUser(),
 		AppName: session.GetApp(),
-		Audit:   audit.NewAuditLogRepository(db.Engine, session),
+		Audit:   audit.NewAuditLogRepository(session),
 	}, nil
 }

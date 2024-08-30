@@ -65,7 +65,7 @@ func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
 		Db:      db.GetEngine(),
 		User:    session.GetUser(),
 		AppName: session.GetApp(),
-		Audit:   audit.NewAuditLogRepository(db.GetEngine(), session),
+		Audit:   audit.NewAuditLogRepository(session),
 	}
 
 	return &ESynx{

@@ -47,7 +47,7 @@ func connectWithRetry(conn string) (*xorm.Engine, error) {
 
 	for i := 1; i <= maxRetries; i++ {
 		engine, err = xorm.NewEngine("mysql", conn, func(db *sql.DB) error {
-			db.SetMaxOpenConns(3)
+			db.SetMaxOpenConns(1)
 			db.SetMaxIdleConns(1)
 			db.SetConnMaxLifetime(time.Minute * 3)
 			return nil
