@@ -27,7 +27,6 @@ type ESynx struct {
 	DebitNoteDetails      contracts.ICmsDebitNoteDetails
 	Invoice               contracts.ICmsInvoice
 	InvoiceDetails        contracts.ICmsInvoiceDetails
-	InvoiceSales          contracts.ICmsInvoiceSales
 	Agent                 contracts.ICmsLogin
 	MobileAppModule       contracts.ICmsMobileModule
 	Product               contracts.ICmsProduct
