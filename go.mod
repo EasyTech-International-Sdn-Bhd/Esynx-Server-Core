@@ -3,7 +3,7 @@ module github.com/easytech-international-sdn-bhd/esynx-server-core
 go 1.22
 
 require (
-	github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240830025014-4b19ebfc596a
+	github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20240831144810-c07c6e708009
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/goccy/go-json v0.10.3
 	github.com/ledongthuc/goterators v1.0.2
