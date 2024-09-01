@@ -36,8 +36,6 @@ func migrations() []*xormigrate.Migration {
 // defaults returns a slice of interface{} containing pointers to various entity structs that are used as default database schema in the application. The returned slice can be used to define database migrations.
 func defaults() []interface{} {
 	return []interface{}{
-		&entities.CmsAccExistingOrder{},
-		&entities.CmsAccExistingOrderItem{},
 		&entities.CmsAppAdvertisement{},
 		&entities.CmsAppAnnouncement{},
 		&entities.CmsCreditnote{},
@@ -112,6 +110,5 @@ func defaults() []interface{} {
 		&entities.CmsVisitReportDocuments{},
 		&entities.CmsWarehouse{},
 		&entities.CmsWarehouseStock{},
-		&entities.AuditLog{},
 	}
 }
