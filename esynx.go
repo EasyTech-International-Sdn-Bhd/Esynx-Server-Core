@@ -22,7 +22,7 @@ type ESynx struct {
 	CreditNoteDetails     contracts.ICmsCreditNoteDetails
 	Customer              contracts.ICmsCustomer
 	CustomerBranch        contracts.ICmsCustomerBranch
-	CustomerSalesperson   contracts.ICmsCustomerSalesperson
+	CustomerAgent         contracts.ICmsCustomerAgent
 	DebitNote             contracts.ICmsDebitNote
 	DebitNoteDetails      contracts.ICmsDebitNoteDetails
 	Invoice               contracts.ICmsInvoice
@@ -74,7 +74,7 @@ func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
 		CreditNoteDetails:     creditnote.NewCmsCreditNoteDetailsRepository(&userOptions),
 		Customer:              customer.NewCmsCustomerRepository(&userOptions),
 		CustomerBranch:        customer.NewCmsCustomerBranchRepository(&userOptions),
-		CustomerSalesperson:   agent.NewCmsCustomerSalespersonRepository(&userOptions),
+		CustomerAgent:         agent.NewCmsCustomerAgentRepository(&userOptions),
 		DebitNote:             debitnote.NewCmsDebitNoteRepository(&userOptions),
 		DebitNoteDetails:      debitnote.NewCmsDebitNoteDetailsRepository(&userOptions),
 		Invoice:               invoice.NewCmsInvoiceRepository(&userOptions),

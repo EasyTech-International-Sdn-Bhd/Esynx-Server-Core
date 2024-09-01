@@ -11,8 +11,8 @@ type ICmsCustomer interface {
 	GetMany(custCodes []string) ([]*entities.CmsCustomer, error)
 	GetWithBranches(custCode string) (*models.CustomerWithBranches, error)
 	GetWithAgent(custCode string) (*models.CustomerWithAgent, error)
-	GetCustomerById(custId string) (*entities.CmsCustomer, error)
-	GetAllStatusByAgentId(agentId int64) ([]*entities.CmsCustomer, error)
+	GetCustomerByCode(custCode string) (*entities.CmsCustomer, error)
+	GetAllStatusByAgentCode(agentCode string) ([]*entities.CmsCustomer, error)
 	SearchByNameOrCode(predicate string) ([]*entities.CmsCustomer, error)
 	InsertMany(records []*entities.CmsCustomer) error
 	Update(customer *entities.CmsCustomer) error

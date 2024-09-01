@@ -87,7 +87,7 @@ func (r *CmsMobileModuleRepository) parseSalesmanGroup(s string) (map[string][]s
 				return nil, err
 			}
 			for _, record := range records {
-				each = append(each, record.StaffCode)
+				each = append(each, record.AgentCode)
 			}
 			group[k] = each
 		}

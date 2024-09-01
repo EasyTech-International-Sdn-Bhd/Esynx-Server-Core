@@ -19,7 +19,7 @@ type CmsCustomerRepository struct {
 	db    *xorm.Engine
 	audit contracts.IAuditLog
 	b     *CmsCustomerBranchRepository
-	s     *agent.CmsCustomerSalespersonRepository
+	s     *agent.CmsCustomerAgentRepository
 }
 
 // NewCmsCustomerRepository is a function that creates a new instance of CmsCustomerRepository.
@@ -29,7 +29,7 @@ func NewCmsCustomerRepository(option *contracts.IRepository) *CmsCustomerReposit
 		db:    option.Db,
 		audit: option.Audit,
 		b:     NewCmsCustomerBranchRepository(option),
-		s:     agent.NewCmsCustomerSalespersonRepository(option),
+		s:     agent.NewCmsCustomerAgentRepository(option),
 	}
 }
 
@@ -105,7 +105,7 @@ func (r *CmsCustomerRepository) GetWithAgent(custCode string) (*models.CustomerW
 	if customer == nil {
 		return nil, nil
 	}
-	agentRec, err := r.s.GetAgentByCustId(int64(customer.CustId))
+	agentRec, err := r.s.GetAgentByCustCode(customer.CustCode)
 	if err != nil {
 		return nil, err
 	}
@@ -115,27 +115,27 @@ func (r *CmsCustomerRepository) GetWithAgent(custCode string) (*models.CustomerW
 	}, nil
 }
 
-// GetAllStatusByAgentId retrieves all customer records with the given agent ID.
+// GetAllStatusByAgentCode retrieves all customer records with the given agent ID.
 //
-// It first calls the GetByAgentId method of the CmsCustomerSalespersonRepository to get the customer IDs
+// It first calls the GetByAgentId method of the CmsCustomerAgentRepository to get the customer IDs
 // associated with the given agent ID. Then, it uses the obtained customer IDs to fetch the corresponding
 // customer records from the database using the In operator.
 //
 // If successful, it returns a slice of *entities.CmsCustomer representing the customer records and nil error.
 // If an error occurs during the retrieval process, it returns nil and the corresponding error.
-func (r *CmsCustomerRepository) GetAllStatusByAgentId(agentId int64) ([]*entities.CmsCustomer, error) {
-	result, err := r.s.GetByAgentId(agentId)
+func (r *CmsCustomerRepository) GetAllStatusByAgentCode(agentCode string) ([]*entities.CmsCustomer, error) {
+	result, err := r.s.GetByAgentCode(agentCode)
 	if err != nil {
 		return nil, err
 	}
 
-	var customerIds []int
+	var custCodes []string
 	for _, record := range result {
-		customerIds = append(customerIds, record.CustomerId)
+		custCodes = append(custCodes, record.CustCode)
 	}
 
 	var records []*entities.CmsCustomer
-	err = r.db.In("cust_id", customerIds).Find(&records)
+	err = r.db.In("cust_code", custCodes).Find(&records)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +160,7 @@ func (r *CmsCustomerRepository) SearchByNameOrCode(predicate string) ([]*entitie
 	return records, nil
 }
 
-// GetCustomerById retrieves a customer record from the database based on the specified customer ID.
+// GetCustomerByCode retrieves a customer record from the database based on the specified customer ID.
 //
 // If the customer ID is not found, nil will be returned along with nil error.
 // If there is an error during the retrieval process, nil customer record will be returned along with the error.
@@ -171,9 +171,9 @@ func (r *CmsCustomerRepository) SearchByNameOrCode(predicate string) ([]*entitie
 // Returns:
 // - *entities.CmsCustomer: The retrieved customer record.
 // - error: The error occurred during the retrieval process, if any.
-func (r *CmsCustomerRepository) GetCustomerById(custId string) (*entities.CmsCustomer, error) {
+func (r *CmsCustomerRepository) GetCustomerByCode(custCode string) (*entities.CmsCustomer, error) {
 	var record entities.CmsCustomer
-	has, err := r.db.Where("cust_id=?", custId).Get(&record)
+	has, err := r.db.Where("cust_code=?", custCode).Get(&record)
 	if err != nil {
 		return nil, err
 	}

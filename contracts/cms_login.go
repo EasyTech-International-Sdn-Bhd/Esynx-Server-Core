@@ -6,7 +6,7 @@ import (
 )
 
 type ICmsLogin interface {
-	Get(agentId int64) (*entities.CmsLogin, error)
+	Get(agentCode string) (*entities.CmsLogin, error)
 	GetByAgentCode(agentCode string) (*entities.CmsLogin, error)
 	GetAll() ([]*entities.CmsLogin, error)
 	InsertMany(records []*entities.CmsLogin) error
