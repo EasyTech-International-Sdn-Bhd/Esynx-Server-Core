@@ -21,7 +21,6 @@ func TestCmsCustomerBranchRepository_InsertMany(t *testing.T) {
 		branches = append(branches, &entities.CmsCustomerBranch{
 			BranchCode:   fmt.Sprintf("BR-%d", i),
 			CustCode:     fmt.Sprintf("CS-%d", rand.IntN(100000)+1),
-			CustId:       rand.IntN(100),
 			BranchActive: rand.IntN(2),
 		})
 	}
