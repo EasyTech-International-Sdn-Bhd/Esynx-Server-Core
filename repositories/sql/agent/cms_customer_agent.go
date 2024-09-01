@@ -30,6 +30,26 @@ func NewCmsCustomerAgentRepository(option *contracts.IRepository) *CmsCustomerAg
 	}
 }
 
+func (r *CmsCustomerAgentRepository) GetByManyCustomers(custCodes []string) ([]*entities.CmsCustomerAgent, error) {
+	var res []*entities.CmsCustomerAgent
+	var t entities.CmsCustomerAgent
+	err := r.db.SQL(builder.Select("*").From(t.TableName()).Where(builder.In("cust_code", custCodes))).Find(&res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (r *CmsCustomerAgentRepository) GetByManyAgents(agentCodes []string) ([]*entities.CmsCustomerAgent, error) {
+	var res []*entities.CmsCustomerAgent
+	var t entities.CmsCustomerAgent
+	err := r.db.SQL(builder.Select("*").From(t.TableName()).Where(builder.In("agent_code", agentCodes))).Find(&res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 // GetByAgentCode retrieves customer salesperson records by agent ID.
 //
 // It queries the database for customer salesperson records where the salesperson ID
