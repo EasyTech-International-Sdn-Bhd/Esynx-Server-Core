@@ -153,7 +153,6 @@ func (r *CmsCustomerAgentRepository) Delete(record *entities.CmsCustomerAgent) e
 // If any update fails, it returns the error. Otherwise, it logs the updated records.
 func (r *CmsCustomerAgentRepository) UpdateMany(records []*entities.CmsCustomerAgent) error {
 	for _, record := range records {
-		record.Validate()
 		_, err := r.db.Where("id = ?", record.Id).Update(record)
 		if err != nil {
 			return err

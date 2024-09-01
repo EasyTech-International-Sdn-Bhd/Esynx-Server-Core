@@ -8,8 +8,8 @@ import (
 type ICmsCustomerBranch interface {
 	Get(branchCode string) (*entities.CmsCustomerBranch, error)
 	GetByCustomerCode(custCode string) ([]*entities.CmsCustomerBranch, error)
-	GetByAgentId(agentId int64) ([]*entities.CmsCustomerBranch, error)
-	GetAllStatusByAgentId(agentId int64) ([]*entities.CmsCustomerBranch, error)
+	GetByAgentCode(agentCode string) ([]*entities.CmsCustomerBranch, error)
+	GetAllStatusByAgentCode(agentCode string) ([]*entities.CmsCustomerBranch, error)
 	InsertMany(records []*entities.CmsCustomerBranch) error
 	Update(record *entities.CmsCustomerBranch) error
 	UpdateMany(records []*entities.CmsCustomerBranch) error

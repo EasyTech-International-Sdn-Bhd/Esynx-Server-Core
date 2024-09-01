@@ -117,7 +117,7 @@ func (r *CmsCustomerRepository) GetWithAgent(custCode string) (*models.CustomerW
 
 // GetAllStatusByAgentCode retrieves all customer records with the given agent ID.
 //
-// It first calls the GetByAgentId method of the CmsCustomerAgentRepository to get the customer IDs
+// It first calls the GetByAgentCode method of the CmsCustomerAgentRepository to get the customer IDs
 // associated with the given agent ID. Then, it uses the obtained customer IDs to fetch the corresponding
 // customer records from the database using the In operator.
 //

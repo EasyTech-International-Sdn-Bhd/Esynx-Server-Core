@@ -9,5 +9,5 @@ type CustomerWithBranches struct {
 
 type CustomerWithAgent struct {
 	C *entities.CmsCustomer
-	A *entities.CmsLogin
+	A []*entities.CmsLogin
 }

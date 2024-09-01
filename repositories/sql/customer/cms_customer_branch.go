@@ -53,10 +53,10 @@ func (r *CmsCustomerBranchRepository) GetByCustomerCode(custCode string) ([]*ent
 	return branches, nil
 }
 
-// GetByAgentId returns the customer branches associated with the given agent ID,
+// GetByAgentCode returns the customer branches associated with the given agent ID,
 // filtered by active branches. If no branches are found, it returns an empty result ([]*entities.CmsCustomerBranch, nil).
-func (r *CmsCustomerBranchRepository) GetByAgentId(agentId int64) ([]*entities.CmsCustomerBranch, error) {
-	branches, err := r.GetAllStatusByAgentId(agentId)
+func (r *CmsCustomerBranchRepository) GetByAgentCode(agentCode string) ([]*entities.CmsCustomerBranch, error) {
+	branches, err := r.GetAllStatusByAgentCode(agentCode)
 	if err != nil {
 		return nil, err
 	}
@@ -68,15 +68,15 @@ func (r *CmsCustomerBranchRepository) GetByAgentId(agentId int64) ([]*entities.C
 	return nil, nil
 }
 
-// GetAllStatusByAgentId retrieves all customer branches with a specific agent ID.
+// GetAllStatusByAgentCode retrieves all customer branches with a specific agent ID.
 // It returns a slice of CmsCustomerBranch entities and an error, if any.
 // The agent ID parameter specifies the ID of the agent.
 // The returned slice contains all branches associated with the given agent ID.
 // If no branches are found, the function returns an empty slice.
 // The error value is nil if the query is successful, otherwise it contains the error encountered.
-func (r *CmsCustomerBranchRepository) GetAllStatusByAgentId(agentId int64) ([]*entities.CmsCustomerBranch, error) {
+func (r *CmsCustomerBranchRepository) GetAllStatusByAgentCode(agentCode string) ([]*entities.CmsCustomerBranch, error) {
 	var branches []*entities.CmsCustomerBranch
-	err := r.db.Where("agent_id = ?", agentId).Find(&branches)
+	err := r.db.Where("agent_code = ?", agentCode).Find(&branches)
 	if err != nil {
 		return nil, err
 	}
