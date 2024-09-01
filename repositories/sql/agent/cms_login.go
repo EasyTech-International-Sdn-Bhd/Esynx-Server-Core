@@ -52,7 +52,7 @@ func (r *CmsLoginRepository) Get(agentCode string) (*entities.CmsLogin, error) {
 // - error: An error if any occurred during the retrieval process, or nil if successful.
 func (r *CmsLoginRepository) GetByAgentCode(agentCode string) (*entities.CmsLogin, error) {
 	var record entities.CmsLogin
-	has, err := r.db.Where("staff_code = ?", agentCode).Get(&record)
+	has, err := r.db.Where("agent_code = ?", agentCode).Get(&record)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func (r *CmsLoginRepository) InsertMany(records []*entities.CmsLogin) error {
 // The contracts.IAuditLog interface should have a Log method that takes a slice of
 // entities.AuditLog as its parameter.
 func (r *CmsLoginRepository) Update(record *entities.CmsLogin) error {
-	_, err := r.db.Where("staff_code = ?", record.AgentCode).Update(record)
+	_, err := r.db.Where("agent_code = ?", record.AgentCode).Update(record)
 	if err != nil {
 		return err
 	}
@@ -151,7 +151,7 @@ func (r *CmsLoginRepository) Update(record *entities.CmsLogin) error {
 // and updates it using the Update method. It returns an error if the update operation fails.
 func (r *CmsLoginRepository) Delete(record *entities.CmsLogin) error {
 	record.LoginStatus = 0
-	_, err := r.db.Where("staff_code = ?", record.AgentCode).Cols("login_status").Update(record)
+	_, err := r.db.Where("agent_code = ?", record.AgentCode).Cols("login_status").Update(record)
 	if err == nil {
 		r.log("DELETE", []*entities.CmsLogin{record})
 	}
@@ -164,7 +164,7 @@ func (r *CmsLoginRepository) Delete(record *entities.CmsLogin) error {
 // After updating the records, it logs the operation as "UPDATE" along with the updated records.
 func (r *CmsLoginRepository) UpdateMany(records []*entities.CmsLogin) error {
 	for _, record := range records {
-		_, err := r.db.Where("staff_code = ?", record.AgentCode).Update(record)
+		_, err := r.db.Where("agent_code = ?", record.AgentCode).Update(record)
 		if err != nil {
 			return err
 		}
@@ -182,7 +182,7 @@ func (r *CmsLoginRepository) DeleteMany(records []*entities.CmsLogin) error {
 		return item.AgentCode
 	})
 
-	_, err := r.db.In("staff_code", ids).Cols("login_status").Update(&entities.CmsLogin{
+	_, err := r.db.In("agent_code", ids).Cols("login_status").Update(&entities.CmsLogin{
 		LoginStatus: 0,
 	})
 	if err != nil {
