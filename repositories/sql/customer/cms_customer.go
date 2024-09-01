@@ -105,7 +105,7 @@ func (r *CmsCustomerRepository) GetWithAgent(custCode string) (*models.CustomerW
 	if customer == nil {
 		return nil, nil
 	}
-	agentRec, err := r.s.GetAgentByCustCode(customer.CustCode)
+	agentRec, err := r.s.GetAgentsByCustCode(customer.CustCode)
 	if err != nil {
 		return nil, err
 	}

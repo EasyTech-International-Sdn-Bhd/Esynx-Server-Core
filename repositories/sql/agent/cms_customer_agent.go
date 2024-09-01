@@ -6,6 +6,7 @@ import (
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
 	"strconv"
+	"xorm.io/builder"
 	"xorm.io/xorm"
 )
 
@@ -48,29 +49,31 @@ func (r *CmsCustomerAgentRepository) GetByAgentCode(agentId string) ([]*entities
 // GetByCustomerCode retrieves a record from the database based on the customer ID.
 // It returns a pointer to the retrieved record of type CmsCustomerAgent and an error.
 // If the record exists, the returned error is nil. If the record does not exist, both the record and the error are nil.
-func (r *CmsCustomerAgentRepository) GetByCustomerCode(custCode string) (*entities.CmsCustomerAgent, error) {
-	var record entities.CmsCustomerAgent
-	has, err := r.db.Where("cust_code = ? AND active_status = ?", custCode, 1).Get(&record)
+func (r *CmsCustomerAgentRepository) GetByCustomerCode(custCode string) ([]*entities.CmsCustomerAgent, error) {
+	var record []*entities.CmsCustomerAgent
+	err := r.db.Where("cust_code = ? AND active_status = ?", custCode, 1).Find(&record)
 	if err != nil {
 		return nil, err
 	}
-	if !has {
-		return nil, nil
-	}
-	return &record, nil
+	return record, nil
 }
 
-// GetAgentByCustCode returns the agent for a given customer ID.
+// GetAgentsByCustCode returns the agent for a given customer ID.
 // It retrieves the associated CmsCustomerAgent record using GetByCustomerId,
 // and then retrieves the CmsLogin record using the salesperson ID from the CmsCustomerAgent record.
 // If any error occurs during the retrieval process, it returns nil and the error.
 // Otherwise, it returns the CmsLogin record and nil.
-func (r *CmsCustomerAgentRepository) GetAgentByCustCode(custCode string) (*entities.CmsLogin, error) {
+func (r *CmsCustomerAgentRepository) GetAgentsByCustCode(custCode string) ([]*entities.CmsLogin, error) {
 	a, err := r.GetByCustomerCode(custCode)
 	if err != nil {
 		return nil, err
 	}
-	c, err := r.l.Get(a.AgentCode)
+
+	agentCodes := iterator.Map(a, func(item *entities.CmsCustomerAgent) string {
+		return item.AgentCode
+	})
+
+	c, err := r.l.Find(builder.Select("*").Where(builder.In("agent_code", agentCodes)))
 	if err != nil {
 		return nil, err
 	}
