@@ -6,13 +6,13 @@ import (
 )
 
 type ICmsProductPriceTag interface {
-	Get(productCode string) ([]*entities.CmsProductPriceV2, error)
-	GetByCustCode(productCode string, custCode string) ([]*entities.CmsProductPriceV2, error)
-	GetByPriceType(productCode string, priceType string) ([]*entities.CmsProductPriceV2, error)
-	InsertMany(records []*entities.CmsProductPriceV2) error
-	Update(record *entities.CmsProductPriceV2) error
-	UpdateMany(records []*entities.CmsProductPriceV2) error
-	Delete(record *entities.CmsProductPriceV2) error
-	DeleteMany(records []*entities.CmsProductPriceV2) error
-	Find(predicate *builder.Builder) ([]*entities.CmsProductPriceV2, error)
+	Get(productCode string) ([]*entities.CmsProductPrice, error)
+	GetByCustCode(productCode string, custCode string) ([]*entities.CmsProductPrice, error)
+	GetByPriceType(productCode string, priceType string) ([]*entities.CmsProductPrice, error)
+	InsertMany(records []*entities.CmsProductPrice) error
+	Update(record *entities.CmsProductPrice) error
+	UpdateMany(records []*entities.CmsProductPrice) error
+	Delete(record *entities.CmsProductPrice) error
+	DeleteMany(records []*entities.CmsProductPrice) error
+	Find(predicate *builder.Builder) ([]*entities.CmsProductPrice, error)
 }

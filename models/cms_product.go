@@ -6,8 +6,8 @@ type ProductWithDetails struct {
 	P *entities.CmsProduct
 	A []*entities.CmsProductAtch
 	I []*entities.CmsProductImage
-	U []*entities.CmsProductUomPriceV2
-	T []*entities.CmsProductPriceV2
+	U []*entities.CmsProductUomPrice
+	T []*entities.CmsProductPrice
 	B []*entities.CmsProductBatch
 	W []*entities.CmsWarehouseStock
 }

@@ -29,14 +29,14 @@ func NewCmsProductUomPriceRepository(option *contracts.IRepository) *CmsProductU
 	}
 }
 
-// Get retrieves a list of CmsProductUomPriceV2 entities based on the given product code.
+// Get retrieves a list of CmsProductUomPrice entities based on the given product code.
 // The method uses the CmsProductUomPriceRepository's database connection to perform the query.
 // The function filters the records where the product_code is equal to the provided productCode
 // and the active_status equals 1. If an error occurs during the query, it returns nil and the error.
 // Otherwise, it returns the list of records and nil as the error.
 // Note that the Get method is a member of the CmsProductUomPriceRepository struct.
-func (r *CmsProductUomPriceRepository) Get(productCode string) ([]*entities.CmsProductUomPriceV2, error) {
-	var records []*entities.CmsProductUomPriceV2
+func (r *CmsProductUomPriceRepository) Get(productCode string) ([]*entities.CmsProductUomPrice, error) {
+	var records []*entities.CmsProductUomPrice
 	err := r.db.Where("product_code = ? AND active_status = ?", productCode, 1).Find(&records)
 	if err != nil {
 		return nil, err
@@ -44,9 +44,9 @@ func (r *CmsProductUomPriceRepository) Get(productCode string) ([]*entities.CmsP
 	return records, nil
 }
 
-func (r *CmsProductUomPriceRepository) Find(predicate *builder.Builder) ([]*entities.CmsProductUomPriceV2, error) {
-	var records []*entities.CmsProductUomPriceV2
-	var t entities.CmsProductUomPriceV2
+func (r *CmsProductUomPriceRepository) Find(predicate *builder.Builder) ([]*entities.CmsProductUomPrice, error) {
+	var records []*entities.CmsProductUomPrice
+	var t entities.CmsProductUomPrice
 	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
@@ -57,12 +57,12 @@ func (r *CmsProductUomPriceRepository) Find(predicate *builder.Builder) ([]*enti
 	return records, nil
 }
 
-// InsertMany inserts multiple records into the CmsProductUomPriceV2 table.
+// InsertMany inserts multiple records into the CmsProductUomPrice table.
 // It takes a slice of records as input and returns an error if there was a problem during insertion.
 // Each record is inserted using the database engine's Insert function.
 // After insertion, the method logs the operation and returns nil if successful.
-func (r *CmsProductUomPriceRepository) InsertMany(records []*entities.CmsProductUomPriceV2) error {
-	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductUomPriceV2) *entities.CmsProductUomPriceV2 {
+func (r *CmsProductUomPriceRepository) InsertMany(records []*entities.CmsProductUomPrice) error {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductUomPrice) *entities.CmsProductUomPrice {
 		return item
 	}))
 	if err != nil {
@@ -76,36 +76,36 @@ func (r *CmsProductUomPriceRepository) InsertMany(records []*entities.CmsProduct
 
 // Update updates a record in the CmsProductUomPriceRepository database table.
 //
-// It takes a pointer to a CmsProductUomPriceV2 record as input and updates the corresponding record
+// It takes a pointer to a CmsProductUomPrice record as input and updates the corresponding record
 // in the database table. If any error occurs during the update operation, it returns the error.
 //
 // After updating the record, it logs the "UPDATE" operation along with the updated record using the
 // log method of CmsProductUomPriceRepository.
-func (r *CmsProductUomPriceRepository) Update(record *entities.CmsProductUomPriceV2) error {
+func (r *CmsProductUomPriceRepository) Update(record *entities.CmsProductUomPrice) error {
 	_, err := r.db.Where("product_uom_price_id = ?", record.ProductUomPriceId).Update(record)
 	if err != nil {
 		return err
 	}
 
-	r.log("UPDATE", []*entities.CmsProductUomPriceV2{record})
+	r.log("UPDATE", []*entities.CmsProductUomPrice{record})
 
 	return nil
 }
 
-// Delete sets the ActiveStatus of the given CmsProductUomPriceV2 record to 0
+// Delete sets the ActiveStatus of the given CmsProductUomPrice record to 0
 // and updates it using the Update method of the CmsProductUomPriceRepository.
 // It returns an error if the update operation fails.
-func (r *CmsProductUomPriceRepository) Delete(record *entities.CmsProductUomPriceV2) error {
+func (r *CmsProductUomPriceRepository) Delete(record *entities.CmsProductUomPrice) error {
 	record.ActiveStatus = 0
 	_, err := r.db.Where("product_uom_price_id = ?", record.ProductUomPriceId).Cols("active_status").Update(record)
 	if err == nil {
-		r.log("DELETE", []*entities.CmsProductUomPriceV2{record})
+		r.log("DELETE", []*entities.CmsProductUomPrice{record})
 	}
 	return err
 }
 
 // UpdateMany updates multiple records in the database.
-func (r *CmsProductUomPriceRepository) UpdateMany(records []*entities.CmsProductUomPriceV2) error {
+func (r *CmsProductUomPriceRepository) UpdateMany(records []*entities.CmsProductUomPrice) error {
 	for _, record := range records {
 		_, err := r.db.Where("product_uom_price_id = ?", record.ProductUomPriceId).Update(record)
 		if err != nil {
@@ -121,12 +121,12 @@ func (r *CmsProductUomPriceRepository) UpdateMany(records []*entities.CmsProduct
 // DeleteMany sets the ActiveStatus of each record in the input slice to 0
 // and updates them using the UpdateMany method. It returns an error if
 // the update operation fails.
-func (r *CmsProductUomPriceRepository) DeleteMany(records []*entities.CmsProductUomPriceV2) error {
-	ids := iterator.Map(records, func(item *entities.CmsProductUomPriceV2) uint64 {
+func (r *CmsProductUomPriceRepository) DeleteMany(records []*entities.CmsProductUomPrice) error {
+	ids := iterator.Map(records, func(item *entities.CmsProductUomPrice) uint64 {
 		return item.ProductUomPriceId
 	})
 
-	_, err := r.db.In("product_uom_price_id", ids).Cols("active_status").Update(&entities.CmsProductUomPriceV2{
+	_, err := r.db.In("product_uom_price_id", ids).Cols("active_status").Update(&entities.CmsProductUomPrice{
 		ActiveStatus: 0,
 	})
 	if err != nil {
@@ -145,9 +145,9 @@ func (r *CmsProductUomPriceRepository) DeleteMany(records []*entities.CmsProduct
 // The AuditLog record contains the operation type, table name, record id, and record body.
 // It then logs the AuditLog records to the IAuditLog implementation.
 // The function does not handle the error returned by the IAuditLog implementation.
-func (r *CmsProductUomPriceRepository) log(op string, payload []*entities.CmsProductUomPriceV2) {
+func (r *CmsProductUomPriceRepository) log(op string, payload []*entities.CmsProductUomPrice) {
 	record, _ := json.Marshal(payload)
-	body := iterator.Map(payload, func(item *entities.CmsProductUomPriceV2) *entities.AuditLog {
+	body := iterator.Map(payload, func(item *entities.CmsProductUomPrice) *entities.AuditLog {
 		return &entities.AuditLog{
 			OperationType: op,
 			RecordTable:   item.TableName(),

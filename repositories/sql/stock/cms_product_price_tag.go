@@ -25,13 +25,13 @@ func NewCmsProductPriceTagRepository(option *contracts.IRepository) *CmsProductP
 }
 
 // Get retrieves product price tags by product code
-// It returns an array of CmsProductPriceV2 entities and an error, if any.
+// It returns an array of CmsProductPrice entities and an error, if any.
 // The method queries the database for records with matching product code and active status.
 // The matching records are stored in the 'records' variable.
 // If an error occurs during the query, it is returned.
 // Otherwise, the 'records' variable is returned.
-func (r *CmsProductPriceTagRepository) Get(productCode string) ([]*entities.CmsProductPriceV2, error) {
-	var records []*entities.CmsProductPriceV2
+func (r *CmsProductPriceTagRepository) Get(productCode string) ([]*entities.CmsProductPrice, error) {
+	var records []*entities.CmsProductPrice
 	err := r.db.Where("product_code = ? AND active_status = ?", productCode, 1).Find(&records)
 	if err != nil {
 		return nil, err
@@ -42,9 +42,9 @@ func (r *CmsProductPriceTagRepository) Get(productCode string) ([]*entities.CmsP
 // GetByCustCode retrieves the records of products by customer code.
 // It queries the database for records that match the provided product code,
 // active status, and customer code. It returns a slice of
-// CmsProductPriceV2 entities and an error if any occurred during the database operation.
-func (r *CmsProductPriceTagRepository) GetByCustCode(productCode string, custCode string) ([]*entities.CmsProductPriceV2, error) {
-	var records []*entities.CmsProductPriceV2
+// CmsProductPrice entities and an error if any occurred during the database operation.
+func (r *CmsProductPriceTagRepository) GetByCustCode(productCode string, custCode string) ([]*entities.CmsProductPrice, error) {
+	var records []*entities.CmsProductPrice
 	err := r.db.Where("product_code = ? AND active_status = ? AND cust_code = ?", productCode, 1, custCode).Find(&records)
 	if err != nil {
 		return nil, err
@@ -52,11 +52,11 @@ func (r *CmsProductPriceTagRepository) GetByCustCode(productCode string, custCod
 	return records, nil
 }
 
-// GetByPriceType retrieves a list of CmsProductPriceV2 records based on the given product code and price type.
+// GetByPriceType retrieves a list of CmsProductPrice records based on the given product code and price type.
 // It queries the database by matching the product code, active status (1), and price category.
 // It returns the matching records if found, otherwise it returns an error.
-func (r *CmsProductPriceTagRepository) GetByPriceType(productCode string, priceType string) ([]*entities.CmsProductPriceV2, error) {
-	var records []*entities.CmsProductPriceV2
+func (r *CmsProductPriceTagRepository) GetByPriceType(productCode string, priceType string) ([]*entities.CmsProductPrice, error) {
+	var records []*entities.CmsProductPrice
 	err := r.db.Where("product_code = ? AND active_status = ? AND price_cat = ?", productCode, 1, priceType).Find(&records)
 	if err != nil {
 		return nil, err
@@ -64,9 +64,9 @@ func (r *CmsProductPriceTagRepository) GetByPriceType(productCode string, priceT
 	return records, nil
 }
 
-func (r *CmsProductPriceTagRepository) Find(predicate *builder.Builder) ([]*entities.CmsProductPriceV2, error) {
-	var records []*entities.CmsProductPriceV2
-	var t entities.CmsProductPriceV2
+func (r *CmsProductPriceTagRepository) Find(predicate *builder.Builder) ([]*entities.CmsProductPrice, error) {
+	var records []*entities.CmsProductPrice
+	var t entities.CmsProductPrice
 	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
 		return nil, err
@@ -78,12 +78,12 @@ func (r *CmsProductPriceTagRepository) Find(predicate *builder.Builder) ([]*enti
 }
 
 // InsertMany inserts multiple records into the CmsProductPriceTagRepository database table. It takes an array
-// of CmsProductPriceV2 entities as a parameter and returns an error if the database operation fails. The
+// of CmsProductPrice entities as a parameter and returns an error if the database operation fails. The
 // method first maps the records using the iterator.Map function, which returns the same records. Then,
 // it uses the Insert function of the db field to insert the mapped records into the table. After the insertion,
 // the method logs the operation with the "INSERT" operation type and the inserted records.
-func (r *CmsProductPriceTagRepository) InsertMany(records []*entities.CmsProductPriceV2) error {
-	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductPriceV2) *entities.CmsProductPriceV2 {
+func (r *CmsProductPriceTagRepository) InsertMany(records []*entities.CmsProductPrice) error {
+	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsProductPrice) *entities.CmsProductPrice {
 		return item
 	}))
 	if err != nil {
@@ -102,7 +102,7 @@ func (r *CmsProductPriceTagRepository) InsertMany(records []*entities.CmsProduct
 //
 // Example usage:
 //
-//	record := &entities.CmsProductPriceV2{
+//	record := &entities.CmsProductPrice{
 //	  ProductPriceId: 1,
 //	  // set other fields
 //	}
@@ -116,29 +116,29 @@ func (r *CmsProductPriceTagRepository) InsertMany(records []*entities.CmsProduct
 //
 // Returns:
 //   - error: The error if the update operation fails, nil otherwise.
-func (r *CmsProductPriceTagRepository) Update(record *entities.CmsProductPriceV2) error {
+func (r *CmsProductPriceTagRepository) Update(record *entities.CmsProductPrice) error {
 	_, err := r.db.Where("product_price_id = ?", record.ProductPriceId).Update(record)
 	if err != nil {
 		return err
 	}
 
-	r.log("UPDATE", []*entities.CmsProductPriceV2{record})
+	r.log("UPDATE", []*entities.CmsProductPrice{record})
 
 	return nil
 }
 
 // Delete sets the active status of the given record to 0 and updates it in the database
 // with the Update method. It returns an error if the update operation fails.
-func (r *CmsProductPriceTagRepository) Delete(record *entities.CmsProductPriceV2) error {
+func (r *CmsProductPriceTagRepository) Delete(record *entities.CmsProductPrice) error {
 	record.ActiveStatus = 0
 	_, err := r.db.Where("product_price_id = ?", record.ProductPriceId).Cols("active_status").Update(record)
 	if err == nil {
-		r.log("DELETE", []*entities.CmsProductPriceV2{record})
+		r.log("DELETE", []*entities.CmsProductPrice{record})
 	}
 	return err
 }
 
-func (r *CmsProductPriceTagRepository) UpdateMany(records []*entities.CmsProductPriceV2) error {
+func (r *CmsProductPriceTagRepository) UpdateMany(records []*entities.CmsProductPrice) error {
 	for _, record := range records {
 		_, err := r.db.Where("product_price_id = ?", record.ProductPriceId).Update(record)
 		if err != nil {
@@ -151,12 +151,12 @@ func (r *CmsProductPriceTagRepository) UpdateMany(records []*entities.CmsProduct
 	return nil
 }
 
-func (r *CmsProductPriceTagRepository) DeleteMany(records []*entities.CmsProductPriceV2) error {
-	ids := iterator.Map(records, func(item *entities.CmsProductPriceV2) uint64 {
+func (r *CmsProductPriceTagRepository) DeleteMany(records []*entities.CmsProductPrice) error {
+	ids := iterator.Map(records, func(item *entities.CmsProductPrice) uint64 {
 		return item.ProductPriceId
 	})
 
-	_, err := r.db.In("product_price_id", ids).Cols("active_status").Update(&entities.CmsProductPriceV2{
+	_, err := r.db.In("product_price_id", ids).Cols("active_status").Update(&entities.CmsProductPrice{
 		ActiveStatus: 0,
 	})
 	if err != nil {
@@ -171,9 +171,9 @@ func (r *CmsProductPriceTagRepository) DeleteMany(records []*entities.CmsProduct
 // It marshals the payload into a JSON string and creates an AuditLog object
 // for each item in the payload. It then logs the generated AuditLog objects
 // using the audit logger specified in the CmsProductPriceTagRepository.
-func (r *CmsProductPriceTagRepository) log(op string, payload []*entities.CmsProductPriceV2) {
+func (r *CmsProductPriceTagRepository) log(op string, payload []*entities.CmsProductPrice) {
 	record, _ := json.Marshal(payload)
-	body := iterator.Map(payload, func(item *entities.CmsProductPriceV2) *entities.AuditLog {
+	body := iterator.Map(payload, func(item *entities.CmsProductPrice) *entities.AuditLog {
 		return &entities.AuditLog{
 			OperationType: op,
 			RecordTable:   item.TableName(),
