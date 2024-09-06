@@ -90,7 +90,7 @@ func (r *CmsProductImageRepository) InsertMany(records []*entities.CmsProductIma
 //		   // handle error
 //	  }
 func (r *CmsProductImageRepository) Update(record *entities.CmsProductImage) error {
-	_, err := r.db.Where("product_image_id = ?", record.ProductImageId).Update(record)
+	_, err := r.db.Where("product_image_id = ?", record.ProductImageId).Omit("product_image_id").Update(record)
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func (r *CmsProductImageRepository) Delete(record *entities.CmsProductImage) err
 // It takes a slice of records to update and returns an error if any update operation fails.
 func (r *CmsProductImageRepository) UpdateMany(records []*entities.CmsProductImage) error {
 	for _, record := range records {
-		_, err := r.db.Where("product_image_id = ?", record.ProductImageId).Update(record)
+		_, err := r.db.Where("product_image_id = ?", record.ProductImageId).Omit("product_image_id").Update(record)
 		if err != nil {
 			return err
 		}

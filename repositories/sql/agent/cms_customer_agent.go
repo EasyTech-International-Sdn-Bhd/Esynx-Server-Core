@@ -126,7 +126,7 @@ func (r *CmsCustomerAgentRepository) InsertMany(records []*entities.CmsCustomerA
 // Otherwise, it logs the update operation with the "UPDATE" operation type and the updated records by calling the log method.
 // Returns nil if the update is successful.
 func (r *CmsCustomerAgentRepository) Update(record *entities.CmsCustomerAgent) error {
-	_, err := r.db.Where("id = ?").Update(record.Id)
+	_, err := r.db.Where("id = ?").Omit("id").Update(record.Id)
 	if err != nil {
 		return err
 	}
@@ -153,7 +153,7 @@ func (r *CmsCustomerAgentRepository) Delete(record *entities.CmsCustomerAgent) e
 // If any update fails, it returns the error. Otherwise, it logs the updated records.
 func (r *CmsCustomerAgentRepository) UpdateMany(records []*entities.CmsCustomerAgent) error {
 	for _, record := range records {
-		_, err := r.db.Where("id = ?", record.Id).Update(record)
+		_, err := r.db.Where("id = ?", record.Id).Omit("id").Update(record)
 		if err != nil {
 			return err
 		}

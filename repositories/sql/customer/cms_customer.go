@@ -220,7 +220,7 @@ func (r *CmsCustomerRepository) InsertMany(records []*entities.CmsCustomer) erro
 // After updating the record, the function logs the "UPDATE" operation with the updated customer object.
 // The log is sent to the `audit` object for storing.
 func (r *CmsCustomerRepository) Update(customer *entities.CmsCustomer) error {
-	_, err := r.db.Where("cust_code = ?", customer.CustCode).Update(customer)
+	_, err := r.db.Where("cust_code = ?", customer.CustCode).Omit("cust_code").Update(customer)
 	if err != nil {
 		return err
 	}
@@ -254,7 +254,7 @@ func (r *CmsCustomerRepository) Delete(customer *entities.CmsCustomer) error {
 // This method returns an error if the transaction fails or encounters any other error during the update process.
 func (r *CmsCustomerRepository) UpdateMany(customers []*entities.CmsCustomer) error {
 	for _, customer := range customers {
-		_, err := r.db.Where("cust_code = ?", customer.CustCode).Update(customer)
+		_, err := r.db.Where("cust_code = ?", customer.CustCode).Omit("cust_code").Update(customer)
 		if err != nil {
 			return err
 		}

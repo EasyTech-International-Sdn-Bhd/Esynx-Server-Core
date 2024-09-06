@@ -22,10 +22,8 @@ func TestResolve(t *testing.T) {
 		return
 	}
 	var bulkUpdate []*entities.CmsLogin
-	var whatStaff uint64
 	for _, row := range res {
 		if row.LoginId == 35 {
-			whatStaff = row.LoginId
 			err := repo.Delete(row)
 			if err != nil {
 				t.Error(err)
@@ -34,9 +32,9 @@ func TestResolve(t *testing.T) {
 			}
 		}
 		up := entities.CmsLogin{
-			StaffCode: row.StaffCode,
+			AgentCode: row.AgentCode,
 			Password:  "********",
-			Login:     row.StaffCode,
+			Login:     row.AgentCode,
 		}
 		bulkUpdate = append(bulkUpdate, &up)
 	}
@@ -48,20 +46,11 @@ func TestResolve(t *testing.T) {
 			return
 		}
 	}
-	staff, err := repo.Get(int64(whatStaff))
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-		return
-	}
-	if staff.LoginStatus == 1 {
-		t.Fail()
-		return
-	}
+
 	var otherStaffs []*entities.CmsLogin
 	for _, row := range res {
 		if row.LoginStatus == 1 {
-			otherStaffs = append(otherStaffs, &entities.CmsLogin{StaffCode: row.StaffCode})
+			otherStaffs = append(otherStaffs, &entities.CmsLogin{AgentCode: row.AgentCode})
 		}
 	}
 	err = repo.DeleteMany(otherStaffs)

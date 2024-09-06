@@ -74,7 +74,7 @@ func (r *CmsWarehouseStockRepository) InsertMany(records []*entities.CmsWarehous
 // After successful update, it logs the "UPDATE" operation and the updated record using the log method.
 // It returns nil if the update operation is successful.
 func (r *CmsWarehouseStockRepository) Update(record *entities.CmsWarehouseStock) error {
-	_, err := r.db.Where("id = ?", record.Id).Update(record)
+	_, err := r.db.Where("id = ?", record.Id).Omit("id").Update(record)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func (r *CmsWarehouseStockRepository) Delete(record *entities.CmsWarehouseStock)
 // UpdateMany updates multiple CmsWarehouseStock records in the database.
 func (r *CmsWarehouseStockRepository) UpdateMany(records []*entities.CmsWarehouseStock) error {
 	for _, record := range records {
-		_, err := r.db.Where("id = ?", record.Id).Update(record)
+		_, err := r.db.Where("id = ?", record.Id).Omit("id").Update(record)
 		if err != nil {
 			return err
 		}

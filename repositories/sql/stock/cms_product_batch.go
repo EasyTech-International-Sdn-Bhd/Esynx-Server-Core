@@ -97,7 +97,7 @@ func (r *CmsProductBatchRepository) InsertMany(records []*entities.CmsProductBat
 // and an array containing the updated record as the payload.
 // Finally, the method returns nil if the update is successful.
 func (r *CmsProductBatchRepository) Update(record *entities.CmsProductBatch) error {
-	_, err := r.db.Where("id = ?", record.Id).Update(record)
+	_, err := r.db.Where("id = ?", record.Id).Omit("id").Update(record)
 	if err != nil {
 		return err
 	}
@@ -126,7 +126,7 @@ func (r *CmsProductBatchRepository) Delete(record *entities.CmsProductBatch) err
 // Finally, it logs the UPDATE operation and returns nil if all updates are successful.
 func (r *CmsProductBatchRepository) UpdateMany(records []*entities.CmsProductBatch) error {
 	for _, record := range records {
-		_, err := r.db.Where("id = ?", record.Id).Update(record)
+		_, err := r.db.Where("id = ?", record.Id).Omit("id").Update(record)
 		if err != nil {
 			return err
 		}

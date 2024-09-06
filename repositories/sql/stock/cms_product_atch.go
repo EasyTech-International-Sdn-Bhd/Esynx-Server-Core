@@ -77,7 +77,7 @@ func (r *CmsProductAtchRepository) InsertMany(records []*entities.CmsProductAtch
 // If an error occurs during the update process, it returns the error.
 // After the update, it logs the operation type as "UPDATE" and the updated record.
 func (r *CmsProductAtchRepository) Update(record *entities.CmsProductAtch) error {
-	_, err := r.db.Where("id = ?", record.Id).Update(record)
+	_, err := r.db.Where("id = ?", record.Id).Omit("id").Update(record)
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func (r *CmsProductAtchRepository) Delete(record *entities.CmsProductAtch) error
 
 func (r *CmsProductAtchRepository) UpdateMany(records []*entities.CmsProductAtch) error {
 	for _, record := range records {
-		_, err := r.db.Where("id = ?", record.Id).Update(record)
+		_, err := r.db.Where("id = ?", record.Id).Omit("id").Update(record)
 		if err != nil {
 			return err
 		}

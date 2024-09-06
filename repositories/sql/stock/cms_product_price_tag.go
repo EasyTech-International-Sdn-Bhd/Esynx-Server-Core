@@ -117,7 +117,7 @@ func (r *CmsProductPriceTagRepository) InsertMany(records []*entities.CmsProduct
 // Returns:
 //   - error: The error if the update operation fails, nil otherwise.
 func (r *CmsProductPriceTagRepository) Update(record *entities.CmsProductPrice) error {
-	_, err := r.db.Where("product_price_id = ?", record.ProductPriceId).Update(record)
+	_, err := r.db.Where("product_price_id = ?", record.ProductPriceId).Omit("product_price_id").Update(record)
 	if err != nil {
 		return err
 	}
@@ -140,7 +140,7 @@ func (r *CmsProductPriceTagRepository) Delete(record *entities.CmsProductPrice) 
 
 func (r *CmsProductPriceTagRepository) UpdateMany(records []*entities.CmsProductPrice) error {
 	for _, record := range records {
-		_, err := r.db.Where("product_price_id = ?", record.ProductPriceId).Update(record)
+		_, err := r.db.Where("product_price_id = ?", record.ProductPriceId).Omit("product_price_id").Update(record)
 		if err != nil {
 			return err
 		}

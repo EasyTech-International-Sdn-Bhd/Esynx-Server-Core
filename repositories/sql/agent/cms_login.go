@@ -137,7 +137,7 @@ func (r *CmsLoginRepository) InsertMany(records []*entities.CmsLogin) error {
 // The contracts.IAuditLog interface should have a Log method that takes a slice of
 // entities.AuditLog as its parameter.
 func (r *CmsLoginRepository) Update(record *entities.CmsLogin) error {
-	_, err := r.db.Where("agent_code = ?", record.AgentCode).Update(record)
+	_, err := r.db.Where("agent_code = ?", record.AgentCode).Omit("agent_code").Update(record)
 	if err != nil {
 		return err
 	}
@@ -164,7 +164,7 @@ func (r *CmsLoginRepository) Delete(record *entities.CmsLogin) error {
 // After updating the records, it logs the operation as "UPDATE" along with the updated records.
 func (r *CmsLoginRepository) UpdateMany(records []*entities.CmsLogin) error {
 	for _, record := range records {
-		_, err := r.db.Where("agent_code = ?", record.AgentCode).Update(record)
+		_, err := r.db.Where("agent_code = ?", record.AgentCode).Omit("agent_code").Update(record)
 		if err != nil {
 			return err
 		}

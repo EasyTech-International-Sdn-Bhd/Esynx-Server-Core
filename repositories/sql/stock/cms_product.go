@@ -134,7 +134,7 @@ func (r *CmsProductRepository) InsertMany(records []*entities.CmsProduct) error 
 //	    fmt.Println("Error updating record:", err)
 //	}
 func (r *CmsProductRepository) Update(record *entities.CmsProduct) error {
-	_, err := r.db.Where("product_code = ?", record.ProductCode).Update(record)
+	_, err := r.db.Where("product_code = ?", record.ProductCode).Omit("product_code").Update(record)
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (r *CmsProductRepository) Delete(record *entities.CmsProduct) error {
 // It logs the "UPDATE" operation with the updated records.
 func (r *CmsProductRepository) UpdateMany(records []*entities.CmsProduct) error {
 	for _, product := range records {
-		_, err := r.db.Where("product_code = ?", product.ProductCode).Update(product)
+		_, err := r.db.Where("product_code = ?", product.ProductCode).Omit("product_code").Update(product)
 		if err != nil {
 			return err
 		}

@@ -82,7 +82,7 @@ func (r *CmsProductUomPriceRepository) InsertMany(records []*entities.CmsProduct
 // After updating the record, it logs the "UPDATE" operation along with the updated record using the
 // log method of CmsProductUomPriceRepository.
 func (r *CmsProductUomPriceRepository) Update(record *entities.CmsProductUomPrice) error {
-	_, err := r.db.Where("product_uom_price_id = ?", record.ProductUomPriceId).Update(record)
+	_, err := r.db.Where("product_uom_price_id = ?", record.ProductUomPriceId).Omit("product_uom_price_id").Update(record)
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func (r *CmsProductUomPriceRepository) Delete(record *entities.CmsProductUomPric
 // UpdateMany updates multiple records in the database.
 func (r *CmsProductUomPriceRepository) UpdateMany(records []*entities.CmsProductUomPrice) error {
 	for _, record := range records {
-		_, err := r.db.Where("product_uom_price_id = ?", record.ProductUomPriceId).Update(record)
+		_, err := r.db.Where("product_uom_price_id = ?", record.ProductUomPriceId).Omit("product_uom_price_id").Update(record)
 		if err != nil {
 			return err
 		}
