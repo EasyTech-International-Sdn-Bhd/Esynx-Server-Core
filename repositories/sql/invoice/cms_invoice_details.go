@@ -173,10 +173,11 @@ func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceD
 	ids := iterator.Map(details, func(item *entities.CmsInvoiceDetails) uint64 {
 		return item.Id
 	})
-
-	_, err := r.db.In("id", ids).Cols("active_status").Update(&entities.CmsInvoiceDetails{
-		ActiveStatus: 0,
+	data := iterator.Map(details, func(item *entities.CmsInvoiceDetails) *entities.CmsInvoiceDetails {
+		item.ActiveStatus = 0
+		return item
 	})
+	_, err := r.db.In("id", ids).Cols("active_status").Update(data)
 	if err != nil {
 		return err
 	}
