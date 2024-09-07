@@ -25,7 +25,7 @@ func (h *SQLHook) AfterProcess(c *hook.ContextHook) error {
 		h.logger.Errorf("Error: %s, [SQL] - %s", c.Err.Error(), c.SQL)
 	}
 	if c.ExecuteTime.Seconds() > 10 {
-		h.logger.Errorf("Slow SQL: %s, [SQL] - %s", c.ExecuteTime.String(), c.SQL)
+		h.logger.Warnf("Slow SQL: %s, [SQL] - %s", c.ExecuteTime.String(), c.SQL)
 	}
 	return nil
 }
