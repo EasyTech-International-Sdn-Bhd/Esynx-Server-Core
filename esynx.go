@@ -67,7 +67,6 @@ func NewEsynxProvider(session contracts.IDatabaseUserSession) (*ESynx, error) {
 		AppName: session.GetApp(),
 		Audit:   audit.NewAuditLogRepository(session),
 	}
-
 	return &ESynx{
 		engine:                db,
 		CreditNote:            creditnote.NewCmsCreditNoteRepository(&userOptions),

@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/hooks"
 	migrate "github.com/easytech-international-sdn-bhd/esynx-server-core/migrate/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
 	"xorm.io/xorm"
+	"xorm.io/xorm/schemas"
 )
 
 // SqlDb represents a wrapper for the xorm.Engine that provides functions for interacting with a MySQL database.
@@ -33,7 +35,8 @@ func (m *SqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error) 
 	if logger != nil {
 		m.Engine.SetLogger(logger)
 	}
-	m.Engine.ShowSQL(true)
+	m.Engine.AddHook(hooks.NewSQLHook(logger))
+	m.Engine.ShowSQL(false)
 	m.Engine.SetLogLevel(0)
 	return nil
 }
@@ -85,4 +88,17 @@ func (m *SqlDb) Close() error {
 
 func (m *SqlDb) GetEngine() *xorm.Engine {
 	return m.Engine
+}
+
+func UniqueColumns(db *xorm.Engine, entity contracts.IEntity, fallback string) []string {
+	if info, err := db.TableInfo(entity.TableName()); err == nil {
+		columns := make([]string, 0)
+		for col, index := range info.Indexes {
+			if index.Type == schemas.UniqueType {
+				columns = append(columns, col)
+			}
+		}
+		return columns
+	}
+	return []string{fallback}
 }

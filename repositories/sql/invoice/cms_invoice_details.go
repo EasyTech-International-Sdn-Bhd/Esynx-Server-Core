@@ -133,7 +133,7 @@ func (r *CmsInvoiceDetailsRepository) InsertMany(details []*entities.CmsInvoiceD
 // It takes a pointer to the entities.CmsInvoiceDetails struct as input,
 // and returns an error if any.
 func (r *CmsInvoiceDetailsRepository) Update(details *entities.CmsInvoiceDetails) error {
-	_, err := r.db.Where("ref_no = ?", details.RefNo).Omit("ref_no").Update(details)
+	_, err := r.db.Where("ref_no = ?", details.RefNo).Omit("ref_no", "invoice_code").Update(details)
 	if err != nil {
 		return err
 	}
@@ -157,7 +157,7 @@ func (r *CmsInvoiceDetailsRepository) Delete(details *entities.CmsInvoiceDetails
 // UpdateMany updates multiple CmsInvoiceDetails.
 func (r *CmsInvoiceDetailsRepository) UpdateMany(details []*entities.CmsInvoiceDetails) error {
 	for _, detail := range details {
-		_, err := r.db.Where("ref_no = ?", detail.RefNo).Omit("ref_no").Update(detail)
+		_, err := r.db.Where("ref_no = ?", detail.RefNo).Omit("ref_no", "invoice_code").Update(detail)
 		if err != nil {
 			return err
 		}
