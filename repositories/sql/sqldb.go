@@ -34,7 +34,6 @@ func (m *SqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error) 
 	if logger != nil {
 		m.Engine.SetLogger(logger)
 	}
-	//m.Engine.AddHook(hooks.NewSQLHook(logger))
 	m.Engine.ShowSQL(false)
 	m.Engine.SetLogLevel(0)
 	return nil
