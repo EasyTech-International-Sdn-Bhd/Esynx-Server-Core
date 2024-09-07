@@ -148,7 +148,7 @@ func (r *CmsCreditNoteDetailsRepository) Update(details *entities.CmsCreditnoteD
 // It returns an error if the update operation fails.
 func (r *CmsCreditNoteDetailsRepository) Delete(details *entities.CmsCreditnoteDetails) error {
 	details.ActiveStatus = 0
-	_, err := r.db.Where("id = ?", details.Id).Cols("active_status").Update(details)
+	_, err := r.db.Where("ref_no = ?", details.RefNo).Cols("active_status").Update(&entities.CmsCreditnoteDetails{ActiveStatus: 0})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsCreditnoteDetails{details})
 	}
@@ -176,11 +176,11 @@ func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCredi
 // and updates them in a bulk update operation. It returns an error if
 // the update operation fails. Finally, it logs the operation with op = "DELETE".
 func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCreditnoteDetails) error {
-	ids := iterator.Map(details, func(item *entities.CmsCreditnoteDetails) uint64 {
-		return item.Id
+	ids := iterator.Map(details, func(item *entities.CmsCreditnoteDetails) string {
+		return item.RefNo
 	})
 
-	_, err := r.db.In("id", ids).Cols("active_status").Update(&entities.CmsCreditnoteDetails{
+	_, err := r.db.In("ref_no", ids).Cols("active_status").Update(&entities.CmsCreditnoteDetails{
 		ActiveStatus: 0,
 	})
 	if err != nil {

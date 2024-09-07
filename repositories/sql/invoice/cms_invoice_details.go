@@ -147,7 +147,7 @@ func (r *CmsInvoiceDetailsRepository) Update(details *entities.CmsInvoiceDetails
 // It also logs the DELETE operation.
 func (r *CmsInvoiceDetailsRepository) Delete(details *entities.CmsInvoiceDetails) error {
 	details.ActiveStatus = 0
-	_, err := r.db.Where("id = ?", details.Id).Cols("active_status").Update(details)
+	_, err := r.db.Where("ref_no = ?", details.RefNo).Cols("active_status").Update(&entities.CmsInvoiceDetails{ActiveStatus: 0})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsInvoiceDetails{details})
 	}
@@ -170,14 +170,10 @@ func (r *CmsInvoiceDetailsRepository) UpdateMany(details []*entities.CmsInvoiceD
 
 // DeleteMany sets the ActiveStatus of multiple CmsInvoiceDetails to 0 and updates the specific column directly.
 func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceDetails) error {
-	ids := iterator.Map(details, func(item *entities.CmsInvoiceDetails) uint64 {
-		return item.Id
+	ids := iterator.Map(details, func(item *entities.CmsInvoiceDetails) string {
+		return item.RefNo
 	})
-	data := iterator.Map(details, func(item *entities.CmsInvoiceDetails) *entities.CmsInvoiceDetails {
-		item.ActiveStatus = 0
-		return item
-	})
-	_, err := r.db.In("id", ids).Cols("active_status").Update(data)
+	_, err := r.db.In("ref_no", ids).Cols("active_status").Update(&entities.CmsInvoiceDetails{ActiveStatus: 0})
 	if err != nil {
 		return err
 	}
