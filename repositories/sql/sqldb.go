@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
+	"github.com/easytech-international-sdn-bhd/esynx-server-core/hook"
 	migrate "github.com/easytech-international-sdn-bhd/esynx-server-core/migrate/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
@@ -33,6 +34,7 @@ func (m *SqlDb) Open(conn string, logger contracts.IDatabaseLogger) (err error) 
 	m.Engine = engine
 	if logger != nil {
 		m.Engine.SetLogger(logger)
+		m.Engine.AddHook(hook.NewSqlDBHook(logger))
 	}
 	m.Engine.ShowSQL(true)
 	m.Engine.SetLogLevel(0)
