@@ -150,7 +150,7 @@ func (r *CmsDebitNoteRepository) InsertMany(debitNotes []*entities.CmsDebitnote)
 // If there is an error during the update, it returns the error.
 // It also logs the "UPDATE" operation with the updated CmsDebitnote.
 func (r *CmsDebitNoteRepository) Update(debitNote *entities.CmsDebitnote) error {
-	_, err := r.db.Where("dn_code = ?", debitNote.DnCode).Omit("dn_code", "ref_no").Update(debitNote)
+	_, err := r.db.Where("dn_code = ? AND ref_no = ?", debitNote.DnCode, debitNote.RefNo).Omit("dn_code", "ref_no").Update(debitNote)
 	if err != nil {
 		return err
 	}
@@ -176,7 +176,7 @@ func (r *CmsDebitNoteRepository) Delete(debitNote *entities.CmsDebitnote) error 
 // UpdateMany updates multiple debit notes in the database.
 func (r *CmsDebitNoteRepository) UpdateMany(debitNotes []*entities.CmsDebitnote) error {
 	for _, dn := range debitNotes {
-		_, err := r.db.Where("dn_code = ?", dn.DnCode).Omit("dn_code", "ref_no").Update(dn)
+		_, err := r.db.Where("dn_code = ? AND ref_no = ?", dn.DnCode, dn.RefNo).Omit("dn_code", "ref_no").Update(dn)
 		if err != nil {
 			return err
 		}

@@ -133,7 +133,7 @@ func (r *CmsCreditNoteDetailsRepository) InsertMany(details []*entities.CmsCredi
 // Preconditions: `details` is not nil.
 // Postconditions: The `details` object is updated in the repository.
 func (r *CmsCreditNoteDetailsRepository) Update(details *entities.CmsCreditnoteDetails) error {
-	_, err := r.db.Where("ref_no = ?", details.RefNo).Omit("ref_no", "cn_code").Update(details)
+	_, err := r.db.Where("ref_no = ? AND cn_code = ?", details.RefNo, details.CnCode).Omit("ref_no", "cn_code").Update(details)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (r *CmsCreditNoteDetailsRepository) Delete(details *entities.CmsCreditnoteD
 // Finally, the updated details are logged using the "UPDATE" operation type.
 func (r *CmsCreditNoteDetailsRepository) UpdateMany(details []*entities.CmsCreditnoteDetails) error {
 	for _, detail := range details {
-		_, err := r.db.Where("ref_no = ?", detail.RefNo).Omit("ref_no", "cn_code").Update(detail)
+		_, err := r.db.Where("ref_no = ? AND cn_code = ?", detail.RefNo, detail.CnCode).Omit("ref_no", "cn_code").Update(detail)
 		if err != nil {
 			return err
 		}
