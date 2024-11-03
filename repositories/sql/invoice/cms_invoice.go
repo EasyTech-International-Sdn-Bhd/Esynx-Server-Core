@@ -177,7 +177,7 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 // The `Update` method expects a pointer to a `CmsInvoice` struct as the input parameter.
 // It does not return any value.
 func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
-	_, err := r.db.Where("invoice_code = ? AND ref_no = ?", invoice.InvoiceCode, invoice.RefNo).Omit("invoice_code", "ref_no").Update(invoice)
+	_, err := r.db.Where("ref_no = ?", invoice.RefNo).Omit("ref_no").Update(invoice)
 	if err != nil {
 		return err
 	}
@@ -205,7 +205,7 @@ func (r *CmsInvoiceRepository) Delete(invoice *entities.CmsInvoice) error {
 // The method also logs the update operation with the invoices.
 func (r *CmsInvoiceRepository) UpdateMany(invoices []*entities.CmsInvoice) error {
 	for _, inv := range invoices {
-		_, err := r.db.Where("invoice_code = ? AND ref_no = ?", inv.InvoiceCode, inv.RefNo).Omit("invoice_code", "ref_no").Update(inv)
+		_, err := r.db.Where("ref_no = ?", inv.RefNo).Omit("ref_no").Update(inv)
 		if err != nil {
 			return err
 		}
