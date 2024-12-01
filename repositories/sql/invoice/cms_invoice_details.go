@@ -182,6 +182,27 @@ func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceD
 	return nil
 }
 
+func (r *CmsInvoiceDetailsRepository) DeleteByAny(predicate *builder.Builder) error {
+	var t entities.CmsInvoiceDetails
+
+	var records []*entities.CmsInvoiceDetails
+	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.SQL(predicate.From(t.TableName())).Update(&entities.CmsInvoiceDetails{
+		ActiveStatus: 0,
+	})
+	if err != nil {
+		return err
+	}
+
+	r.log("DELETE", records)
+
+	return nil
+}
+
 // log logs the operation and payload to the audit log.
 // op is the operation type (e.g., INSERT, UPDATE).
 // The payload is an array of CmsInvoiceDetails entities.
