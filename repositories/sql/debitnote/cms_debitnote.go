@@ -216,9 +216,7 @@ func (r *CmsDebitNoteRepository) DeleteByAny(predicate *builder.Builder) ([]*ent
 		return nil, err
 	}
 
-	_, err = r.db.SQL(predicate.From(t.TableName())).Update(&entities.CmsDebitnote{
-		Cancelled: "T",
-	})
+	err = r.DeleteMany(records)
 	if err != nil {
 		return nil, err
 	}

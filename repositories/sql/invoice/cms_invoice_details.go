@@ -191,9 +191,7 @@ func (r *CmsInvoiceDetailsRepository) DeleteByAny(predicate *builder.Builder) ([
 		return nil, err
 	}
 
-	_, err = r.db.SQL(predicate.From(t.TableName())).Update(&entities.CmsInvoiceDetails{
-		ActiveStatus: 0,
-	})
+	err = r.DeleteMany(records)
 	if err != nil {
 		return nil, err
 	}

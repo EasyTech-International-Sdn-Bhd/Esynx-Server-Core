@@ -224,9 +224,7 @@ func (r *CmsCreditNoteRepository) DeleteByAny(predicate *builder.Builder) ([]*en
 		return nil, err
 	}
 
-	_, err = r.db.SQL(predicate.From(t.TableName())).Update(&entities.CmsCreditnote{
-		Cancelled: "T",
-	})
+	err = r.DeleteMany(records)
 	if err != nil {
 		return nil, err
 	}

@@ -200,9 +200,7 @@ func (r *CmsCreditNoteDetailsRepository) DeleteByAny(predicate *builder.Builder)
 		return nil, err
 	}
 
-	_, err = r.db.SQL(predicate.From(t.TableName())).Update(&entities.CmsCreditnoteDetails{
-		ActiveStatus: 0,
-	})
+	err = r.DeleteMany(records)
 	if err != nil {
 		return nil, err
 	}
