@@ -160,7 +160,7 @@ func (r *CmsCreditNoteRepository) InsertMany(creditNotes []*entities.CmsCreditno
 // Returns:
 // - error: An error if the update operation fails.
 func (r *CmsCreditNoteRepository) Update(creditNote *entities.CmsCreditnote) error {
-	_, err := r.db.Where("ref_no = ?", creditNote.RefNo).Omit("ref_no").Update(creditNote)
+	_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Omit("cn_code").Update(creditNote)
 	if err != nil {
 		return err
 	}
@@ -188,7 +188,7 @@ func (r *CmsCreditNoteRepository) Delete(creditNote *entities.CmsCreditnote) err
 // It takes a slice of credit notes as the input and returns an error if any.
 func (r *CmsCreditNoteRepository) UpdateMany(creditNotes []*entities.CmsCreditnote) error {
 	for _, cn := range creditNotes {
-		_, err := r.db.Where("ref_no = ?", cn.RefNo).Omit("ref_no").Update(cn)
+		_, err := r.db.Where("cn_code = ?", cn.CnCode).Omit("cn_code").Update(cn)
 		if err != nil {
 			return err
 		}
