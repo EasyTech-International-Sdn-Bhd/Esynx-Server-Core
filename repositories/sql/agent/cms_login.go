@@ -100,14 +100,37 @@ func (r *CmsLoginRepository) Find(predicate *builder.Builder) ([]*entities.CmsLo
 // to log the operation. If any error occurs during the insertion, it returns the error.
 // It returns nil if the insertion is successful.
 func (r *CmsLoginRepository) InsertMany(records []*entities.CmsLogin) error {
-	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsLogin) *entities.CmsLogin {
-		return item
-	}))
-	if err != nil {
-		return err
-	}
+	toUpdate := iterator.Filter(records, func(item *entities.CmsLogin) bool {
+		res, err := r.GetByAgentCode(item.AgentCode)
+		if err != nil {
+			return false
+		}
+		if res == nil {
+			return false
+		}
+		return true
+	})
+	toInsert := iterator.Filter(records, func(item *entities.CmsLogin) bool {
+		res, err := r.GetByAgentCode(item.AgentCode)
+		if err != nil {
+			return false
+		}
+		if res != nil {
+			return false
+		}
+		return true
+	})
+	if len(toInsert) > 0 {
+		_, err := r.db.Insert(toInsert)
+		if err != nil {
+			return err
+		}
 
-	r.log("INSERT", records)
+		r.log("INSERT", records)
+	}
+	if len(toUpdate) > 0 {
+		return r.UpdateMany(toUpdate)
+	}
 
 	return nil
 }
