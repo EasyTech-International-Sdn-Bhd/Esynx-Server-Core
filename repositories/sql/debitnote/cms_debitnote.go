@@ -207,25 +207,25 @@ func (r *CmsDebitNoteRepository) DeleteMany(debitNotes []*entities.CmsDebitnote)
 	return nil
 }
 
-func (r *CmsDebitNoteRepository) DeleteByAny(predicate *builder.Builder) error {
+func (r *CmsDebitNoteRepository) DeleteByAny(predicate *builder.Builder) ([]*entities.CmsDebitnote, error) {
 	var t entities.CmsDebitnote
 
 	var records []*entities.CmsDebitnote
 	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	_, err = r.db.SQL(predicate.From(t.TableName())).Update(&entities.CmsDebitnote{
 		Cancelled: "T",
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	r.log("DELETE", records)
 
-	return nil
+	return records, nil
 }
 
 // log logs an audit record for a given operation and payload.

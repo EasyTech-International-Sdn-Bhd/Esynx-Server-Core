@@ -191,25 +191,25 @@ func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCredi
 	return nil
 }
 
-func (r *CmsCreditNoteDetailsRepository) DeleteByAny(predicate *builder.Builder) error {
+func (r *CmsCreditNoteDetailsRepository) DeleteByAny(predicate *builder.Builder) ([]*entities.CmsCreditnoteDetails, error) {
 	var t entities.CmsCreditnoteDetails
 
 	var records []*entities.CmsCreditnoteDetails
 	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	_, err = r.db.SQL(predicate.From(t.TableName())).Update(&entities.CmsCreditnoteDetails{
 		ActiveStatus: 0,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	r.log("DELETE", records)
 
-	return nil
+	return records, nil
 }
 
 // log is a method that is used to log an operation and its payload to the audit log.

@@ -236,25 +236,25 @@ func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error
 	return nil
 }
 
-func (r *CmsInvoiceRepository) DeleteByAny(predicate *builder.Builder) error {
+func (r *CmsInvoiceRepository) DeleteByAny(predicate *builder.Builder) ([]*entities.CmsInvoice, error) {
 	var t entities.CmsInvoice
 
 	var records []*entities.CmsInvoice
 	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	_, err = r.db.SQL(predicate.From(t.TableName())).Update(&entities.CmsInvoice{
 		Cancelled: "T",
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	r.log("DELETE", records)
 
-	return nil
+	return records, nil
 }
 
 // log is a method used to record audit logs for operations performed on CmsInvoiceRepository.

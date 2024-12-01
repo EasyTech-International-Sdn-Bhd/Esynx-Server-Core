@@ -184,25 +184,25 @@ func (r *CmsDebitNoteDetailsRepository) DeleteMany(records []*entities.CmsDebitn
 	return nil
 }
 
-func (r *CmsDebitNoteDetailsRepository) DeleteByAny(predicate *builder.Builder) error {
+func (r *CmsDebitNoteDetailsRepository) DeleteByAny(predicate *builder.Builder) ([]*entities.CmsDebitnoteDetails, error) {
 	var t entities.CmsDebitnoteDetails
 
 	var records []*entities.CmsDebitnoteDetails
 	err := r.db.SQL(predicate.From(t.TableName())).Find(&records)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	_, err = r.db.SQL(predicate.From(t.TableName())).Update(&entities.CmsDebitnoteDetails{
 		ActiveStatus: 0,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	r.log("DELETE", records)
 
-	return nil
+	return records, nil
 }
 
 // log logs the specified operation and payload to the audit log. It marshals the payload into JSON format
