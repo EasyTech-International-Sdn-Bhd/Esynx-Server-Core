@@ -18,6 +18,6 @@ type ICmsCreditNote interface {
 	UpdateMany(creditNotes []*entities.CmsCreditnote) error
 	Delete(creditNote *entities.CmsCreditnote) error
 	DeleteMany(creditNotes []*entities.CmsCreditnote) error
-	DeleteByAny(predicate *builder.Builder) error
+	DeleteByAny(predicate *builder.Builder) ([]*entities.CmsCreditnote, error)
 	Find(predicate *builder.Builder) ([]*entities.CmsCreditnote, error)
 }

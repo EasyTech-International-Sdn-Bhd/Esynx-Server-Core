@@ -15,6 +15,6 @@ type ICmsInvoiceDetails interface {
 	UpdateMany(details []*entities.CmsInvoiceDetails) error
 	Delete(details *entities.CmsInvoiceDetails) error
 	DeleteMany(details []*entities.CmsInvoiceDetails) error
-	DeleteByAny(predicate *builder.Builder) error
+	DeleteByAny(predicate *builder.Builder) ([]*entities.CmsInvoiceDetails, error)
 	Find(predicate *builder.Builder) ([]*entities.CmsInvoiceDetails, error)
 }

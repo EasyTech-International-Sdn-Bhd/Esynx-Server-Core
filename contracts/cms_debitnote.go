@@ -18,6 +18,6 @@ type ICmsDebitNote interface {
 	UpdateMany(debitNotes []*entities.CmsDebitnote) error
 	Delete(debitNote *entities.CmsDebitnote) error
 	DeleteMany(debitNotes []*entities.CmsDebitnote) error
-	DeleteByAny(predicate *builder.Builder) error
+	DeleteByAny(predicate *builder.Builder) ([]*entities.CmsDebitnote, error)
 	Find(predicate *builder.Builder) ([]*entities.CmsDebitnote, error)
 }
