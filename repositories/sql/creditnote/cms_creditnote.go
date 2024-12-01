@@ -1,6 +1,7 @@
 package creditnote
 
 import (
+	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
@@ -173,7 +174,10 @@ func (r *CmsCreditNoteRepository) Update(creditNote *entities.CmsCreditnote) err
 // and updates it directly using r.db. It returns an error if the update operation fails.
 func (r *CmsCreditNoteRepository) Delete(creditNote *entities.CmsCreditnote) error {
 	creditNote.Cancelled = "T"
-	_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Cols("cancelled").Update(creditNote)
+	_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Cols("cancelled", "ref_no").Update(&entities.CmsCreditnote{
+		Cancelled: "T",
+		RefNo:     fmt.Sprintf("DELETED-%s", time.Now().Format("20060102")),
+	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsCreditnote{creditNote})
 	}
@@ -203,8 +207,9 @@ func (r *CmsCreditNoteRepository) DeleteMany(creditNotes []*entities.CmsCreditno
 		return item.CnCode
 	})
 
-	_, err := r.db.In("cn_code", ids).Cols("cancelled").Update(&entities.CmsCreditnote{
+	_, err := r.db.In("cn_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsCreditnote{
 		Cancelled: "T",
+		RefNo:     fmt.Sprintf("DELETED-%s", time.Now().Format("20060102")),
 	})
 	if err != nil {
 		return err

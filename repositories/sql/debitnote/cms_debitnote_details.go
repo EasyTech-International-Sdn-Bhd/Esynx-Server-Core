@@ -8,6 +8,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/stock"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
+	"time"
 	"xorm.io/builder"
 	"xorm.io/xorm"
 )
@@ -144,7 +145,10 @@ func (r *CmsDebitNoteDetailsRepository) Update(details *entities.CmsDebitnoteDet
 // It returns an error if the update operation fails.
 func (r *CmsDebitNoteDetailsRepository) Delete(record *entities.CmsDebitnoteDetails) error {
 	record.ActiveStatus = 0
-	_, err := r.db.Where("ref_no = ?", record.RefNo).Cols("active_status").Update(&entities.CmsDebitnoteDetails{ActiveStatus: 0})
+	_, err := r.db.Where("ref_no = ?", record.RefNo).Cols("active_status", "ref_no").Update(&entities.CmsDebitnoteDetails{
+		ActiveStatus: 0,
+		RefNo:        fmt.Sprintf("DELETED-%s", time.Now().Format("20060102")),
+	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsDebitnoteDetails{record})
 	}
@@ -173,8 +177,9 @@ func (r *CmsDebitNoteDetailsRepository) DeleteMany(records []*entities.CmsDebitn
 		return item.RefNo
 	})
 
-	_, err := r.db.In("ref_no", ids).Cols("active_status").Update(&entities.CmsDebitnoteDetails{
+	_, err := r.db.In("ref_no", ids).Cols("active_status", "ref_no").Update(&entities.CmsDebitnoteDetails{
 		ActiveStatus: 0,
+		RefNo:        fmt.Sprintf("DELETED-%s", time.Now().Format("20060102")),
 	})
 	if err != nil {
 		return err
