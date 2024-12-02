@@ -193,7 +193,7 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 // and updates it using the Update method. It returns an error if the
 // update operation fails.
 func (r *CmsInvoiceRepository) Delete(invoice *entities.CmsInvoice) error {
-	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
+	_, err := r.db.Where("invoice_code = ? AND cancelled = 'F'", invoice.InvoiceCode).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
 		Cancelled: "T",
 		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
@@ -228,7 +228,7 @@ func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error
 		return item.InvoiceCode
 	})
 
-	_, err := r.db.In("invoice_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
+	_, err := r.db.Where("cancelled = 'F'").In("invoice_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
 		Cancelled: "T",
 		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})

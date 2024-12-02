@@ -149,7 +149,7 @@ func (r *CmsCreditNoteDetailsRepository) Update(details *entities.CmsCreditnoteD
 // It returns an error if the update operation fails.
 func (r *CmsCreditNoteDetailsRepository) Delete(details *entities.CmsCreditnoteDetails) error {
 	details.ActiveStatus = 0
-	_, err := r.db.Where("ref_no = ?", details.RefNo).Cols("active_status", "ref_no").Update(&entities.CmsCreditnoteDetails{
+	_, err := r.db.Where("ref_no = ? AND active_status = 1", details.RefNo).Cols("active_status", "ref_no").Update(&entities.CmsCreditnoteDetails{
 		ActiveStatus: 0,
 		RefNo:        fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
@@ -184,7 +184,7 @@ func (r *CmsCreditNoteDetailsRepository) DeleteMany(details []*entities.CmsCredi
 		return item.RefNo
 	})
 
-	_, err := r.db.In("ref_no", ids).Cols("active_status", "ref_no").Update(&entities.CmsCreditnoteDetails{
+	_, err := r.db.Where("active_status = 1").In("ref_no", ids).Cols("active_status", "ref_no").Update(&entities.CmsCreditnoteDetails{
 		ActiveStatus: 0,
 		RefNo:        fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})

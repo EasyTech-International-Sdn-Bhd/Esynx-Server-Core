@@ -148,7 +148,7 @@ func (r *CmsInvoiceDetailsRepository) Update(details *entities.CmsInvoiceDetails
 // It also logs the DELETE operation.
 func (r *CmsInvoiceDetailsRepository) Delete(details *entities.CmsInvoiceDetails) error {
 	details.ActiveStatus = 0
-	_, err := r.db.Where("ref_no = ?", details.RefNo).Cols("active_status", "ref_no").Update(&entities.CmsInvoiceDetails{
+	_, err := r.db.Where("ref_no = ? AND active_status = 1", details.RefNo).Cols("active_status", "ref_no").Update(&entities.CmsInvoiceDetails{
 		ActiveStatus: 0,
 		RefNo:        fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
@@ -177,7 +177,7 @@ func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceD
 	ids := iterator.Map(details, func(item *entities.CmsInvoiceDetails) string {
 		return item.RefNo
 	})
-	_, err := r.db.In("ref_no", ids).Cols("active_status", "ref_no").Update(&entities.CmsInvoiceDetails{
+	_, err := r.db.Where("active_status = 1").In("ref_no", ids).Cols("active_status", "ref_no").Update(&entities.CmsInvoiceDetails{
 		ActiveStatus: 0,
 		RefNo:        fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
