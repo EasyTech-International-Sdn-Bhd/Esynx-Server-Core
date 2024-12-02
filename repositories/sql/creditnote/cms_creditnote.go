@@ -1,6 +1,7 @@
 package creditnote
 
 import (
+	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
@@ -175,6 +176,7 @@ func (r *CmsCreditNoteRepository) Delete(creditNote *entities.CmsCreditnote) err
 	creditNote.Cancelled = "T"
 	_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Cols("cancelled", "ref_no").Update(&entities.CmsCreditnote{
 		Cancelled: "T",
+		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
 	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsCreditnote{creditNote})
@@ -207,6 +209,7 @@ func (r *CmsCreditNoteRepository) DeleteMany(creditNotes []*entities.CmsCreditno
 
 	_, err := r.db.In("cn_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsCreditnote{
 		Cancelled: "T",
+		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
 	})
 	if err != nil {
 		return err

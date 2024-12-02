@@ -1,6 +1,7 @@
 package invoice
 
 import (
+	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
@@ -193,6 +194,7 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 func (r *CmsInvoiceRepository) Delete(invoice *entities.CmsInvoice) error {
 	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
 		Cancelled: "T",
+		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
 	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsInvoice{invoice})
@@ -227,6 +229,7 @@ func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error
 
 	_, err := r.db.In("invoice_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
 		Cancelled: "T",
+		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
 	})
 	if err != nil {
 		return err

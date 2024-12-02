@@ -8,6 +8,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/stock"
 	"github.com/goccy/go-json"
 	iterator "github.com/ledongthuc/goterators"
+	"time"
 	"xorm.io/builder"
 	"xorm.io/xorm"
 )
@@ -149,6 +150,7 @@ func (r *CmsInvoiceDetailsRepository) Delete(details *entities.CmsInvoiceDetails
 	details.ActiveStatus = 0
 	_, err := r.db.Where("ref_no = ?", details.RefNo).Cols("active_status", "ref_no").Update(&entities.CmsInvoiceDetails{
 		ActiveStatus: 0,
+		RefNo:        fmt.Sprintf("DELETED-%d", time.Now().Unix()),
 	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsInvoiceDetails{details})
@@ -177,6 +179,7 @@ func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceD
 	})
 	_, err := r.db.In("ref_no", ids).Cols("active_status", "ref_no").Update(&entities.CmsInvoiceDetails{
 		ActiveStatus: 0,
+		RefNo:        fmt.Sprintf("DELETED-%d", time.Now().Unix()),
 	})
 	if err != nil {
 		return err
