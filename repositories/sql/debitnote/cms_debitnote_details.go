@@ -7,8 +7,8 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/stock"
 	"github.com/goccy/go-json"
+	"github.com/google/uuid"
 	iterator "github.com/ledongthuc/goterators"
-	"time"
 	"xorm.io/builder"
 	"xorm.io/xorm"
 )
@@ -147,7 +147,7 @@ func (r *CmsDebitNoteDetailsRepository) Delete(record *entities.CmsDebitnoteDeta
 	record.ActiveStatus = 0
 	_, err := r.db.Where("ref_no = ?", record.RefNo).Cols("active_status", "ref_no").Update(&entities.CmsDebitnoteDetails{
 		ActiveStatus: 0,
-		RefNo:        fmt.Sprintf("DELETED-%d", time.Now().Unix()),
+		RefNo:        fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsDebitnoteDetails{record})
@@ -179,7 +179,7 @@ func (r *CmsDebitNoteDetailsRepository) DeleteMany(records []*entities.CmsDebitn
 
 	_, err := r.db.In("ref_no", ids).Cols("active_status", "ref_no").Update(&entities.CmsDebitnoteDetails{
 		ActiveStatus: 0,
-		RefNo:        fmt.Sprintf("DELETED-%d", time.Now().Unix()),
+		RefNo:        fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
 	if err != nil {
 		return err

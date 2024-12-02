@@ -7,6 +7,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/customer"
 	"github.com/goccy/go-json"
+	"github.com/google/uuid"
 	iterator "github.com/ledongthuc/goterators"
 	"time"
 	"xorm.io/builder"
@@ -169,7 +170,7 @@ func (r *CmsDebitNoteRepository) Delete(debitNote *entities.CmsDebitnote) error 
 	debitNote.Cancelled = "T"
 	_, err := r.db.Where("dn_code = ?", debitNote.DnCode).Cols("cancelled", "ref_no").Update(&entities.CmsDebitnote{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
+		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsDebitnote{debitNote})
@@ -201,7 +202,7 @@ func (r *CmsDebitNoteRepository) DeleteMany(debitNotes []*entities.CmsDebitnote)
 
 	_, err := r.db.In("dn_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsDebitnote{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
+		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
 	if err != nil {
 		return err

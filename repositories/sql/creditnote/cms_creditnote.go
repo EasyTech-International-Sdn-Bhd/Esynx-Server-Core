@@ -7,6 +7,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/customer"
 	"github.com/goccy/go-json"
+	"github.com/google/uuid"
 	iterator "github.com/ledongthuc/goterators"
 	"time"
 	"xorm.io/builder"
@@ -176,7 +177,7 @@ func (r *CmsCreditNoteRepository) Delete(creditNote *entities.CmsCreditnote) err
 	creditNote.Cancelled = "T"
 	_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Cols("cancelled", "ref_no").Update(&entities.CmsCreditnote{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
+		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsCreditnote{creditNote})
@@ -209,7 +210,7 @@ func (r *CmsCreditNoteRepository) DeleteMany(creditNotes []*entities.CmsCreditno
 
 	_, err := r.db.In("cn_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsCreditnote{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
+		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
 	if err != nil {
 		return err

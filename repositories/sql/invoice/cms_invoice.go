@@ -7,6 +7,7 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/customer"
 	"github.com/goccy/go-json"
+	"github.com/google/uuid"
 	iterator "github.com/ledongthuc/goterators"
 	"time"
 	"xorm.io/builder"
@@ -194,7 +195,7 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 func (r *CmsInvoiceRepository) Delete(invoice *entities.CmsInvoice) error {
 	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
+		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsInvoice{invoice})
@@ -229,7 +230,7 @@ func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error
 
 	_, err := r.db.In("invoice_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%d", time.Now().Unix()),
+		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
 	})
 	if err != nil {
 		return err

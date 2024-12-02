@@ -23,16 +23,6 @@ github.com/denisenkom/go-mssqldb v0.12.3/go.mod h1:k0mtMFOnU+AihqFxPMiF05rtiDror
 github.com/dnaeon/go-vcr v1.2.0/go.mod h1:R4UdLID7HZT3taECzJs4YgbbH6PIGXB6W/sc5OLb6RQ=
 github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4zYo=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241001124743-790f1896192b h1:Qi/t78K1ZnHpQGSEp/abQ3PapD6kpT1LERYJRmdpsiA=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241001124743-790f1896192b/go.mod h1:UVPvwANVlvSyYQ58u2i++rGlrnPpdryMtQLqHIZGRyc=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241001180451-0a3de4ee3ec5 h1:cTzyjFY3dVwgt4g8cwWWJZmZ/A2NcgvIg8SszDZiW5k=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241001180451-0a3de4ee3ec5/go.mod h1:UVPvwANVlvSyYQ58u2i++rGlrnPpdryMtQLqHIZGRyc=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241002131638-66af9f5b60e4 h1:fS/3mzgP7TNQ2/U4hJMIz3U5hRmCO1iUMF0UrVNoUJs=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241002131638-66af9f5b60e4/go.mod h1:UVPvwANVlvSyYQ58u2i++rGlrnPpdryMtQLqHIZGRyc=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241103094557-862ac807c4a2 h1:JPV5e+RGgtY0RSH6IhjPh1YNYLGpRkCLnGLsezPr+xA=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241103094557-862ac807c4a2/go.mod h1:UVPvwANVlvSyYQ58u2i++rGlrnPpdryMtQLqHIZGRyc=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241103101036-332aa4ed31dd h1:bIuEITBQ3w5NvlSNqeYrPO6vBSnTTvYhjcIhpdRt+uI=
-github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241103101036-332aa4ed31dd/go.mod h1:UVPvwANVlvSyYQ58u2i++rGlrnPpdryMtQLqHIZGRyc=
 github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241201025939-9075d155b6be h1:JIww0ZE7DTS73BZOwg04dkNNxMfevy5YSkCOujcFFLk=
 github.com/easytech-international-sdn-bhd/esynx-common v0.0.0-20241201025939-9075d155b6be/go.mod h1:UVPvwANVlvSyYQ58u2i++rGlrnPpdryMtQLqHIZGRyc=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
