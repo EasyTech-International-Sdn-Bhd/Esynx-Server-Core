@@ -1,7 +1,6 @@
 package debitnote
 
 import (
-	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
@@ -169,7 +168,6 @@ func (r *CmsDebitNoteRepository) Delete(debitNote *entities.CmsDebitnote) error 
 	debitNote.Cancelled = "T"
 	_, err := r.db.Where("dn_code = ?", debitNote.DnCode).Cols("cancelled", "ref_no").Update(&entities.CmsDebitnote{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", time.Now().Format("20060102")),
 	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsDebitnote{debitNote})
@@ -201,7 +199,6 @@ func (r *CmsDebitNoteRepository) DeleteMany(debitNotes []*entities.CmsDebitnote)
 
 	_, err := r.db.In("dn_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsDebitnote{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", time.Now().Format("20060102")),
 	})
 	if err != nil {
 		return err

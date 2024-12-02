@@ -1,7 +1,6 @@
 package invoice
 
 import (
-	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
@@ -192,10 +191,8 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 // and updates it using the Update method. It returns an error if the
 // update operation fails.
 func (r *CmsInvoiceRepository) Delete(invoice *entities.CmsInvoice) error {
-	invoice.Cancelled = "T"
 	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", time.Now().Format("20060102")),
 	})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsInvoice{invoice})
@@ -230,7 +227,6 @@ func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error
 
 	_, err := r.db.In("invoice_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
 		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", time.Now().Format("20060102")),
 	})
 	if err != nil {
 		return err
