@@ -1,13 +1,11 @@
 package creditnote
 
 import (
-	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/customer"
 	"github.com/goccy/go-json"
-	"github.com/google/uuid"
 	iterator "github.com/ledongthuc/goterators"
 	"time"
 	"xorm.io/builder"
@@ -175,10 +173,7 @@ func (r *CmsCreditNoteRepository) Update(creditNote *entities.CmsCreditnote) err
 // and updates it directly using r.db. It returns an error if the update operation fails.
 func (r *CmsCreditNoteRepository) Delete(creditNote *entities.CmsCreditnote) error {
 	creditNote.Cancelled = "T"
-	_, err := r.db.Where("cn_code = ? AND cancelled = 'F'", creditNote.CnCode).Cols("cancelled", "ref_no").Update(&entities.CmsCreditnote{
-		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
-	})
+	_, err := r.db.Where("cn_code = ?", creditNote.CnCode).Delete(&entities.CmsCreditnote{})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsCreditnote{creditNote})
 	}
@@ -208,10 +203,7 @@ func (r *CmsCreditNoteRepository) DeleteMany(creditNotes []*entities.CmsCreditno
 		return item.CnCode
 	})
 
-	_, err := r.db.Where("cancelled = 'F'").In("cn_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsCreditnote{
-		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
-	})
+	_, err := r.db.In("cn_code", ids).Delete(&entities.CmsCreditnote{})
 	if err != nil {
 		return err
 	}

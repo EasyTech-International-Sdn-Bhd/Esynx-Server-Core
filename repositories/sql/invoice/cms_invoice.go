@@ -1,13 +1,11 @@
 package invoice
 
 import (
-	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/customer"
 	"github.com/goccy/go-json"
-	"github.com/google/uuid"
 	iterator "github.com/ledongthuc/goterators"
 	"time"
 	"xorm.io/builder"
@@ -193,10 +191,7 @@ func (r *CmsInvoiceRepository) Update(invoice *entities.CmsInvoice) error {
 // and updates it using the Update method. It returns an error if the
 // update operation fails.
 func (r *CmsInvoiceRepository) Delete(invoice *entities.CmsInvoice) error {
-	_, err := r.db.Where("invoice_code = ? AND cancelled = 'F'", invoice.InvoiceCode).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
-		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
-	})
+	_, err := r.db.Where("invoice_code = ?", invoice.InvoiceCode).Delete(&entities.CmsInvoice{})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsInvoice{invoice})
 	}
@@ -228,10 +223,7 @@ func (r *CmsInvoiceRepository) DeleteMany(invoices []*entities.CmsInvoice) error
 		return item.InvoiceCode
 	})
 
-	_, err := r.db.Where("cancelled = 'F'").In("invoice_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsInvoice{
-		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
-	})
+	_, err := r.db.In("invoice_code", ids).Delete(&entities.CmsInvoice{})
 	if err != nil {
 		return err
 	}

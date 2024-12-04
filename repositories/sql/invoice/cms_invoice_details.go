@@ -7,7 +7,6 @@ import (
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/stock"
 	"github.com/goccy/go-json"
-	"github.com/google/uuid"
 	iterator "github.com/ledongthuc/goterators"
 	"xorm.io/builder"
 	"xorm.io/xorm"
@@ -148,10 +147,7 @@ func (r *CmsInvoiceDetailsRepository) Update(details *entities.CmsInvoiceDetails
 // It also logs the DELETE operation.
 func (r *CmsInvoiceDetailsRepository) Delete(details *entities.CmsInvoiceDetails) error {
 	details.ActiveStatus = 0
-	_, err := r.db.Where("ref_no = ? AND active_status = 1", details.RefNo).Cols("active_status", "ref_no").Update(&entities.CmsInvoiceDetails{
-		ActiveStatus: 0,
-		RefNo:        fmt.Sprintf("DELETED-%s", uuid.New().String()),
-	})
+	_, err := r.db.Where("ref_no = ?", details.RefNo).Delete(&entities.CmsInvoiceDetails{})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsInvoiceDetails{details})
 	}
@@ -177,10 +173,7 @@ func (r *CmsInvoiceDetailsRepository) DeleteMany(details []*entities.CmsInvoiceD
 	ids := iterator.Map(details, func(item *entities.CmsInvoiceDetails) string {
 		return item.RefNo
 	})
-	_, err := r.db.Where("active_status = 1").In("ref_no", ids).Cols("active_status", "ref_no").Update(&entities.CmsInvoiceDetails{
-		ActiveStatus: 0,
-		RefNo:        fmt.Sprintf("DELETED-%s", uuid.New().String()),
-	})
+	_, err := r.db.In("ref_no", ids).Delete(&entities.CmsInvoiceDetails{})
 	if err != nil {
 		return err
 	}

@@ -1,13 +1,11 @@
 package debitnote
 
 import (
-	"fmt"
 	"github.com/easytech-international-sdn-bhd/esynx-common/entities"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/contracts"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/models"
 	"github.com/easytech-international-sdn-bhd/esynx-server-core/repositories/sql/customer"
 	"github.com/goccy/go-json"
-	"github.com/google/uuid"
 	iterator "github.com/ledongthuc/goterators"
 	"time"
 	"xorm.io/builder"
@@ -168,10 +166,7 @@ func (r *CmsDebitNoteRepository) Update(debitNote *entities.CmsDebitnote) error 
 // the "DELETE" operation.
 func (r *CmsDebitNoteRepository) Delete(debitNote *entities.CmsDebitnote) error {
 	debitNote.Cancelled = "T"
-	_, err := r.db.Where("dn_code = ? AND cancelled = 'F'", debitNote.DnCode).Cols("cancelled", "ref_no").Update(&entities.CmsDebitnote{
-		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
-	})
+	_, err := r.db.Where("dn_code = ?", debitNote.DnCode).Delete(&entities.CmsDebitnote{})
 	if err == nil {
 		r.log("DELETE", []*entities.CmsDebitnote{debitNote})
 	}
@@ -200,10 +195,7 @@ func (r *CmsDebitNoteRepository) DeleteMany(debitNotes []*entities.CmsDebitnote)
 		return item.DnCode
 	})
 
-	_, err := r.db.Where("cancelled = 'F'").In("dn_code", ids).Cols("cancelled", "ref_no").Update(&entities.CmsDebitnote{
-		Cancelled: "T",
-		RefNo:     fmt.Sprintf("DELETED-%s", uuid.New().String()),
-	})
+	_, err := r.db.In("dn_code", ids).Delete(&entities.CmsDebitnote{})
 	if err != nil {
 		return err
 	}
