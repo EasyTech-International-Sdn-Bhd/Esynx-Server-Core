@@ -154,15 +154,28 @@ func (r *CmsInvoiceRepository) Find(predicate *builder.Builder) ([]*entities.Cms
 // If the insertion is successful, the method logs the operation.
 // The method returns an error if the insertion or logging fails.
 func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error {
-	_, err := r.db.Insert(iterator.Map(invoices, func(item *entities.CmsInvoice) *entities.CmsInvoice {
-		return item
-	}))
-	if err != nil {
-		return err
+	toUpdate := make([]*entities.CmsInvoice, 0)
+	toInsert := make([]*entities.CmsInvoice, 0)
+	for _, inv := range invoices {
+		res, err := r.Get(inv.InvoiceCode)
+		if res != nil && err == nil {
+			toInsert = append(toInsert, inv)
+		} else {
+			toUpdate = append(toUpdate, inv)
+		}
 	}
-
-	r.log("INSERT", invoices)
-
+	if len(toInsert) > 0 {
+		_, err := r.db.Insert(toInsert)
+		if err != nil {
+			return err
+		}
+	}
+	if len(toUpdate) > 0 {
+		err := r.UpdateMany(toUpdate)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -266,7 +279,7 @@ func (r *CmsInvoiceRepository) DeleteByAny(predicate *builder.Builder) ([]*entit
 //
 // Example Usage:
 //
-//	r.log("INSERT", invoices)
+//	// r.log("INSERT", invoices)
 //	r.log("UPDATE", []*entities.CmsInvoice{invoice})
 //
 // Note: The audit.Log method is not shown as it belongs to a different package.

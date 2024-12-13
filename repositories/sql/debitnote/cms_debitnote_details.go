@@ -110,14 +110,29 @@ func (r *CmsDebitNoteDetailsRepository) Find(predicate *builder.Builder) ([]*ent
 // After the successful insertion, the log function is called to log the operation.
 // Finally, it returns nil to indicate success.
 func (r *CmsDebitNoteDetailsRepository) InsertMany(details []*entities.CmsDebitnoteDetails) error {
-	_, err := r.db.Insert(iterator.Map(details, func(item *entities.CmsDebitnoteDetails) *entities.CmsDebitnoteDetails {
-		return item
-	}))
-	if err != nil {
-		return err
+	toUpdate := make([]*entities.CmsDebitnoteDetails, 0)
+	toInsert := make([]*entities.CmsDebitnoteDetails, 0)
+	for _, dn := range details {
+		res, err := r.Find(builder.Select("*").Where(builder.Eq{"ref_no": dn.RefNo, "dn_code": dn.DnCode}))
+		if res != nil && err == nil {
+			toInsert = append(toInsert, dn)
+		} else {
+			toUpdate = append(toUpdate, dn)
+		}
 	}
-
-	r.log("INSERT", details)
+	if len(toInsert) > 0 {
+		_, err := r.db.Insert(toInsert)
+		if err != nil {
+			return err
+		}
+	}
+	if len(toUpdate) > 0 {
+		err := r.UpdateMany(toUpdate)
+		if err != nil {
+			return err
+		}
+	}
+	// r.log("INSERT", details)
 
 	return nil
 }

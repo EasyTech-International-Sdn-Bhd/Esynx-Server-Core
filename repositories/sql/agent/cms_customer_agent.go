@@ -114,7 +114,7 @@ func (r *CmsCustomerAgentRepository) InsertMany(records []*entities.CmsCustomerA
 		return err
 	}
 
-	r.log("INSERT", records)
+	// r.log("INSERT", records)
 
 	return nil
 }

@@ -126,7 +126,7 @@ func (r *CmsLoginRepository) InsertMany(records []*entities.CmsLogin) error {
 			return err
 		}
 
-		r.log("INSERT", records)
+		// r.log("INSERT", records)
 	}
 	if len(toUpdate) > 0 {
 		return r.UpdateMany(toUpdate)
@@ -227,7 +227,7 @@ func (r *CmsLoginRepository) DeleteMany(records []*entities.CmsLogin) error {
 //
 // Example usage:
 // ```
-// r.log("INSERT", records)
+// // r.log("INSERT", records)
 // ```
 func (r *CmsLoginRepository) log(op string, payload []*entities.CmsLogin) {
 	record, _ := json.Marshal(payload)

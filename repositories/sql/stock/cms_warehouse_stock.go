@@ -63,7 +63,7 @@ func (r *CmsWarehouseStockRepository) InsertMany(records []*entities.CmsWarehous
 		return err
 	}
 
-	r.log("INSERT", records)
+	// r.log("INSERT", records)
 
 	return nil
 }

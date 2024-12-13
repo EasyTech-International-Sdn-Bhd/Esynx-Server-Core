@@ -133,15 +133,28 @@ func (r *CmsDebitNoteRepository) Find(predicate *builder.Builder) ([]*entities.C
 // Then it performs the insertion using the db.Insert function.
 // After successful insertion, it logs the operation as "INSERT" along with the inserted debit notes.
 func (r *CmsDebitNoteRepository) InsertMany(debitNotes []*entities.CmsDebitnote) error {
-	_, err := r.db.Insert(iterator.Map(debitNotes, func(item *entities.CmsDebitnote) *entities.CmsDebitnote {
-		return item
-	}))
-	if err != nil {
-		return err
+	toUpdate := make([]*entities.CmsDebitnote, 0)
+	toInsert := make([]*entities.CmsDebitnote, 0)
+	for _, dn := range debitNotes {
+		res, err := r.Get(dn.DnCode)
+		if res != nil && err == nil {
+			toInsert = append(toInsert, dn)
+		} else {
+			toUpdate = append(toUpdate, dn)
+		}
 	}
-
-	r.log("INSERT", debitNotes)
-
+	if len(toInsert) > 0 {
+		_, err := r.db.Insert(toInsert)
+		if err != nil {
+			return err
+		}
+	}
+	if len(toUpdate) > 0 {
+		err := r.UpdateMany(toUpdate)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -235,7 +248,7 @@ func (r *CmsDebitNoteRepository) DeleteByAny(predicate *builder.Builder) ([]*ent
 //
 // Example usage:
 //
-//	r.log("INSERT", debitNotes)
+//	// r.log("INSERT", debitNotes)
 //	r.log("UPDATE", []*entities.CmsDebitnote{debitNote})
 //	r.log("UPDATE", debitNotes)
 //

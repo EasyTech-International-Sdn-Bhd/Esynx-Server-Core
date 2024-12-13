@@ -139,15 +139,28 @@ func (r *CmsCreditNoteRepository) Find(predicate *builder.Builder) ([]*entities.
 // After the insertion, it logs the "INSERT" operation with the inserted credit notes.
 // It returns nil if everything is successful.
 func (r *CmsCreditNoteRepository) InsertMany(creditNotes []*entities.CmsCreditnote) error {
-	_, err := r.db.Insert(iterator.Map(creditNotes, func(item *entities.CmsCreditnote) *entities.CmsCreditnote {
-		return item
-	}))
-	if err != nil {
-		return err
+	toUpdate := make([]*entities.CmsCreditnote, 0)
+	toInsert := make([]*entities.CmsCreditnote, 0)
+	for _, cn := range creditNotes {
+		res, err := r.Get(cn.CnCode)
+		if res != nil && err == nil {
+			toInsert = append(toInsert, cn)
+		} else {
+			toUpdate = append(toUpdate, cn)
+		}
 	}
-
-	r.log("INSERT", creditNotes)
-
+	if len(toInsert) > 0 {
+		_, err := r.db.Insert(toInsert)
+		if err != nil {
+			return err
+		}
+	}
+	if len(toUpdate) > 0 {
+		err := r.UpdateMany(toUpdate)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

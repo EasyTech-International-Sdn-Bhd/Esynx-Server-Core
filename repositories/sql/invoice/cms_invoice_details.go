@@ -117,14 +117,30 @@ func (r *CmsInvoiceDetailsRepository) Find(predicate *builder.Builder) ([]*entit
 // InsertMany inserts multiple CmsInvoiceDetails into the database.
 // It returns an error if the insertion fails.
 func (r *CmsInvoiceDetailsRepository) InsertMany(details []*entities.CmsInvoiceDetails) error {
-	_, err := r.db.Insert(iterator.Map(details, func(item *entities.CmsInvoiceDetails) *entities.CmsInvoiceDetails {
-		return item
-	}))
-	if err != nil {
-		return err
+	toUpdate := make([]*entities.CmsInvoiceDetails, 0)
+	toInsert := make([]*entities.CmsInvoiceDetails, 0)
+	for _, inv := range details {
+		res, err := r.Find(builder.Select("*").Where(builder.Eq{"ref_no": inv.RefNo, "invoice_code": inv.InvoiceCode}))
+		if res != nil && err == nil {
+			toInsert = append(toInsert, inv)
+		} else {
+			toUpdate = append(toUpdate, inv)
+		}
+	}
+	if len(toInsert) > 0 {
+		_, err := r.db.Insert(toInsert)
+		if err != nil {
+			return err
+		}
+	}
+	if len(toUpdate) > 0 {
+		err := r.UpdateMany(toUpdate)
+		if err != nil {
+			return err
+		}
 	}
 
-	r.log("INSERT", details)
+	// r.log("INSERT", details)
 
 	return nil
 }

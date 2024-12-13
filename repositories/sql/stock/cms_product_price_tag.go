@@ -90,7 +90,7 @@ func (r *CmsProductPriceTagRepository) InsertMany(records []*entities.CmsProduct
 		return err
 	}
 
-	r.log("INSERT", records)
+	// r.log("INSERT", records)
 
 	return nil
 }

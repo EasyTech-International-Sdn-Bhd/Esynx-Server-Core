@@ -201,15 +201,28 @@ func (r *CmsCustomerRepository) Find(predicate *builder.Builder) ([]*entities.Cm
 // The new slice is then passed to the Insert method of the database engine.
 // If there is an error during insertion, it is returned. Otherwise, the method logs the "INSERT" operation and returns nil.
 func (r *CmsCustomerRepository) InsertMany(records []*entities.CmsCustomer) error {
-	_, err := r.db.Insert(iterator.Map(records, func(item *entities.CmsCustomer) *entities.CmsCustomer {
-		return item
-	}))
-	if err != nil {
-		return err
+	toUpdate := make([]*entities.CmsCustomer, 0)
+	toInsert := make([]*entities.CmsCustomer, 0)
+	for _, record := range records {
+		res, err := r.Get(record.CustCode)
+		if res != nil && err == nil {
+			toUpdate = append(toUpdate, record)
+		} else {
+			toInsert = append(toInsert, record)
+		}
 	}
-
-	r.log("INSERT", records)
-
+	if len(toInsert) > 0 {
+		_, err := r.db.Insert(toInsert)
+		if err != nil {
+			return err
+		}
+	}
+	if len(toUpdate) > 0 {
+		err := r.UpdateMany(toUpdate)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

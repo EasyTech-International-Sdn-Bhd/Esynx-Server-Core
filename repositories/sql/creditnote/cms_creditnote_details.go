@@ -115,14 +115,30 @@ func (r *CmsCreditNoteDetailsRepository) Find(predicate *builder.Builder) ([]*en
 // It returns an error if the insertion operation fails. After successfully inserting
 // the details, it logs the operation as "INSERT" along with the inserted details.
 func (r *CmsCreditNoteDetailsRepository) InsertMany(details []*entities.CmsCreditnoteDetails) error {
-	_, err := r.db.Insert(iterator.Map(details, func(item *entities.CmsCreditnoteDetails) *entities.CmsCreditnoteDetails {
-		return item
-	}))
-	if err != nil {
-		return err
+	toUpdate := make([]*entities.CmsCreditnoteDetails, 0)
+	toInsert := make([]*entities.CmsCreditnoteDetails, 0)
+	for _, cn := range details {
+		res, err := r.Find(builder.Select("*").Where(builder.Eq{"ref_no": cn.RefNo, "cn_code": cn.CnCode}))
+		if res != nil && err == nil {
+			toInsert = append(toInsert, cn)
+		} else {
+			toUpdate = append(toUpdate, cn)
+		}
+	}
+	if len(toInsert) > 0 {
+		_, err := r.db.Insert(toInsert)
+		if err != nil {
+			return err
+		}
+	}
+	if len(toUpdate) > 0 {
+		err := r.UpdateMany(toUpdate)
+		if err != nil {
+			return err
+		}
 	}
 
-	r.log("INSERT", details)
+	// r.log("INSERT", details)
 
 	return nil
 }
@@ -223,7 +239,7 @@ func (r *CmsCreditNoteDetailsRepository) DeleteByAny(predicate *builder.Builder)
 //
 //   - The log method can be used to log an "INSERT" operation with a slice of *entities.CmsCreditnoteDetails, as shown here:
 //
-//     err := r.log("INSERT", details)
+//     err := // r.log("INSERT", details)
 //
 //   - Another example is logging an "UPDATE" operation with a slice of *entities.CmsCreditnoteDetails, as shown here:
 //

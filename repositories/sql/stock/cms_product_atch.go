@@ -67,7 +67,7 @@ func (r *CmsProductAtchRepository) InsertMany(records []*entities.CmsProductAtch
 		return err
 	}
 
-	r.log("INSERT", records)
+	// r.log("INSERT", records)
 
 	return nil
 }
@@ -145,7 +145,7 @@ func (r *CmsProductAtchRepository) DeleteMany(records []*entities.CmsProductAtch
 //	    return err
 //	  }
 //
-//	  r.log("INSERT", records)
+//	  // r.log("INSERT", records)
 //
 //	  return nil
 //	}

@@ -116,7 +116,7 @@ func (r *CmsProductRepository) InsertMany(records []*entities.CmsProduct) error 
 		return err
 	}
 
-	r.log("INSERT", records)
+	// r.log("INSERT", records)
 
 	return nil
 }
