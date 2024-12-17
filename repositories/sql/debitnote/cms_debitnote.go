@@ -138,9 +138,10 @@ func (r *CmsDebitNoteRepository) InsertMany(debitNotes []*entities.CmsDebitnote)
 	for _, dn := range debitNotes {
 		res, err := r.Get(dn.DnCode)
 		if res != nil && err == nil {
-			toInsert = append(toInsert, dn)
-		} else {
 			toUpdate = append(toUpdate, dn)
+		}
+		if res == nil && err == nil {
+			toInsert = append(toInsert, dn)
 		}
 	}
 	if len(toInsert) > 0 {

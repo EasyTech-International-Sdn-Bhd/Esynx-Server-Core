@@ -159,9 +159,10 @@ func (r *CmsInvoiceRepository) InsertMany(invoices []*entities.CmsInvoice) error
 	for _, inv := range invoices {
 		res, err := r.Get(inv.InvoiceCode)
 		if res != nil && err == nil {
-			toInsert = append(toInsert, inv)
-		} else {
 			toUpdate = append(toUpdate, inv)
+		}
+		if res == nil && err == nil {
+			toInsert = append(toInsert, inv)
 		}
 	}
 	if len(toInsert) > 0 {

@@ -144,9 +144,10 @@ func (r *CmsCreditNoteRepository) InsertMany(creditNotes []*entities.CmsCreditno
 	for _, cn := range creditNotes {
 		res, err := r.Get(cn.CnCode)
 		if res != nil && err == nil {
-			toInsert = append(toInsert, cn)
-		} else {
 			toUpdate = append(toUpdate, cn)
+		}
+		if res == nil && err == nil {
+			toInsert = append(toInsert, cn)
 		}
 	}
 	if len(toInsert) > 0 {

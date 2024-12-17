@@ -207,7 +207,8 @@ func (r *CmsCustomerRepository) InsertMany(records []*entities.CmsCustomer) erro
 		res, err := r.Get(record.CustCode)
 		if res != nil && err == nil {
 			toUpdate = append(toUpdate, record)
-		} else {
+		}
+		if res == nil && err == nil {
 			toInsert = append(toInsert, record)
 		}
 	}

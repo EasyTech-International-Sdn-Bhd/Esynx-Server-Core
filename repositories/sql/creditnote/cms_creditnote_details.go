@@ -120,9 +120,10 @@ func (r *CmsCreditNoteDetailsRepository) InsertMany(details []*entities.CmsCredi
 	for _, cn := range details {
 		res, err := r.Find(builder.Select("*").Where(builder.Eq{"ref_no": cn.RefNo, "cn_code": cn.CnCode}))
 		if res != nil && err == nil {
-			toInsert = append(toInsert, cn)
-		} else {
 			toUpdate = append(toUpdate, cn)
+		}
+		if res == nil && err == nil {
+			toInsert = append(toInsert, cn)
 		}
 	}
 	if len(toInsert) > 0 {

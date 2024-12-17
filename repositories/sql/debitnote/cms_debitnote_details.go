@@ -115,9 +115,10 @@ func (r *CmsDebitNoteDetailsRepository) InsertMany(details []*entities.CmsDebitn
 	for _, dn := range details {
 		res, err := r.Find(builder.Select("*").Where(builder.Eq{"ref_no": dn.RefNo, "dn_code": dn.DnCode}))
 		if res != nil && err == nil {
-			toInsert = append(toInsert, dn)
-		} else {
 			toUpdate = append(toUpdate, dn)
+		}
+		if res == nil && err == nil {
+			toInsert = append(toInsert, dn)
 		}
 	}
 	if len(toInsert) > 0 {

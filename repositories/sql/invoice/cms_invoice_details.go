@@ -122,9 +122,10 @@ func (r *CmsInvoiceDetailsRepository) InsertMany(details []*entities.CmsInvoiceD
 	for _, inv := range details {
 		res, err := r.Find(builder.Select("*").Where(builder.Eq{"ref_no": inv.RefNo, "invoice_code": inv.InvoiceCode}))
 		if res != nil && err == nil {
-			toInsert = append(toInsert, inv)
-		} else {
 			toUpdate = append(toUpdate, inv)
+		}
+		if res == nil && err == nil {
+			toInsert = append(toInsert, inv)
 		}
 	}
 	if len(toInsert) > 0 {
